@@ -6,17 +6,7 @@ class WebViewMainController {
       _instance ??= WebViewMainController._internal();
   WebViewMainController._internal();
 
-  final WebViewController webViewController = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setNavigationDelegate(
-      NavigationDelegate(
-          // TODO
-          ),
-    )
-    ..addJavaScriptChannel('map',
-        onMessageReceived: (JavaScriptMessage message) {
-      print(message.message);
-    });
-
-  WebViewController getWebViewController() => webViewController;
+  Future<String> getHtmlFromAssets() async {
+    return await rootBundle.loadString('assets/html/map.html');
+  }
 }
