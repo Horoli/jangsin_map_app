@@ -1,31 +1,78 @@
 <!DOCTYPE html>
-    <html>
+<html>
 
-        <head>
-              <meta charset="UTF-8">
-              <meta http-equiv="X-UA-Compatible" content="IE=edge">
-              <meta name="viewport"
-                  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-              <title>"title"</title>
-              <script type="text/javascript"
-                  src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rey7y37ny0"></script>
-        </head>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>"title"</title>
+    <script type="text/javascript"
+        src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rey7y37ny0"></script>
+</head>
 
-        <body>
-              <div id="map" style="width:60%;height:600px;margin:0 auto;"></div>
-              <script>
+<body>
+    <div id="map" style="width:60%;height:600px;margin:0 auto;"></div>
+    <script>
+        window.parent.addEventListener('message', handleMessage, false);
+        // window.parent.addEventListener('set', setMarker, false);
 
-              const lat = "37.4824419369998";
-              const lng = "126.84983521857548";
-              var center = new naver.maps.LatLng(lat, lng);
-              var mapOptions = { center: center, zoom: 20 };
-              var map = new naver.maps.Map('map', mapOptions);
+        const lat = "37.4824419369998";
+        const lng = "126.84983521857548";
+        var center = new naver.maps.LatLng(lat, lng);
+        var mapOptions = { zoom: 10 };
+        var map = new naver.maps.Map('map', mapOptions);
 
-              var marker = new naver.maps.Marker({
-                position: center,
-                map: map,
-              });
-              </script>
-        </body>
+        var marker = new naver.maps.Marker({
+            position: center,
+            map: map,
+        });
 
-    </html>
+
+        function handleMessage(e) {
+            const getData = JSON.parse(e.data);
+            if (getData.type === "set") {
+                setMarker(getData);
+            }
+
+            if (getData.type === "init") {
+                initMarker(getData);
+            }
+        }
+
+        // initData create marker
+        function initMarker(e) {
+            console.log('e', e);
+            Object.keys(e.data).forEach((key) => {
+                var position = new naver.maps.LatLng(e.data[key].lat, e.data[key].lng);
+                var newMarker = new naver.maps.Marker({
+                    position: position,
+                    map: map,
+                })
+            })
+        }
+
+        // selectedData setMarker
+        function setMarker(e) {
+            console.log(e);
+            // var position = new naver.maps.LatLng(e.data.lat, e.data.lng);
+            // map.setCenter(position)
+            // map.setZoom(13)
+            // map.fitBounds(position);
+
+            // marker.setPosition(position);
+        }
+
+        naver.maps.Event.addListener(map, 'click', function (e) {
+            console.log(e.latlng);
+
+            map.setCenter(e.latlng)
+            // map.fitBounds(e.latlng);
+            map.setZoom(13)
+            marker.setPosition(e.latlng);
+        });
+
+    </script>
+</body>
+
+</html>
