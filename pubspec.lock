@@ -83,8 +83,17 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  horoli_package:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "293f4e22f0c338c20083d8fc5fd3580759999c9e"
+      url: "https://github.com/Horoli/horoli_package.git"
+    source: git
+    version: "1.0.0+1"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
@@ -281,5 +290,5 @@ packages:
     source: hosted
     version: "0.2.2"
 sdks:
-  dart: ">=3.1.2 <4.0.0"
+  dart: ">=3.1.3 <4.0.0"
   flutter: ">=3.13.0"

@@ -12,6 +12,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   webviewx: ^0.2.2
+  http: ^0.13.6
+  horoli_package:
+    git:
+      url: "https://github.com/Horoli/horoli_package.git"
+      ref: "master"
 
 dev_dependencies:
   flutter_test:

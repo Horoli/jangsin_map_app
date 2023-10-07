@@ -1,11 +1,17 @@
 import 'package:jangsin_map/common.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GWebView = WebViewMainController.getInstance();
 
+  initSerivice();
+
   runApp(const MyApp());
+}
+
+void initSerivice() {
+  GServiceMap = ServiceMap.getInstance();
 }
 
 class MyApp extends StatelessWidget {

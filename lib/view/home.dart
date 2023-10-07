@@ -27,7 +27,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Column(
           children: [
-            Expanded(
+            // Expanded(
+            //   child: FutureBuilder(
+            //     future: GServiceMap.getLatLng(),
+            //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+            //       return Container();
+            //     },
+            //   ),
+            // ),
+            const Expanded(
               child: HtmlElementView(
                 viewType: 'naver-map',
                 // onPlatformViewCreated: (int a) {},
@@ -35,18 +43,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               child: Text('aa'),
-              onPressed: () {
-                html.window.postMessage(
-                    jsonEncode({
-                      "type": "set",
-                      "data": {
-                        "": {
-                          "lat": '36.3333',
-                          "lng": '126.75',
-                        }
-                      }
-                    }),
-                    "*");
+              onPressed: () async {
+                // html.window.postMessage(
+                //     jsonEncode({
+                //       "type": "set",
+                //       "data": {
+                //         "": {
+                //           "lng": '126.75',
+                //           "lat": '36.3333',
+                //         }
+                //       }
+                //     }),
+                //     "*");
               },
             ),
           ],
@@ -67,7 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initMap() async {
     await registerView();
-    Future.delayed(const Duration(seconds: 1), () => {postMessage()});
+    RestfulResult result = await GServiceMap.getLatLng();
+    List latLngs = result.data;
+    Future.delayed(
+        const Duration(milliseconds: 500), () => {postMessage(latLngs)});
   }
 
   Future<void> registerView() async {
@@ -81,8 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> postMessage() async {
-    String jsonData = jsonEncode(location);
+  Future<void> postMessage(dynamic latLng) async {
+    Map<String, dynamic> data = {
+      'type': 'init',
+      'data': latLng,
+    };
+    String jsonData = jsonEncode(data);
+    print('jsonData $jsonData');
     html.window.postMessage(jsonData, '*');
   }
 

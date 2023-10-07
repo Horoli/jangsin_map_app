@@ -17,8 +17,8 @@
         window.parent.addEventListener('message', handleMessage, false);
         // window.parent.addEventListener('set', setMarker, false);
 
-        const lat = "37.4824419369998";
-        const lng = "126.84983521857548";
+        const lat = 37.4824419369998;
+        const lng = 126.84983521857548;
         var center = new naver.maps.LatLng(lat, lng);
         var mapOptions = { zoom: 10 };
         var map = new naver.maps.Map('map', mapOptions);
@@ -43,6 +43,11 @@
         // initData create marker
         function initMarker(e) {
             console.log('e', e);
+            // var position = new naver.maps.LatLng(e[lat], e[lng])
+            //     var newMarker = new naver.maps.Marker({
+            //         position: position,
+            //         map: map,
+            //     })
             Object.keys(e.data).forEach((key) => {
                 var position = new naver.maps.LatLng(e.data[key].lat, e.data[key].lng);
                 var newMarker = new naver.maps.Marker({
