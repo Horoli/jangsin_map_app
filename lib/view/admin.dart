@@ -17,6 +17,12 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
+  /// TODO : 입력 필드 추가
+  /// sido : preset으로 관리
+  /// sigungu : 직접 입력
+  /// eupmyeondong : 직접 입력
+  /// detail : 직접 입력
+
   @override
   void initState() {
     String tokenFromLocalStorage =

@@ -45,6 +45,7 @@ class ViewMapState extends State<ViewMap> {
         }
         List<MRestaurant> restaurants = snapshot.data!.data;
 
+        // TODO : 눌려있는 데이터를 보여주기 위해 stream 추가
         return ListView.separated(
           separatorBuilder: (context, index) => const Divider(),
           itemCount: restaurants.length,
