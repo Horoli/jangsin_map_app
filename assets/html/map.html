@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div id="map" style="width:60%;height:600px;margin:0 auto;"></div>
+    <div id="map" style="width:100%;height:800px;margin:0 auto;"></div>
     <script>
         window.parent.addEventListener('message', handleMessage, false);
         // window.parent.addEventListener('set', setMarker, false);
@@ -32,17 +32,35 @@
         function handleMessage(e) {
             const getData = JSON.parse(e.data);
             if (getData.type === "set") {
-                setMarker(getData);
+                clickMoveCurrentMapScreen(getData);
             }
 
             if (getData.type === "init") {
+                // setHeaderSrc(getData);
                 initMarker(getData);
             }
         }
 
+    //     function setHeaderSrc(e){
+    //         console.log('src :', e['src']);
+    //         const getSrc = document.head.getElementsByTagName('script');
+    //         // console.log('oldSrc.length ', oldSrc[0]);
+    // // const oldSrc =            document.getElementsByTagName('script');
+    // // console.log('oldSrc', oldSrc);
+
+    // for(var i = 0; i < getSrc.length; i++){
+    //     getSrc[i].src = e['src']
+    //     console.log(getSrc[i].src);
+    // }
+
+    // console.log(getSrc);
+
+    //     }
+
+
+
         // initData create marker
         function initMarker(e) {
-            console.log('e', e);
             // var position = new naver.maps.LatLng(e[lat], e[lng])
             //     var newMarker = new naver.maps.Marker({
             //         position: position,
@@ -57,25 +75,22 @@
             })
         }
 
-        // selectedData setMarker
-        function setMarker(e) {
-            console.log(e);
-            // var position = new naver.maps.LatLng(e.data.lat, e.data.lng);
-            // map.setCenter(position)
-            // map.setZoom(13)
+        // 선택하면 입력된 좌표로 지도화면 이동
+        function clickMoveCurrentMapScreen(e) {
+            var position = new naver.maps.LatLng(e.data.lat, e.data.lng);
+            map.setCenter(position)
+            map.setZoom(17)
             // map.fitBounds(position);
-
             // marker.setPosition(position);
         }
 
-        naver.maps.Event.addListener(map, 'click', function (e) {
-            console.log(e.latlng);
-
-            map.setCenter(e.latlng)
-            // map.fitBounds(e.latlng);
-            map.setZoom(13)
-            marker.setPosition(e.latlng);
-        });
+        // naver.maps.Event.addListener(map, 'click', function (e) {
+        //     console.log(e.latlng);
+        //     map.setCenter(e.latlng)
+        //     // map.fitBounds(e.latlng);
+        //     map.setZoom(13)
+        //     marker.setPosition(e.latlng);
+        // });
 
     </script>
 </body>

@@ -1,30 +1,23 @@
-import 'package:jangsin_map/common.dart';
+import 'package:jangsin_map/jangsin_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GWebView = WebViewMainController.getInstance();
 
-  initSerivice();
+  await dotenv.load(fileName: ".env");
+  await _initSerivice();
+  await _initLocalStorage();
 
-  runApp(const MyApp());
+  runApp(AppRoot());
 }
 
-void initSerivice() {
+Future<void> _initLocalStorage() async {
+  GSharedPreferences = await SharedPreferences.getInstance();
+}
+
+Future<void> _initSerivice() async {
   GServiceMap = ServiceMap.getInstance();
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(),
-    );
-  }
+  GServiceAdmin = ServiceAdmin.getInstance();
 }

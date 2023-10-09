@@ -1,4 +1,4 @@
-part of 'common.dart';
+part of 'jangsin_map.dart';
 
 class WebViewMainController {
   static WebViewMainController? _instance;
