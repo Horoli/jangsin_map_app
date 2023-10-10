@@ -19,7 +19,7 @@ class ViewMapState extends State<ViewMap> {
             child: Container(),
             onPressed: () {},
             onLongPress: () {
-              Navigator.of(context).pushNamed(PATH.ADMIN_LOGIN);
+              Navigator.of(context).pushNamed(PATH.ROUTE_ADMIN_LOGIN);
             },
           ),
         ],

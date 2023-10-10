@@ -13,10 +13,9 @@ class ServiceMap {
       "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
-    String detailPath = 'map/latlng';
-
-    Uri query =
-        IS_LOCAL ? Uri.http(LOCAL_URL, detailPath) : Uri.http(FORIEGN_URL);
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_LATLNG)
+        : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
       Map result = json.decode(rep.body);
@@ -38,10 +37,9 @@ class ServiceMap {
       "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
-    String detailPath = 'map/get';
-
-    Uri query =
-        IS_LOCAL ? Uri.http(LOCAL_URL, detailPath) : Uri.http(FORIEGN_URL);
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_GET)
+        : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
       Map result = json.decode(rep.body);

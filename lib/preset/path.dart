@@ -1,8 +1,14 @@
-// const String title = "hello";
-// const String lat = "37.4824419369998";
-// const String lng = "126.84983521857548";
-// const String clientId = 'rey7y37ny0';
+const bool IS_LOCAL = true;
+const String LOCAL_URL = 'localhost:4003';
+const String FORIEGN_URL = '';
 
-const String MAP = '/';
-const String ADMIN = '/admin';
-const String ADMIN_LOGIN = '/admin_login';
+const String ROUTE_MAP = '/';
+const String ROUTE_ADMIN = '/admin';
+const String ROUTE_ADMIN_LOGIN = '/admin_login';
+
+const String API_MAP_CREATE = 'map/create';
+const String API_MAP_GET = 'map/get';
+const String API_MAP_LATLNG = 'map/latlng';
+
+const String API_USERS_SIGN_IN = 'users/sign_in';
+const String API_USERS_SIGN_UP = 'users/sign_up';

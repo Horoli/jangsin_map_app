@@ -6,10 +6,8 @@ class ServiceAdmin {
 
   ServiceAdmin._internal();
 
-  Future<RestfulResult> login({required String id, required String pw}) {
+  Future<RestfulResult> signIn({required String id, required String pw}) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
-
-    String detailPath = 'users/sign_in';
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -18,8 +16,9 @@ class ServiceAdmin {
 
     String jsonBody = jsonEncode({"id": id, "pw": pw});
 
-    Uri query =
-        IS_LOCAL ? Uri.http(LOCAL_URL, detailPath) : Uri.http(FORIEGN_URL);
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_USERS_SIGN_IN)
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_USERS_SIGN_IN);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
@@ -46,8 +45,6 @@ class ServiceAdmin {
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
-    String detailPath = 'map/create';
-
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "token": token,
@@ -62,8 +59,9 @@ class ServiceAdmin {
       "lng": lng,
     });
 
-    Uri query =
-        IS_LOCAL ? Uri.http(LOCAL_URL, detailPath) : Uri.http(FORIEGN_URL);
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_CREATE)
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_MAP_CREATE);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);

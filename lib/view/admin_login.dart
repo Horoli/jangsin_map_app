@@ -36,7 +36,7 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
                     ElevatedButton(
                       child: const Text('login'),
                       onPressed: () async {
-                        RestfulResult result = await GServiceAdmin.login(
+                        RestfulResult result = await GServiceAdmin.signIn(
                           id: "aaaaa",
                           pw: "asd",
                         );
@@ -44,11 +44,12 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
                         if (result.statusCode != 200) return;
 
                         GSharedPreferences.setString(
-                          LOCAL_TOKEN_KEY,
+                          KEY.LOCAL_DB_TOKEN_KEY,
                           result.data['token'],
                         );
 
-                        Navigator.of(context).pushReplacementNamed(PATH.ADMIN);
+                        Navigator.of(context)
+                            .pushReplacementNamed(PATH.ROUTE_ADMIN);
                       },
                     )
                   ],

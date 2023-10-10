@@ -13,6 +13,8 @@ import 'package:http/http.dart' as http;
 import 'package:jangsin_map/model/lib.dart';
 // preset
 import 'package:jangsin_map/preset/path.dart' as PATH;
+import 'package:jangsin_map/preset/key.dart' as KEY;
+import 'package:jangsin_map/preset/district.dart' as DISTRICT;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:horoli_package/model/lib.dart';
@@ -24,8 +26,6 @@ part 'app_root.dart';
 
 part 'service/map.dart';
 part 'service/admin.dart';
-
-part 'controller.dart';
 
 part 'global.dart';
 
