@@ -35,13 +35,9 @@ class ServiceAdmin {
     return completer.future;
   }
 
-  Future<RestfulResult> createMapData({
+  Future<RestfulResult> createRestaurant({
     required String token,
-    required String label,
-    required String contact,
-    required String info,
-    required double lat,
-    required double lng,
+    required MRestaurant restaurant,
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -52,11 +48,11 @@ class ServiceAdmin {
     };
 
     String jsonBody = jsonEncode({
-      "label": label,
-      "contact": contact,
-      "info": info,
-      "lat": lat,
-      "lng": lng,
+      // "label": label,
+      // "contact": contact,
+      // "info": info,
+      // "lat": lat,
+      // "lng": lng,
     });
 
     Uri query = PATH.IS_LOCAL
@@ -77,4 +73,6 @@ class ServiceAdmin {
 
     return completer.future;
   }
+
+  // TODO : updateRestaurant 생성
 }

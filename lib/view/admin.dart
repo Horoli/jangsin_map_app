@@ -69,7 +69,7 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
-  Widget buildMapList(MRestaurant restaurant) {
+  Widget buildMapList(MRestaurant selectedRestaurant) {
     return FutureBuilder(
       future: GServiceRestaurant.get(),
       builder: (
@@ -88,14 +88,14 @@ class ViewAdminState extends State<ViewAdmin> {
             width: double.infinity,
             child: ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: restaurants[index].id == restaurant.id
+                backgroundColor: restaurants[index].id == selectedRestaurant.id
                     ? MaterialStateProperty.all(Colors.red)
                     : MaterialStateProperty.all(Colors.blue),
               ),
               child: Text(restaurants[index].label),
               onPressed: () {
                 // TODO : 선택을 해제하면 입력된 값을 모두 초기화
-                if (GServiceRestaurant.$selectedRestaurant.lastValue.id != "") {
+                if (selectedRestaurant.id == restaurants[index].id) {
                   initCtrl();
                   return;
                 }
