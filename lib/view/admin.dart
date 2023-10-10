@@ -11,9 +11,27 @@ class ViewAdminState extends State<ViewAdmin> {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
 
-  final Map<String, TextEditingController> mapOfCtl = {
+  final Map<String, TextEditingController> mapOfCtrl = {
     KEY.ADMIN_SIDO: TextEditingController(),
     KEY.ADMIN_SIGUNGU: TextEditingController(),
+  };
+
+  final Map<String, TextEditingController> mapOfInputCtrl = {
+    KEY.ADMIN_EUPMYEONDONG: TextEditingController(),
+    KEY.ADMIN_DETAIL: TextEditingController(),
+    KEY.ADMIN_STREET: TextEditingController(),
+    KEY.ADMIN_LABEL: TextEditingController(),
+    KEY.ADMIN_CONTACT: TextEditingController(),
+    KEY.ADMIN_MENU: TextEditingController(),
+    KEY.ADMIN_LAT: TextEditingController(),
+    KEY.ADMIN_LNG: TextEditingController(),
+    KEY.ADMIN_CLOSED_DAYS: TextEditingController(),
+    KEY.ADMIN_OPERATION_TIME: TextEditingController(),
+    KEY.ADMIN_SNS_LINK: TextEditingController(),
+    KEY.ADMIN_NAVER_MAP_LINK: TextEditingController(),
+    KEY.ADMIN_YOUTUBE_LINK: TextEditingController(),
+    KEY.ADMIN_YOUTUBE_UPDATED_AT: TextEditingController(),
+    KEY.ADMIN_BAEMIN_LINK: TextEditingController(),
   };
 
   @override
@@ -24,14 +42,20 @@ class ViewAdminState extends State<ViewAdmin> {
       ),
       body: Center(
         child: SizedBox(
-          width: width * 0.3,
-          height: height * 0.4,
+          width: width * 0.5,
+          height: height * 0.7,
           child: Card(
-            child: Row(
+            child: Column(
               children: [
-                buildSidoDropDownButton().expand(),
-                const VerticalDivider(),
-                buildSigunguDropDownButton().expand(),
+                Row(
+                  children: [
+                    buildSidoDropDownButton().expand(),
+                    const VerticalDivider(),
+                    buildSigunguDropDownButton().expand(),
+                  ],
+                ).expand(),
+                for (int i = 0; i < mapOfInputCtrl.length; i++)
+                  buildAdminTextField(mapOfInputCtrl.keys.toList()[i]).expand(),
               ],
             ),
           ),
@@ -42,15 +66,16 @@ class ViewAdminState extends State<ViewAdmin> {
 
   Widget buildSidoDropDownButton() {
     return DropdownButton(
-      value: mapOfCtl[KEY.ADMIN_SIDO]!.text,
+      value: mapOfCtrl[KEY.ADMIN_SIDO]!.text,
       items: DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: (dynamic value) {
         setState(() {
-          mapOfCtl[KEY.ADMIN_SIDO]!.text = value;
-          mapOfCtl[KEY.ADMIN_SIGUNGU]!.text = DISTRICT
-              .KOREA_ADMINISTRAIVE_DISTRICT[mapOfCtl[KEY.ADMIN_SIDO]!.text]![0];
+          mapOfCtrl[KEY.ADMIN_SIDO]!.text = value;
+          mapOfCtrl[KEY.ADMIN_SIGUNGU]!.text =
+              DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[
+                  mapOfCtrl[KEY.ADMIN_SIDO]!.text]![0];
         });
       },
     );
@@ -58,16 +83,26 @@ class ViewAdminState extends State<ViewAdmin> {
 
   Widget buildSigunguDropDownButton() {
     return DropdownButton(
-      value: mapOfCtl[KEY.ADMIN_SIGUNGU]!.text,
+      value: mapOfCtrl[KEY.ADMIN_SIGUNGU]!.text,
       items: DISTRICT
-          .KOREA_ADMINISTRAIVE_DISTRICT[mapOfCtl[KEY.ADMIN_SIDO]!.text]!
+          .KOREA_ADMINISTRAIVE_DISTRICT[mapOfCtrl[KEY.ADMIN_SIDO]!.text]!
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: (dynamic value) {
         setState(() {
-          mapOfCtl[KEY.ADMIN_SIGUNGU]!.text = value;
+          mapOfCtrl[KEY.ADMIN_SIGUNGU]!.text = value;
         });
       },
+    );
+  }
+
+  Widget buildAdminTextField(String key) {
+    return TextField(
+      controller: mapOfCtrl[key],
+      decoration: InputDecoration(
+        labelText: key,
+        hintText: key,
+      ),
     );
   }
 
@@ -79,24 +114,28 @@ class ViewAdminState extends State<ViewAdmin> {
 
   @override
   void initState() {
-    String tokenFromLocalStorage =
-        GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
-    // GServiceAdmin.createMapData(
-    //   token: tokenFromLocalStorage,
-    //   label: 'aaaaa',
-    //   contact: 'aasdasd',
-    //   info: 'asdasdasx',
-    //   lat: 37,
-    //   lng: 126,
-    // );
-    init();
+    initController();
     super.initState();
   }
 
-  void init() {
-    mapOfCtl[KEY.ADMIN_SIDO]!.text =
+  void initController() {
+    mapOfCtrl[KEY.ADMIN_SIDO]!.text =
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys.toList()[0];
-    mapOfCtl[KEY.ADMIN_SIGUNGU]!.text =
+    mapOfCtrl[KEY.ADMIN_SIGUNGU]!.text =
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT['서울특별시']![0];
+  }
+
+  // TODO : 각 필드에 입력한 데이터를 서버로 전송하는 함수
+  void createMapData() {
+    String tokenFromLocalStorage =
+        GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
+    GServiceAdmin.createMapData(
+      token: tokenFromLocalStorage,
+      label: 'aaaaa',
+      contact: 'aasdasd',
+      info: 'asdasdasx',
+      lat: 37,
+      lng: 126,
+    );
   }
 }

@@ -1,4 +1,18 @@
 const String LOCAL_DB_TOKEN_KEY = "admin_token";
-
-const String ADMIN_SIDO = "sido";
-const String ADMIN_SIGUNGU = "sigungu";
+const String ADMIN_SIDO = "address_sido";
+const String ADMIN_SIGUNGU = "address_sigungu";
+const String ADMIN_EUPMYEONDONG = "address_eupmyeondong";
+const String ADMIN_DETAIL = "address_detail";
+const String ADMIN_STREET = "address_street";
+const String ADMIN_LABEL = "label";
+const String ADMIN_CONTACT = "contact";
+const String ADMIN_MENU = "menu";
+const String ADMIN_LAT = "lat";
+const String ADMIN_LNG = "lng";
+const String ADMIN_CLOSED_DAYS = "closed_days";
+const String ADMIN_OPERATION_TIME = "operation_time";
+const String ADMIN_SNS_LINK = "sns_link";
+const String ADMIN_NAVER_MAP_LINK = "naver_map_link";
+const String ADMIN_YOUTUBE_LINK = "youtube_link";
+const String ADMIN_YOUTUBE_UPDATED_AT = "youtube_updated_at";
+const String ADMIN_BAEMIN_LINK = "baemin_link";
