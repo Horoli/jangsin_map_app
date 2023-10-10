@@ -1,13 +1,17 @@
-part of '../jangsin_map.dart';
+part of widget;
 
-class ViewAdmin extends StatefulWidget {
-  const ViewAdmin({super.key});
+class ManagementRestaurant extends StatefulWidget {
+  MRestaurant? restaurant;
+  ManagementRestaurant({
+    this.restaurant,
+    super.key,
+  });
 
   @override
-  State<ViewAdmin> createState() => ViewAdminState();
+  State<ManagementRestaurant> createState() => ManagementRestaurantState();
 }
 
-class ViewAdminState extends State<ViewAdmin> {
+class ManagementRestaurantState extends State<ManagementRestaurant> {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
 
@@ -47,79 +51,8 @@ class ViewAdminState extends State<ViewAdmin> {
       mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_RESTAURANT]!;
   Map<String, TextEditingController> get mapOfLink =>
       mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("admin"),
-      ),
-      body: TStreamBuilder(
-          stream: GServiceRestaurant.$selectedRestaurant.browse$,
-          builder: (context, MRestaurant restaurant) {
-            print('restaurant.id ${restaurant.id}');
-            return Row(
-              children: [
-                buildMapList(restaurant).expand(),
-                const VerticalDivider(),
-                buildManagementField().expand(),
-              ],
-            );
-          }),
-    );
-  }
-
-  Widget buildMapList(MRestaurant restaurant) {
-    return FutureBuilder(
-      future: GServiceRestaurant.get(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<RestfulResult> snapshot,
-      ) {
-        if (snapshot.data == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        List<MRestaurant> restaurants = snapshot.data!.data;
-        return ListView.separated(
-          separatorBuilder: (context, index) => const Divider(),
-          itemCount: restaurants.length,
-          itemBuilder: (context, index) => SizedBox(
-            height: 100,
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: restaurants[index].id == restaurant.id
-                    ? MaterialStateProperty.all(Colors.red)
-                    : MaterialStateProperty.all(Colors.blue),
-              ),
-              child: Text(restaurants[index].label),
-              onPressed: () {
-                // TODO : 선택을 해제하면 입력된 값을 모두 초기화
-                if (GServiceRestaurant.$selectedRestaurant.lastValue.id != "") {
-                  initCtrl();
-                  return;
-                }
-
-                // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
-                void inputCtrlSelectedRestaurant() {
-                  GServiceRestaurant.$selectedRestaurant
-                      .sink$(restaurants[index]);
-                  mapOfDropdown[KEY.ADMIN_SIDO]!.text =
-                      restaurants[index].address_sido;
-                  mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-                      restaurants[index].address_sigungu;
-                }
-
-                inputCtrlSelectedRestaurant();
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget buildManagementField() {
     return Center(
       child: SizedBox(
         width: width * 0.7,
@@ -203,12 +136,12 @@ class ViewAdminState extends State<ViewAdmin> {
 
   @override
   void initState() {
-    initCtrl();
+    initController();
     super.initState();
   }
 
-  Future<void> initCtrl() async {
-    GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
+  // TODO : dropdown controller는 초기값이 있어야 함으로 초기화 해줌
+  void initController() {
     mapOfDropdown[KEY.ADMIN_SIDO]!.text =
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys.toList()[0];
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =

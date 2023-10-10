@@ -1,4 +1,12 @@
 const String LOCAL_DB_TOKEN_KEY = "admin_token";
+//
+
+// 어드민페이지에서 사용되는
+const String ADMIN_MAP_OF_CTRL_DROPDOWN = 'dropdown';
+const String ADMIN_MAP_OF_CTRL_ADDRESS = 'address';
+const String ADMIN_MAP_OF_CTRL_RESTAURANT = 'restaurant';
+const String ADMIN_MAP_OF_CTRL_LINK = 'link';
+
 const String ADMIN_SIDO = "address_sido";
 const String ADMIN_SIGUNGU = "address_sigungu";
 const String ADMIN_EUPMYEONDONG = "address_eupmyeondong";

@@ -18,6 +18,6 @@ Future<void> _initLocalStorage() async {
 }
 
 Future<void> _initSerivice() async {
-  GServiceMap = ServiceMap.getInstance();
+  GServiceRestaurant = ServiceRestaurant.getInstance();
   GServiceAdmin = ServiceAdmin.getInstance();
 }

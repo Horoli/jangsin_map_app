@@ -60,8 +60,8 @@ class ServiceAdmin {
     });
 
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_CREATE)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_MAP_CREATE);
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_CREATE)
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_CREATE);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);

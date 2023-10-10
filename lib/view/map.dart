@@ -35,7 +35,7 @@ class ViewMapState extends State<ViewMap> {
 
   Widget buildMapList() {
     return FutureBuilder(
-      future: GServiceMap.get(),
+      future: GServiceRestaurant.get(),
       builder: (
         BuildContext context,
         AsyncSnapshot<RestfulResult> snapshot,
@@ -82,7 +82,7 @@ class ViewMapState extends State<ViewMap> {
 
   Future<void> initMap() async {
     await registerView();
-    RestfulResult result = await GServiceMap.getLatLng();
+    RestfulResult result = await GServiceRestaurant.getLatLng();
     List latLngs = result.data;
     Future.delayed(
         const Duration(milliseconds: 500), () => {postMessage(latLngs)});

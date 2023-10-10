@@ -1,6 +1,7 @@
 part of 'lib.dart';
 
 class MRestaurant extends CommonModel {
+  final String id;
   final String type;
   final String label;
   final String contact;
@@ -22,30 +23,32 @@ class MRestaurant extends CommonModel {
   final String baemin_link;
   final String thumbnail;
   MRestaurant({
-    required this.type,
-    required this.label,
-    required this.contact,
-    required this.representative_menu,
-    required this.info,
-    required this.description,
-    required this.lat,
-    required this.lng,
-    required this.address_sido,
-    required this.address_sigungu,
-    required this.address_eupmyeondong,
-    required this.address_detail,
-    required this.address_street,
-    required this.closed_days,
-    required this.opertaion_time,
-    required this.sns,
-    required this.youtube_uploadedAt,
-    required this.youtube_link,
-    required this.baemin_link,
-    required this.thumbnail,
+    this.id = "",
+    this.type = "",
+    this.label = "",
+    this.contact = "",
+    this.representative_menu = "",
+    this.info = "",
+    this.description = "",
+    this.lat = 0,
+    this.lng = 0,
+    this.address_sido = "",
+    this.address_sigungu = "",
+    this.address_eupmyeondong = "",
+    this.address_detail = "",
+    this.address_street = "",
+    this.closed_days = "",
+    this.opertaion_time = "",
+    this.sns = "",
+    this.youtube_uploadedAt = "",
+    this.youtube_link = "",
+    this.baemin_link = "",
+    this.thumbnail = "",
   });
 
   @override
   Map<String, dynamic> get map => {
+        'id': id,
         'type': type,
         'label': label,
         'contact': contact,
@@ -69,6 +72,7 @@ class MRestaurant extends CommonModel {
       };
 
   factory MRestaurant.fromMap(Map item) {
+    String id = item['id'] ?? '';
     String type = item['type'] ?? '';
     String label = item['label'] ?? '';
     String contact = item['contact'] ?? '';
@@ -91,6 +95,7 @@ class MRestaurant extends CommonModel {
     String thumbnail = item['thumbnail'] ?? '';
 
     return MRestaurant(
+      id: id,
       type: type,
       label: label,
       contact: contact,

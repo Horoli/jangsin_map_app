@@ -1,10 +1,14 @@
 part of "../jangsin_map.dart";
 
-class ServiceMap {
-  static ServiceMap? _instance;
-  factory ServiceMap.getInstance() => _instance ??= ServiceMap._internal();
+class ServiceRestaurant {
+  static ServiceRestaurant? _instance;
+  factory ServiceRestaurant.getInstance() =>
+      _instance ??= ServiceRestaurant._internal();
 
-  ServiceMap._internal();
+  ServiceRestaurant._internal();
+
+  TStream<MRestaurant> $selectedRestaurant = TStream<MRestaurant>()
+    ..sink$(MRestaurant());
 
   Future<RestfulResult> getLatLng() async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
@@ -14,7 +18,7 @@ class ServiceMap {
     };
 
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_LATLNG)
+        ? Uri.http(PATH.LOCAL_URL, PATH.APT_RESTAURANT_LATLNG)
         : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
@@ -38,7 +42,7 @@ class ServiceMap {
     };
 
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_MAP_GET)
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
         : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {

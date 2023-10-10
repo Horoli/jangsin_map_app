@@ -6,9 +6,9 @@ const String ROUTE_MAP = '/';
 const String ROUTE_ADMIN = '/admin';
 const String ROUTE_ADMIN_LOGIN = '/admin_login';
 
-const String API_MAP_CREATE = 'map/create';
-const String API_MAP_GET = 'map/get';
-const String API_MAP_LATLNG = 'map/latlng';
+const String API_RESTAURANT_CREATE = 'restaurant/create';
+const String API_RESTAURANT_GET = 'restaurant/get';
+const String APT_RESTAURANT_LATLNG = 'restaurant/latlng';
 
 const String API_USERS_SIGN_IN = 'users/sign_in';
 const String API_USERS_SIGN_UP = 'users/sign_up';
