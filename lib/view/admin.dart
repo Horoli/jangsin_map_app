@@ -55,17 +55,24 @@ class ViewAdminState extends State<ViewAdmin> {
         title: const Text("admin"),
       ),
       body: TStreamBuilder(
-          stream: GServiceRestaurant.$selectedRestaurant.browse$,
-          builder: (context, MRestaurant restaurant) {
-            print('restaurant.id ${restaurant.id}');
-            return Row(
-              children: [
-                buildMapList(restaurant).expand(),
-                const VerticalDivider(),
-                buildManagementField().expand(),
-              ],
-            );
-          }),
+        stream: GServiceRestaurant.$selectedRestaurant.browse$,
+        builder: (context, MRestaurant restaurant) {
+          print('restaurant.id ${restaurant.id}');
+          return Center(
+            child: SizedBox(
+              width: width * 0.8,
+              height: height * 0.5,
+              child: Row(
+                children: [
+                  buildMapList(restaurant).expand(),
+                  const VerticalDivider(),
+                  buildManagementField().expand(),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
