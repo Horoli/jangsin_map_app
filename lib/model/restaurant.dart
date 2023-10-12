@@ -2,7 +2,6 @@ part of 'lib.dart';
 
 class MRestaurant extends CommonModel {
   final String id;
-  final String type;
   final String label;
   final String contact;
   final String representative_menu;
@@ -17,14 +16,13 @@ class MRestaurant extends CommonModel {
   final String address_street;
   final String closed_days;
   final String opertaion_time;
-  final String sns;
+  final String sns_link;
   final String youtube_uploadedAt;
   final String youtube_link;
   final String baemin_link;
   final String thumbnail;
   MRestaurant({
     this.id = "",
-    this.type = "",
     this.label = "",
     this.contact = "",
     this.representative_menu = "",
@@ -39,7 +37,7 @@ class MRestaurant extends CommonModel {
     this.address_street = "",
     this.closed_days = "",
     this.opertaion_time = "",
-    this.sns = "",
+    this.sns_link = "",
     this.youtube_uploadedAt = "",
     this.youtube_link = "",
     this.baemin_link = "",
@@ -49,7 +47,6 @@ class MRestaurant extends CommonModel {
   @override
   Map<String, dynamic> get map => {
         'id': id,
-        'type': type,
         'label': label,
         'contact': contact,
         'representative_menu': representative_menu,
@@ -64,7 +61,7 @@ class MRestaurant extends CommonModel {
         'address_street': address_street,
         'closed_days': closed_days,
         'opertaion_time': opertaion_time,
-        'sns': sns,
+        'sns_link': sns_link,
         'youtube_uploadedAt': youtube_uploadedAt,
         'youtube_link': youtube_link,
         'baemin_link': baemin_link,
@@ -73,7 +70,6 @@ class MRestaurant extends CommonModel {
 
   factory MRestaurant.fromMap(Map item) {
     String id = item['id'] ?? '';
-    String type = item['type'] ?? '';
     String label = item['label'] ?? '';
     String contact = item['contact'] ?? '';
     String representative_menu = item['representative_menu'] ?? '';
@@ -88,7 +84,7 @@ class MRestaurant extends CommonModel {
     String address_street = item['address_street'] ?? '';
     String closed_days = item['closed_days'] ?? '';
     String opertaion_time = item['opertaion_time'] ?? '';
-    String sns = item['sns'] ?? '';
+    String sns_link = item['sns_link'] ?? '';
     String youtube_uploadedAt = item['youtube_uploadedAt'] ?? '';
     String youtube_link = item['youtube_link'] ?? '';
     String baemin_link = item['baemin_link'] ?? '';
@@ -96,7 +92,6 @@ class MRestaurant extends CommonModel {
 
     return MRestaurant(
       id: id,
-      type: type,
       label: label,
       contact: contact,
       representative_menu: representative_menu,
@@ -111,7 +106,7 @@ class MRestaurant extends CommonModel {
       address_street: address_street,
       closed_days: closed_days,
       opertaion_time: opertaion_time,
-      sns: sns,
+      sns_link: sns_link,
       youtube_uploadedAt: youtube_uploadedAt,
       youtube_link: youtube_link,
       baemin_link: baemin_link,
