@@ -18,7 +18,12 @@ class TileMapUnit extends StatelessWidget {
         children: [
           Container(color: Colors.red).expand(),
           Container(color: Colors.red).expand(),
-          ElevatedButton(onPressed: () {}, child: Container()).expand(),
+          IconButton(
+            icon: const Icon(Icons.open_in_new),
+            onPressed: () {
+              js.context.callMethod('open', [restaurant.naver_map_link]);
+            },
+          ).expand(),
         ],
       ),
     );

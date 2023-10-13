@@ -38,7 +38,7 @@ class ManagementRestaurantState extends State<ManagementRestaurant> {
       KEY.ADMIN_SNS_LINK: TextEditingController(),
       KEY.ADMIN_NAVER_MAP_LINK: TextEditingController(),
       KEY.ADMIN_YOUTUBE_LINK: TextEditingController(),
-      KEY.ADMIN_YOUTUBE_UPDATED_AT: TextEditingController(),
+      KEY.ADMIN_YOUTUBE_UPLOADED_AT: TextEditingController(),
       KEY.ADMIN_BAEMIN_LINK: TextEditingController(),
     },
   };

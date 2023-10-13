@@ -15,8 +15,9 @@ class MRestaurant extends CommonModel {
   final String address_detail;
   final String address_street;
   final String closed_days;
-  final String opertaion_time;
+  final String operation_time;
   final String sns_link;
+  final String naver_map_link;
   final String youtube_uploadedAt;
   final String youtube_link;
   final String baemin_link;
@@ -36,8 +37,9 @@ class MRestaurant extends CommonModel {
     this.address_detail = "",
     this.address_street = "",
     this.closed_days = "",
-    this.opertaion_time = "",
+    this.operation_time = "",
     this.sns_link = "",
+    this.naver_map_link = "",
     this.youtube_uploadedAt = "",
     this.youtube_link = "",
     this.baemin_link = "",
@@ -60,8 +62,9 @@ class MRestaurant extends CommonModel {
         'address_detail': address_detail,
         'address_street': address_street,
         'closed_days': closed_days,
-        'opertaion_time': opertaion_time,
+        'opertaion_time': operation_time,
         'sns_link': sns_link,
+        'naver_map_link': naver_map_link,
         'youtube_uploadedAt': youtube_uploadedAt,
         'youtube_link': youtube_link,
         'baemin_link': baemin_link,
@@ -85,6 +88,7 @@ class MRestaurant extends CommonModel {
     String closed_days = item['closed_days'] ?? '';
     String opertaion_time = item['opertaion_time'] ?? '';
     String sns_link = item['sns_link'] ?? '';
+    String naver_map_link = item['naver_map_link'] ?? '';
     String youtube_uploadedAt = item['youtube_uploadedAt'] ?? '';
     String youtube_link = item['youtube_link'] ?? '';
     String baemin_link = item['baemin_link'] ?? '';
@@ -105,8 +109,9 @@ class MRestaurant extends CommonModel {
       address_detail: address_detail,
       address_street: address_street,
       closed_days: closed_days,
-      opertaion_time: opertaion_time,
+      operation_time: opertaion_time,
       sns_link: sns_link,
+      naver_map_link: naver_map_link,
       youtube_uploadedAt: youtube_uploadedAt,
       youtube_link: youtube_link,
       baemin_link: baemin_link,

@@ -61,4 +61,18 @@ class ServiceRestaurant {
 
     return completer.future;
   }
+
+  // Future<RestfulResult> update() async {
+  //   Completer<RestfulResult> completer = Completer<RestfulResult>();
+  //   Map<String, String> headers = {
+  //     "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+  //   };
+
+  //   Uri query = PATH.IS_LOCAL
+  //       ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
+  //       : Uri.http(PATH.FORIEGN_URL);
+
+  //   http.post(query, headers:headers, body:)
+
+  // }
 }

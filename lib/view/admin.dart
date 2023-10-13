@@ -34,7 +34,7 @@ class ViewAdminState extends State<ViewAdmin> {
       KEY.ADMIN_SNS_LINK: TextEditingController(),
       KEY.ADMIN_NAVER_MAP_LINK: TextEditingController(),
       KEY.ADMIN_YOUTUBE_LINK: TextEditingController(),
-      KEY.ADMIN_YOUTUBE_UPDATED_AT: TextEditingController(),
+      KEY.ADMIN_YOUTUBE_UPLOADED_AT: TextEditingController(),
       KEY.ADMIN_BAEMIN_LINK: TextEditingController(),
     },
   };
@@ -62,11 +62,16 @@ class ViewAdminState extends State<ViewAdmin> {
             child: SizedBox(
               width: width * 0.8,
               height: height * 0.5,
-              child: Row(
+              child: Column(
                 children: [
-                  buildMapList(restaurant).expand(),
-                  const VerticalDivider(),
-                  buildManagementField().expand(),
+                  Row(
+                    children: [
+                      buildMapList(restaurant).expand(),
+                      const VerticalDivider(),
+                      buildManagementField().expand(),
+                    ],
+                  ).expand(),
+                  buildUpdateButton(restaurant),
                 ],
               ),
             ),
@@ -74,6 +79,46 @@ class ViewAdminState extends State<ViewAdmin> {
         },
       ),
     );
+  }
+
+  Widget buildUpdateButton(MRestaurant restaurant) {
+    return restaurant.id == ''
+        ? ElevatedButton(
+            child: Text('새로 등록하기'),
+            onPressed: () {
+              // TODO : mapOfCtrl에 저장된 controller들을 MRestaurant에 저장
+
+              MRestaurant mRestaurant = MRestaurant(
+                address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+                address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
+                address_eupmyeondong:
+                    mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
+                address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
+                address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
+                lat: double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text),
+                lng: double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text),
+                label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
+                contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
+                representative_menu:
+                    mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
+                closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,
+                operation_time: mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text,
+                sns_link: mapOfLink[KEY.ADMIN_SNS_LINK]!.text,
+                naver_map_link: mapOfLink[KEY.ADMIN_NAVER_MAP_LINK]!.text,
+                youtube_link: mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text,
+                youtube_uploadedAt:
+                    mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text,
+                baemin_link: mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text,
+              );
+
+              print(mRestaurant);
+              print(mRestaurant.map);
+            },
+          )
+        : ElevatedButton(
+            child: Text('기존 데이터 수정하기'),
+            onPressed: () {},
+          );
   }
 
   Widget buildMapList(MRestaurant selectedRestaurant) {
@@ -139,22 +184,30 @@ class ViewAdminState extends State<ViewAdmin> {
                   buildSidoDropdownButton().expand(),
                   buildSigunguDropdownButton().expand(),
                   for (int i = 0; i < mapOfAddress.keys.length; i++)
-                    buildAdminTextField(mapOfAddress.keys.toList()[i]).expand(),
+                    buildAdminTextField(
+                      mapOfAddress.keys.toList()[i],
+                      'address',
+                    ).expand(),
                 ],
               ).expand(),
               const VerticalDivider(),
               Column(
                 children: [
                   for (int i = 0; i < mapOfRestaurant.keys.length; i++)
-                    buildAdminTextField(mapOfRestaurant.keys.toList()[i])
-                        .expand(),
+                    buildAdminTextField(
+                      mapOfRestaurant.keys.toList()[i],
+                      'restaurant',
+                    ).expand(),
                 ],
               ).expand(),
               const VerticalDivider(),
               Column(
                 children: [
                   for (int i = 0; i < mapOfLink.keys.length; i++)
-                    buildAdminTextField(mapOfLink.keys.toList()[i]).expand(),
+                    buildAdminTextField(
+                      mapOfLink.keys.toList()[i],
+                      'link',
+                    ).expand(),
                 ],
               ).expand(),
             ],
@@ -196,10 +249,20 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
-  Widget buildAdminTextField(String key) {
+  Widget buildAdminTextField(String key, String flag) {
+    late final TextEditingController ctrl;
+
+    switch (flag) {
+      case 'address':
+        ctrl = mapOfAddress[key]!;
+      case 'restaurant':
+        ctrl = mapOfRestaurant[key]!;
+      case 'link':
+        ctrl = mapOfLink[key]!;
+    }
     return Center(
-      child: TextField(
-        controller: mapOfDropdown[key],
+      child: TextFormField(
+        controller: ctrl,
         decoration: InputDecoration(
           labelText: key,
           hintText: key,

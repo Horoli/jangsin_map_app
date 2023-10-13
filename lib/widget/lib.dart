@@ -3,6 +3,7 @@ library widget;
 import 'package:flutter/material.dart';
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
 
+import 'dart:js' as js;
 import 'package:jangsin_map/model/lib.dart';
 import 'package:jangsin_map/preset/key.dart' as KEY;
 import 'package:jangsin_map/preset/district.dart' as DISTRICT;

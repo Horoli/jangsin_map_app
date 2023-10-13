@@ -22,5 +22,5 @@ const String ADMIN_OPERATION_TIME = "operation_time";
 const String ADMIN_SNS_LINK = "sns_link";
 const String ADMIN_NAVER_MAP_LINK = "naver_map_link";
 const String ADMIN_YOUTUBE_LINK = "youtube_link";
-const String ADMIN_YOUTUBE_UPDATED_AT = "youtube_updated_at";
+const String ADMIN_YOUTUBE_UPLOADED_AT = "youtube_uploaded_at";
 const String ADMIN_BAEMIN_LINK = "baemin_link";

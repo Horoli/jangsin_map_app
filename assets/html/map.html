@@ -41,21 +41,21 @@
             }
         }
 
-    //     function setHeaderSrc(e){
-    //         console.log('src :', e['src']);
-    //         const getSrc = document.head.getElementsByTagName('script');
-    //         // console.log('oldSrc.length ', oldSrc[0]);
-    // // const oldSrc =            document.getElementsByTagName('script');
-    // // console.log('oldSrc', oldSrc);
+        //     function setHeaderSrc(e){
+        //         console.log('src :', e['src']);
+        //         const getSrc = document.head.getElementsByTagName('script');
+        //         // console.log('oldSrc.length ', oldSrc[0]);
+        // // const oldSrc =            document.getElementsByTagName('script');
+        // // console.log('oldSrc', oldSrc);
 
-    // for(var i = 0; i < getSrc.length; i++){
-    //     getSrc[i].src = e['src']
-    //     console.log(getSrc[i].src);
-    // }
+        // for(var i = 0; i < getSrc.length; i++){
+        //     getSrc[i].src = e['src']
+        //     console.log(getSrc[i].src);
+        // }
 
-    // console.log(getSrc);
+        // console.log(getSrc);
 
-    //     }
+        //     }
 
 
 
@@ -67,6 +67,7 @@
             //         map: map,
             //     })
             Object.keys(e.data).forEach((key) => {
+
                 var position = new naver.maps.LatLng(e.data[key].lat, e.data[key].lng);
                 var newMarker = new naver.maps.Marker({
                     position: position,
