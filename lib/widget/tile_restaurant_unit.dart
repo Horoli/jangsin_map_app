@@ -1,10 +1,10 @@
 part of widget;
 
-class TileMapUnit extends StatelessWidget {
+class TileRestaurantUnit extends StatelessWidget {
   final MRestaurant restaurant;
   final VoidCallback clickEvent;
 
-  const TileMapUnit({
+  const TileRestaurantUnit({
     required this.restaurant,
     required this.clickEvent,
     super.key,
@@ -16,8 +16,8 @@ class TileMapUnit extends StatelessWidget {
       onPressed: clickEvent,
       child: Row(
         children: [
-          Container(color: Colors.red).expand(),
-          Container(color: Colors.red).expand(),
+          Container().expand(),
+          Container().expand(),
           IconButton(
             icon: const Icon(Icons.open_in_new),
             onPressed: () {

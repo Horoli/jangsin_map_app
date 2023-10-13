@@ -16,6 +16,9 @@ import 'package:jangsin_map/widget/lib.dart';
 import 'package:jangsin_map/preset/path.dart' as PATH;
 import 'package:jangsin_map/preset/key.dart' as KEY;
 import 'package:jangsin_map/preset/district.dart' as DISTRICT;
+import 'package:jangsin_map/preset/label.dart' as LABEL;
+import 'package:jangsin_map/preset/color.dart' as COLOR;
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:horoli_package/model/lib.dart';

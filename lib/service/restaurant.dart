@@ -10,6 +10,8 @@ class ServiceRestaurant {
   TStream<MRestaurant> $selectedRestaurant = TStream<MRestaurant>()
     ..sink$(MRestaurant());
 
+  TStream<RestfulResult> $pagination = TStream<RestfulResult>();
+
   Future<RestfulResult> getLatLng() async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -18,7 +20,7 @@ class ServiceRestaurant {
     };
 
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.APT_RESTAURANT_LATLNG)
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_LATLNG)
         : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
@@ -57,6 +59,47 @@ class ServiceRestaurant {
         message: 'get Data complete',
         data: getRestaurant,
       ));
+    });
+
+    return completer.future;
+  }
+
+  Future<RestfulResult> pagination({
+    int page = 1,
+    int limit = 3,
+  }) async {
+    Completer<RestfulResult> completer = Completer<RestfulResult>();
+
+    Map<String, String> headers = {
+      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+    };
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_PAGINATION, {
+            'page': page.toString(),
+            'limit': limit.toString(),
+          })
+        : Uri.http(PATH.FORIEGN_URL);
+
+    http.get(query, headers: headers).then((rep) {
+      Map result = json.decode(rep.body);
+      List<MRestaurant> getRestaurant =
+          List.from(result['data']['pagination_data'])
+              .map((data) => MRestaurant.fromMap(data))
+              .toList();
+
+      RestfulResult restfulResult = RestfulResult(
+        statusCode: 200,
+        message: 'get Data complete',
+        data: {
+          "total_page": result['data']['total_page'],
+          "current_page": page,
+          "pagination_data": getRestaurant,
+        },
+      );
+
+      $pagination.sink$(restfulResult);
+
+      completer.complete(restfulResult);
     });
 
     return completer.future;

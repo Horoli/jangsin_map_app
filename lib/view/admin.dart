@@ -66,7 +66,7 @@ class ViewAdminState extends State<ViewAdmin> {
                 children: [
                   Row(
                     children: [
-                      buildMapList(restaurant).expand(),
+                      buildRestaurantList(restaurant).expand(),
                       const VerticalDivider(),
                       buildManagementField().expand(),
                     ],
@@ -84,10 +84,12 @@ class ViewAdminState extends State<ViewAdmin> {
   Widget buildUpdateButton(MRestaurant restaurant) {
     return restaurant.id == ''
         ? ElevatedButton(
-            child: Text('새로 등록하기'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(COLOR.BLUE),
+            ),
+            child: const Text(LABEL.UPDATE_NEW),
             onPressed: () {
               // TODO : mapOfCtrl에 저장된 controller들을 MRestaurant에 저장
-
               MRestaurant mRestaurant = MRestaurant(
                 address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
                 address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
@@ -116,56 +118,71 @@ class ViewAdminState extends State<ViewAdmin> {
             },
           )
         : ElevatedButton(
-            child: Text('기존 데이터 수정하기'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(COLOR.RED),
+            ),
+            child: const Text(LABEL.UPDATE_MODIFY),
             onPressed: () {},
           );
   }
 
-  Widget buildMapList(MRestaurant selectedRestaurant) {
-    return FutureBuilder(
-      future: GServiceRestaurant.get(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<RestfulResult> snapshot,
-      ) {
+  Widget buildRestaurantList(MRestaurant selectedRestaurant) {
+    return TStreamBuilder(
+      initialData: RestfulResult(statusCode: 400, message: '', data: null),
+      stream: GServiceRestaurant.$pagination.browse$,
+      builder: (BuildContext context, RestfulResult snapshot) {
         if (snapshot.data == null) {
           return const Center(child: CircularProgressIndicator());
         }
-        List<MRestaurant> restaurants = snapshot.data!.data;
-        return ListView.separated(
-          separatorBuilder: (context, index) => const Divider(),
-          itemCount: restaurants.length,
-          itemBuilder: (context, index) => SizedBox(
-            height: 100,
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: restaurants[index].id == selectedRestaurant.id
-                    ? MaterialStateProperty.all(Colors.red)
-                    : MaterialStateProperty.all(Colors.blue),
+
+        List<MRestaurant> restaurants = snapshot.data['pagination_data'];
+
+        List<int> pages =
+            List.generate(snapshot.data['total_page'], (index) => index + 1);
+        return Column(
+          children: [
+            ListView.separated(
+              separatorBuilder: (context, index) => const Divider(),
+              itemCount: restaurants.length,
+              itemBuilder: (context, index) => SizedBox(
+                height: 25,
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        restaurants[index].id == selectedRestaurant.id
+                            ? MaterialStateProperty.all(COLOR.RED)
+                            : MaterialStateProperty.all(COLOR.BLUE),
+                  ),
+                  child: Text(restaurants[index].label),
+                  onPressed: () {
+                    // TODO : 선택을 해제하면 입력된 값을 모두 초기화
+                    if (selectedRestaurant.id == restaurants[index].id) {
+                      initCtrl();
+                      return;
+                    }
+
+                    inputCtrlSelectedRestaurant(restaurants[index]);
+                  },
+                ),
               ),
-              child: Text(restaurants[index].label),
-              onPressed: () {
-                // TODO : 선택을 해제하면 입력된 값을 모두 초기화
-                if (selectedRestaurant.id == restaurants[index].id) {
-                  initCtrl();
-                  return;
-                }
-
-                // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
-                void inputCtrlSelectedRestaurant() {
-                  GServiceRestaurant.$selectedRestaurant
-                      .sink$(restaurants[index]);
-                  mapOfDropdown[KEY.ADMIN_SIDO]!.text =
-                      restaurants[index].address_sido;
-                  mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-                      restaurants[index].address_sigungu;
-                }
-
-                inputCtrlSelectedRestaurant();
-              },
-            ),
-          ),
+            ).expand(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: pages
+                  .map((page) => ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: page == snapshot.data['current_page']
+                            ? MaterialStateProperty.all(COLOR.RED)
+                            : MaterialStateProperty.all(COLOR.BLUE),
+                      ),
+                      onPressed: () {
+                        GServiceRestaurant.pagination(page: page);
+                      },
+                      child: Text('$page')))
+                  .toList(),
+            )
+          ],
         );
       },
     );
@@ -251,7 +268,6 @@ class ViewAdminState extends State<ViewAdmin> {
 
   Widget buildAdminTextField(String key, String flag) {
     late final TextEditingController ctrl;
-
     switch (flag) {
       case 'address':
         ctrl = mapOfAddress[key]!;
@@ -274,6 +290,7 @@ class ViewAdminState extends State<ViewAdmin> {
   @override
   void initState() {
     initCtrl();
+    GServiceRestaurant.pagination();
     super.initState();
   }
 
@@ -282,6 +299,26 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfDropdown[KEY.ADMIN_SIDO]!.text =
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys.toList()[0];
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-        DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT['서울특별시']![0];
+        DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[DISTRICT.INIT]![0];
+    mapOfAddress[KEY.ADMIN_LAT]!.text = '';
+    mapOfAddress[KEY.ADMIN_LNG]!.text = '';
+  }
+
+  // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
+  void inputCtrlSelectedRestaurant(MRestaurant restaurant) {
+    GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
+    mapOfDropdown[KEY.ADMIN_SIDO]!.text = restaurant.address_sido;
+    mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = restaurant.address_sigungu;
+    mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text =
+        restaurant.address_eupmyeondong;
+    mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
+    mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
+  }
+
+  @override
+  void dispose() {
+    GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
+    // TODO : 모든 textController dispose
+    super.dispose();
   }
 }

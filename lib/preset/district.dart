@@ -1,3 +1,5 @@
+const String INIT = "서울특별시";
+
 const Map<String, List<String>> KOREA_ADMINISTRAIVE_DISTRICT = {
   "서울특별시": [
     "종로구",

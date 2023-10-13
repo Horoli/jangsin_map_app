@@ -34,44 +34,87 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Widget buildMapList() {
-    return FutureBuilder(
-      future: GServiceRestaurant.get(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<RestfulResult> snapshot,
-      ) {
-        if (snapshot.data == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        List<MRestaurant> restaurants = snapshot.data!.data;
+    return TStreamBuilder(
+        initialData: RestfulResult(statusCode: 400, message: '', data: null),
+        stream: GServiceRestaurant.$pagination.browse$,
+        builder: (BuildContext context, RestfulResult snapshot) {
+          if (snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        // TODO : 눌려있는 데이터를 보여주기 위해 stream 추가
-        return ListView.separated(
-          separatorBuilder: (context, index) => const Divider(),
-          itemCount: restaurants.length,
-          itemBuilder: (context, index) => SizedBox(
-            height: 100,
-            width: double.infinity,
-            child: TileMapUnit(
-              restaurant: restaurants[index],
-              clickEvent: () {
-                Map<String, dynamic> data = {
-                  'type': 'set',
-                  'data': {
-                    'lat': restaurants[index].lat,
-                    'lng': restaurants[index].lng
-                  },
-                };
+          List<MRestaurant> restaurants = snapshot.data['pagination_data'];
 
-                String jsonData = jsonEncode(data);
+          List<int> pages =
+              List.generate(snapshot.data['total_page'], (index) => index + 1);
 
-                html.window.postMessage(jsonData, '*');
-              },
-            ),
-          ),
-        );
-      },
-    );
+          return Column(
+            children: [
+              TStreamBuilder(
+                  stream: GServiceRestaurant.$selectedRestaurant.browse$,
+                  builder: (context, MRestaurant selectedRestaurant) {
+                    return ListView.separated(
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: restaurants.length,
+                      itemBuilder: (context, index) => SizedBox(
+                        height: 100,
+                        width: double.infinity,
+                        child: Stack(
+                          children: [
+                            // 선택한 가게 표시용 stack
+                            Container(
+                                color: selectedRestaurant.id ==
+                                        restaurants[index].id
+                                    ? COLOR.RED
+                                    : COLOR.BLUE),
+                            // 가게 정보
+                            TileRestaurantUnit(
+                              restaurant: restaurants[index],
+                              clickEvent: () {
+                                if (selectedRestaurant.id ==
+                                    restaurants[index].id) {
+                                  GServiceRestaurant.$selectedRestaurant
+                                      .sink$(MRestaurant());
+                                  return;
+                                }
+                                GServiceRestaurant.$selectedRestaurant
+                                    .sink$(restaurants[index]);
+
+                                Map<String, dynamic> data = {
+                                  'type': 'set',
+                                  'data': {
+                                    'lat': restaurants[index].lat,
+                                    'lng': restaurants[index].lng
+                                  },
+                                };
+
+                                String jsonData = jsonEncode(data);
+
+                                html.window.postMessage(jsonData, '*');
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ).expand();
+                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: pages
+                    .map((page) => ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: page == snapshot.data['current_page']
+                              ? MaterialStateProperty.all(COLOR.RED)
+                              : MaterialStateProperty.all(COLOR.BLUE),
+                        ),
+                        onPressed: () {
+                          GServiceRestaurant.pagination(page: page);
+                        },
+                        child: Text('$page')))
+                    .toList(),
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -83,6 +126,7 @@ class ViewMapState extends State<ViewMap> {
   Future<void> initMap() async {
     await registerView();
     RestfulResult result = await GServiceRestaurant.getLatLng();
+    await GServiceRestaurant.pagination();
     List latLngs = result.data;
     Future.delayed(
         const Duration(milliseconds: 500), () => {postMessage(latLngs)});

@@ -1,4 +1,6 @@
 library model;
 
-import 'package:horoli_package/model/lib.dart';
+import 'package:jangsin_map/model/lib.dart';
+
+export 'package:horoli_package/model/lib.dart';
 part 'restaurant.dart';

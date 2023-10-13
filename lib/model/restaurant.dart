@@ -72,50 +72,68 @@ class MRestaurant extends CommonModel {
       };
 
   factory MRestaurant.fromMap(Map item) {
-    String id = item['id'] ?? '';
-    String label = item['label'] ?? '';
-    String contact = item['contact'] ?? '';
-    String representative_menu = item['representative_menu'] ?? '';
-    String info = item['info'] ?? '';
-    String description = item['description'] ?? '';
-    double lat = item['lat'] ?? 0;
-    double lng = item['lng'] ?? 0;
-    String address_sido = item['address_sido'] ?? '';
-    String address_sigungu = item['address_sigungu'] ?? '';
-    String address_eupmyeondong = item['address_eupmyeondong'] ?? '';
-    String address_detail = item['address_detail'] ?? '';
-    String address_street = item['address_street'] ?? '';
-    String closed_days = item['closed_days'] ?? '';
-    String opertaion_time = item['opertaion_time'] ?? '';
-    String sns_link = item['sns_link'] ?? '';
-    String naver_map_link = item['naver_map_link'] ?? '';
-    String youtube_uploadedAt = item['youtube_uploadedAt'] ?? '';
-    String youtube_link = item['youtube_link'] ?? '';
-    String baemin_link = item['baemin_link'] ?? '';
-    String thumbnail = item['thumbnail'] ?? '';
+    assert(item.containsKey('id'), 'MRestaurant.fromMap : ids is null value');
+    assert(item.containsKey('label'),
+        'MRestaurant.fromMap : labels is null value');
+    assert(item.containsKey('contact'),
+        'MRestaurant.fromMap : contacts is null value');
+    assert(item.containsKey('representative_menu'),
+        'MRestaurant.fromMap : representative_menus is null value');
+    assert(
+        item.containsKey('info'), 'MRestaurant.fromMap : infos is null value');
+    assert(item.containsKey('description'),
+        'MRestaurant.fromMap : descriptions is null value');
+    assert(item.containsKey('lat'), 'MRestaurant.fromMap : lats is null value');
+    assert(item.containsKey('lng'), 'MRestaurant.fromMap : lngs is null value');
+    assert(item.containsKey('address_sido'),
+        'MRestaurant.fromMap : address_sidos is null value');
+    assert(item.containsKey('address_sigungu'),
+        'MRestaurant.fromMap : address_sigungus is null value');
+    assert(item.containsKey('address_eupmyeondong'),
+        'MRestaurant.fromMap : address_eupmyeondongs is null value');
+    assert(item.containsKey('address_detail'),
+        'MRestaurant.fromMap : address_details is null value');
+    assert(item.containsKey('address_street'),
+        'MRestaurant.fromMap : address_streets is null value');
+    assert(item.containsKey('closed_days'),
+        'MRestaurant.fromMap : closed_dayss is null value');
+    assert(item.containsKey('opertaion_time'),
+        'MRestaurant.fromMap : opertaion_times is null value');
+    assert(item.containsKey('sns_link'),
+        'MRestaurant.fromMap : sns_links is null value');
+    assert(item.containsKey('naver_map_link'),
+        'MRestaurant.fromMap : naver_map_links is null value');
+    assert(item.containsKey('youtube_uploadedAt'),
+        'MRestaurant.fromMap : youtube_uploadedAts is null value');
+    assert(item.containsKey('youtube_link'),
+        'MRestaurant.fromMap : youtube_links is null value');
+    assert(item.containsKey('baemin_link'),
+        'MRestaurant.fromMap : baemin_links is null value');
+    assert(item.containsKey('thumbnail'),
+        'MRestaurant.fromMap : thumbnails is null value');
 
     return MRestaurant(
-      id: id,
-      label: label,
-      contact: contact,
-      representative_menu: representative_menu,
-      info: info,
-      description: description,
-      lat: lat,
-      lng: lng,
-      address_sido: address_sido,
-      address_sigungu: address_sigungu,
-      address_eupmyeondong: address_eupmyeondong,
-      address_detail: address_detail,
-      address_street: address_street,
-      closed_days: closed_days,
-      operation_time: opertaion_time,
-      sns_link: sns_link,
-      naver_map_link: naver_map_link,
-      youtube_uploadedAt: youtube_uploadedAt,
-      youtube_link: youtube_link,
-      baemin_link: baemin_link,
-      thumbnail: thumbnail,
+      id: item['id'],
+      label: item['label'],
+      contact: item['contact'],
+      representative_menu: item['representative_menu'],
+      info: item['info'],
+      description: item['description'],
+      lat: item['lat'],
+      lng: item['lng'],
+      address_sido: item['address_sido'],
+      address_sigungu: item['address_sigungu'],
+      address_eupmyeondong: item['address_eupmyeondong'],
+      address_detail: item['address_detail'],
+      address_street: item['address_street'],
+      closed_days: item['closed_days'],
+      operation_time: item['opertaion_time'],
+      sns_link: item['sns_link'],
+      naver_map_link: item['naver_map_link'],
+      youtube_uploadedAt: item['youtube_uploadedAt'],
+      youtube_link: item['youtube_link'],
+      baemin_link: item['baemin_link'],
+      thumbnail: item['thumbnail'],
     );
   }
 }
