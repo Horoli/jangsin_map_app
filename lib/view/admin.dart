@@ -48,6 +48,9 @@ class ViewAdminState extends State<ViewAdmin> {
   Map<String, TextEditingController> get mapOfLink =>
       mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
 
+  final TStream<List<String>> $selectedRestaurantThumbnail =
+      TStream<List<String>>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +64,7 @@ class ViewAdminState extends State<ViewAdmin> {
           return Center(
             child: SizedBox(
               width: width * 0.8,
-              height: height * 0.5,
+              height: height * 0.7,
               child: Column(
                 children: [
                   Row(
@@ -69,6 +72,24 @@ class ViewAdminState extends State<ViewAdmin> {
                       buildRestaurantList(restaurant).expand(),
                       const VerticalDivider(),
                       buildManagementField().expand(),
+
+                      // TODO : dev code add thumnail image
+                      ElevatedButton(
+                          child: Text('a'),
+                          onPressed: () async {
+                            await selectImageFile().then((v) {
+                              $selectedRestaurantThumbnail.sink$(v);
+                            });
+                          }).expand(),
+
+                      TStreamBuilder(
+                          stream: $selectedRestaurantThumbnail.browse$,
+                          builder: (context, List<String> thumbnail) {
+                            print(thumbnail.length);
+                            return thumbnail.isEmpty
+                                ? const Text('empty')
+                                : Image.memory(base64Decode(thumbnail[0]));
+                          }),
                     ],
                   ).expand(),
                   buildUpdateButton(restaurant),

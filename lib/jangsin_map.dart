@@ -25,6 +25,7 @@ import 'package:horoli_package/model/lib.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tnd_core/tnd_core.dart';
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
+import 'package:file_picker/file_picker.dart';
 
 part 'app_root.dart';
 

@@ -30,6 +30,7 @@ dependencies:
     git:
       url: "https://git.technolda.com/Technolda/tnd_pkg_repository.git"
       ref: v1-migration
+  file_picker: ^3.0.4
 
   shared_preferences: ^2.1.1
 
