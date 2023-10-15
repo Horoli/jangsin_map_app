@@ -62,10 +62,11 @@ class ViewMapState extends State<ViewMap> {
                           children: [
                             // 선택한 가게 표시용 stack
                             Container(
-                                color: selectedRestaurant.id ==
-                                        restaurants[index].id
-                                    ? COLOR.RED
-                                    : COLOR.BLUE),
+                              color:
+                                  selectedRestaurant.id == restaurants[index].id
+                                      ? COLOR.RED
+                                      : COLOR.GREEN,
+                            ),
                             // 가게 정보
                             TileRestaurantUnit(
                               restaurant: restaurants[index],

@@ -118,7 +118,7 @@ class ServiceRestaurant {
   }
 
   Future<RestfulResult> getThumbnail({
-    required String thumbnailId,
+    required String thumbnail,
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -127,7 +127,7 @@ class ServiceRestaurant {
       "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
-    String jsonBody = jsonEncode({"thumbnail_id": thumbnailId});
+    String jsonBody = jsonEncode({"thumbnail": thumbnail});
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL)

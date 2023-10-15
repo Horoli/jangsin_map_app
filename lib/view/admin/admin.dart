@@ -62,14 +62,6 @@ class ViewAdminState extends State<ViewAdmin> {
       body: TStreamBuilder(
         stream: GServiceRestaurant.$selectedRestaurant.browse$,
         builder: (context, MRestaurant restaurant) {
-          // print('restaurant ${restaurant.map}');
-          // print('restaurant ${restaurant.thumbnail}');
-          if (restaurant.id != "" &&
-              restaurant.thumbnail != "" &&
-              restaurant.thumbnail.length == 32) {
-            // 선택한 식당의 썸네일이 id인 경우(length == 32)
-            getThumbnail(restaurant);
-          }
           return Center(
             child: SizedBox(
               width: width * 0.8,
@@ -92,24 +84,44 @@ class ViewAdminState extends State<ViewAdmin> {
                               child: Text('a'),
                               onPressed: () async {
                                 await selectImageFile().then((image) {
-                                  addThumbnailImage(restaurant, image);
+                                  if (image.isEmpty) {
+                                    print('image empty');
+                                    return;
+                                  }
+
+                                  $selectedRestaurantThumbnail.sink$(image);
+                                  GServiceRestaurant.$selectedRestaurant.sink$(
+                                      restaurant.copyWith(
+                                          add_thumbnail: image[0]));
                                 });
                               }).expand(),
-                          // FutureBuilder(
-                          //     future: getThumbnail(restaurant),
-                          //     builder: (BuildContext context, snapshot) {
-                          //       if (!snapshot.hasData) {
-                          //         return const Text('empty');
-                          //       }
-                          //       return Image.memory(
-                          //           base64Decode(snapshot.data!.first));
-                          //     }).expand(),
+                          FutureBuilder(
+                              future: getThumbnail(restaurant),
+                              builder: (BuildContext context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const Text('empty');
+                                }
+                                return Column(
+                                  children: [
+                                    Text('after'),
+                                    Image.memory(
+                                            base64Decode(snapshot.data!.first))
+                                        .expand(),
+                                  ],
+                                );
+                              }).expand(),
                           TStreamBuilder(
                             stream: $selectedRestaurantThumbnail.browse$,
                             builder: (context, List<String> thumbnail) {
                               return thumbnail[0] == ""
                                   ? const Text('empty')
-                                  : Image.memory(base64Decode(thumbnail[0]));
+                                  : Column(
+                                      children: [
+                                        Text('before'),
+                                        Image.memory(base64Decode(thumbnail[0]))
+                                            .expand(),
+                                      ],
+                                    );
                             },
                           ).expand(),
                         ],
@@ -134,9 +146,12 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_NEW),
             onPressed: () async {
+              // 선택된 id가 없으면 create 함수를 실행
+              // 이떄,
+              MRestaurant newRestaurant = setRestaurantInfo(restaurant);
               GServiceAdmin.createRestaurant(
                 token: token,
-                restaurant: restaurant,
+                restaurant: newRestaurant,
               );
             },
           )
@@ -149,9 +164,11 @@ class ViewAdminState extends State<ViewAdmin> {
               String token =
                   GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
 
+              setRestaurantInfo(restaurant);
+              MRestaurant modifyRestaurant = setRestaurantInfo(restaurant);
               GServiceAdmin.patchRestaurant(
                 token: token,
-                restaurant: restaurant,
+                restaurant: modifyRestaurant,
               );
             },
           );
@@ -252,12 +269,6 @@ class ViewAdminState extends State<ViewAdmin> {
     $selectedRestaurantThumbnail.sink$(['']);
   }
 
-  void addThumbnailImage(MRestaurant restaurant, List<String> base64String) {
-    $selectedRestaurantThumbnail.sink$(base64String);
-    GServiceRestaurant.$selectedRestaurant
-        .sink$(restaurant.copyWith(thumbnail: base64String[0]));
-  }
-
   // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
   void inputCtrlSelectedRestaurant(MRestaurant restaurant) {
     GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
@@ -267,7 +278,61 @@ class ViewAdminState extends State<ViewAdmin> {
         restaurant.address_eupmyeondong;
     mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
     mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
-    $selectedRestaurantThumbnail.sink$([restaurant.thumbnail]);
+    mapOfAddress[KEY.ADMIN_DETAIL]!.text = restaurant.address_detail.toString();
+    mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
+    mapOfRestaurant[KEY.ADMIN_LABEL]!.text = restaurant.label.toString();
+    mapOfRestaurant[KEY.ADMIN_CONTACT]!.text = restaurant.contact.toString();
+    mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text =
+        restaurant.representative_menu.toString();
+    mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text =
+        restaurant.closed_days.toString();
+    mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text =
+        restaurant.operation_time.toString();
+    mapOfLink[KEY.ADMIN_SNS_LINK]!.text = restaurant.sns_link.toString();
+    mapOfLink[KEY.ADMIN_NAVER_MAP_LINK]!.text =
+        restaurant.naver_map_link.toString();
+    mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text =
+        restaurant.youtube_link.toString();
+    mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text =
+        restaurant.youtube_uploadedAt.toString();
+    mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text = restaurant.baemin_link.toString();
+    // $selectedRestaurantThumbnail.sink$([restaurant.thumbnail]);
+
+    print('restaurant ${restaurant.thumbnail}');
+  }
+
+  MRestaurant setRestaurantInfo(MRestaurant restaurant) {
+    double lat = mapOfAddress[KEY.ADMIN_LAT]!.text == ""
+        ? 0
+        : double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text);
+    double lng = mapOfAddress[KEY.ADMIN_LNG]!.text == ""
+        ? 0
+        : double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text);
+
+    MRestaurant mRestaurant = MRestaurant(
+      id: restaurant.id == '' ? '' : restaurant.id,
+      address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+      address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
+      address_eupmyeondong: mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
+      address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
+      address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
+      lat: lat,
+      lng: lng,
+      label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
+      contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
+      representative_menu: mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
+      closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,
+      operation_time: mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text,
+      sns_link: mapOfLink[KEY.ADMIN_SNS_LINK]!.text,
+      naver_map_link: mapOfLink[KEY.ADMIN_NAVER_MAP_LINK]!.text,
+      youtube_link: mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text,
+      youtube_uploadedAt: mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text,
+      baemin_link: mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text,
+      // 썸네일은 id가 아닌 이미지 데이터를 그대로 넣어줌
+      add_thumbnail: $selectedRestaurantThumbnail.lastValue[0],
+    );
+
+    return mRestaurant;
   }
 
   Future<List<String>> getThumbnail(MRestaurant restaurant) async {
@@ -275,10 +340,6 @@ class ViewAdminState extends State<ViewAdmin> {
       token: token,
       thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
     );
-
-    $selectedRestaurantThumbnail
-        .sink$([getThumbnail.data['thumbnail']['image']]);
-
     return [getThumbnail.data['thumbnail']['image']];
   }
 

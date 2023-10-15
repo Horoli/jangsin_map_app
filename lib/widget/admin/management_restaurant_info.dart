@@ -81,7 +81,7 @@ class ManagementRestaurantInfo extends StatelessWidget {
         mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
             DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[
                 mapOfDropdown[KEY.ADMIN_SIDO]!.text]![0];
-        addDataIfNotSelected();
+        setAddressForRestaurant();
       },
     );
   }
@@ -95,7 +95,7 @@ class ManagementRestaurantInfo extends StatelessWidget {
           .toList(),
       onChanged: (dynamic value) {
         mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = value;
-        addDataIfNotSelected();
+        setAddressForRestaurant();
       },
     );
   }
@@ -112,46 +112,23 @@ class ManagementRestaurantInfo extends StatelessWidget {
     }
     return Center(
       child: TextFormField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: key,
-            hintText: key,
-          ),
-          onChanged: (value) => addDataIfNotSelected()),
+        controller: ctrl,
+        decoration: InputDecoration(
+          labelText: key,
+          hintText: key,
+        ),
+        // onChanged: (value) => addDataIfNotSelected()
+      ),
     );
   }
 
-  void addDataIfNotSelected() {
-    double lat = mapOfAddress[KEY.ADMIN_LAT]!.text == ""
-        ? 0
-        : double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text);
-    double lng = mapOfAddress[KEY.ADMIN_LNG]!.text == ""
-        ? 0
-        : double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text);
-
-    MRestaurant mRestaurant = MRestaurant(
+  void setAddressForRestaurant() {
+    MRestaurant mRestaurant = restaurant.copyWith(
       id: restaurant.id == '' ? '' : restaurant.id,
       address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
       address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
-      address_eupmyeondong: mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
-      address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
-      address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
-      lat: lat,
-      lng: lng,
-      label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
-      contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
-      representative_menu: mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
-      closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,
-      operation_time: mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text,
-      sns_link: mapOfLink[KEY.ADMIN_SNS_LINK]!.text,
-      naver_map_link: mapOfLink[KEY.ADMIN_NAVER_MAP_LINK]!.text,
-      youtube_link: mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text,
-      youtube_uploadedAt: mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text,
-      baemin_link: mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text,
     );
 
     GServiceRestaurant.$selectedRestaurant.sink$(mRestaurant);
-
-    // return mRestaurant;
   }
 }

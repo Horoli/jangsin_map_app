@@ -18,15 +18,23 @@ class TileRestaurantUnit extends StatelessWidget {
         children: [
           // Text('${restaurant.thumbnail}').expand(),
           FutureBuilder(
+            initialData:
+                RestfulResult(statusCode: 400, message: '', data: null),
             future: GServiceRestaurant.getThumbnail(
-              thumbnailId: restaurant.thumbnail,
+              thumbnail: restaurant.thumbnail,
             ),
             builder: (
               BuildContext context,
               AsyncSnapshot<RestfulResult> snapshot,
             ) {
-              print(snapshot.data!.data['thumbnail']['image']);
-              // return Container();
+              if (snapshot.data!.statusCode != 200) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.data!.data['thumbnail'] == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
               return Image.memory(
                   base64Decode(snapshot.data!.data['thumbnail']['image']));
             },
@@ -43,15 +51,4 @@ class TileRestaurantUnit extends StatelessWidget {
       ),
     );
   }
-
-  // Future<List<String>> getThumbnail(MRestaurant restaurant) async {
-  //   RestfulResult getThumbnail = await GServiceRestaurant.getThumbnail(
-  //     thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
-  //   );
-
-  // $selectedRestaurantThumbnail
-  //     .sink$([getThumbnail.data['thumbnail']['image']]);
-
-  //   return [getThumbnail.data['thumbnail']['image']];
-  // }
 }
