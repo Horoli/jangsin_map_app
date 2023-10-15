@@ -71,6 +71,53 @@ class MRestaurant extends CommonModel {
         'thumbnail': thumbnail,
       };
 
+  MRestaurant copyWith({
+    String? id,
+    String? label,
+    String? contact,
+    String? representative_menu,
+    String? info,
+    String? description,
+    double? lat,
+    double? lng,
+    String? address_sido,
+    String? address_sigungu,
+    String? address_eupmyeondong,
+    String? address_detail,
+    String? address_street,
+    String? closed_days,
+    String? operation_time,
+    String? sns_link,
+    String? naver_map_link,
+    String? youtube_uploadedAt,
+    String? youtube_link,
+    String? baemin_link,
+    String? thumbnail,
+  }) =>
+      MRestaurant(
+        id: id ?? this.id,
+        label: label ?? this.label,
+        contact: contact ?? this.contact,
+        representative_menu: representative_menu ?? this.representative_menu,
+        info: info ?? this.info,
+        description: description ?? this.description,
+        lat: lat ?? this.lat,
+        lng: lng ?? this.lng,
+        address_sido: address_sido ?? this.address_sido,
+        address_sigungu: address_sigungu ?? this.address_sigungu,
+        address_eupmyeondong: address_eupmyeondong ?? this.address_eupmyeondong,
+        address_detail: address_detail ?? this.address_detail,
+        address_street: address_street ?? this.address_street,
+        closed_days: closed_days ?? this.closed_days,
+        operation_time: operation_time ?? this.operation_time,
+        sns_link: sns_link ?? this.sns_link,
+        naver_map_link: naver_map_link ?? this.naver_map_link,
+        youtube_uploadedAt: youtube_uploadedAt ?? this.youtube_uploadedAt,
+        youtube_link: youtube_link ?? this.youtube_link,
+        baemin_link: baemin_link ?? this.baemin_link,
+        thumbnail: thumbnail ?? this.thumbnail,
+      );
+
   factory MRestaurant.fromMap(Map item) {
     assert(item.containsKey('id'), 'MRestaurant.fromMap : ids is null value');
     assert(item.containsKey('label'),

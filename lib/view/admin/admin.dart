@@ -1,4 +1,4 @@
-part of '../jangsin_map.dart';
+part of '../../jangsin_map.dart';
 
 class ViewAdmin extends StatefulWidget {
   const ViewAdmin({super.key});
@@ -11,7 +11,7 @@ class ViewAdminState extends State<ViewAdmin> {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
 
-  final Map<String, Map<String, TextEditingController>> mapOfCtrl = {
+  final Map<String, Map<String, TextEditingController>> mapOfMainCtrl = {
     KEY.ADMIN_MAP_OF_CTRL_DROPDOWN: {
       KEY.ADMIN_SIDO: TextEditingController(),
       KEY.ADMIN_SIGUNGU: TextEditingController(),
@@ -40,16 +40,18 @@ class ViewAdminState extends State<ViewAdmin> {
   };
 
   Map<String, TextEditingController> get mapOfDropdown =>
-      mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_DROPDOWN]!;
+      mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_DROPDOWN]!;
   Map<String, TextEditingController> get mapOfAddress =>
-      mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_ADDRESS]!;
+      mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_ADDRESS]!;
   Map<String, TextEditingController> get mapOfRestaurant =>
-      mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_RESTAURANT]!;
+      mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_RESTAURANT]!;
   Map<String, TextEditingController> get mapOfLink =>
-      mapOfCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
+      mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
 
   final TStream<List<String>> $selectedRestaurantThumbnail =
       TStream<List<String>>();
+
+  late final String token;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,14 @@ class ViewAdminState extends State<ViewAdmin> {
       body: TStreamBuilder(
         stream: GServiceRestaurant.$selectedRestaurant.browse$,
         builder: (context, MRestaurant restaurant) {
-          print('restaurant.id ${restaurant.id}');
+          print('restaurant.id ${restaurant.map}');
+          if (restaurant.id != "") {
+            // GServiceAdmin.getThumbnail(
+            //   token: token,
+            //   thumbnailId: restaurant.thumbnail,
+            // );
+            getThumbnail(restaurant);
+          }
           return Center(
             child: SizedBox(
               width: width * 0.8,
@@ -71,25 +80,34 @@ class ViewAdminState extends State<ViewAdmin> {
                     children: [
                       buildRestaurantList(restaurant).expand(),
                       const VerticalDivider(),
-                      buildManagementField().expand(),
+                      // buildManagementField().expand(),
+                      ManagementRestaurantInfo(
+                        context: context,
+                        restaurant: restaurant,
+                        mapOfCtrl: mapOfMainCtrl,
+                      ).expand(),
 
                       // TODO : dev code add thumnail image
-                      ElevatedButton(
-                          child: Text('a'),
-                          onPressed: () async {
-                            await selectImageFile().then((v) {
-                              $selectedRestaurantThumbnail.sink$(v);
-                            });
-                          }).expand(),
-
-                      TStreamBuilder(
-                          stream: $selectedRestaurantThumbnail.browse$,
-                          builder: (context, List<String> thumbnail) {
-                            print(thumbnail.length);
-                            return thumbnail.isEmpty
-                                ? const Text('empty')
-                                : Image.memory(base64Decode(thumbnail[0]));
-                          }),
+                      Column(
+                        children: [
+                          ElevatedButton(
+                              child: Text('a'),
+                              onPressed: () async {
+                                await selectImageFile().then((v) {
+                                  $selectedRestaurantThumbnail.sink$(v);
+                                  addThumbnailImage(restaurant, v);
+                                });
+                              }).expand(),
+                          TStreamBuilder(
+                              stream: $selectedRestaurantThumbnail.browse$,
+                              builder: (context, List<String> thumbnail) {
+                                print(thumbnail.length);
+                                return thumbnail.isEmpty
+                                    ? const Text('empty')
+                                    : Image.memory(base64Decode(thumbnail[0]));
+                              }).expand(),
+                        ],
+                      ).expand(),
                     ],
                   ).expand(),
                   buildUpdateButton(restaurant),
@@ -109,33 +127,13 @@ class ViewAdminState extends State<ViewAdmin> {
               backgroundColor: MaterialStateProperty.all(COLOR.BLUE),
             ),
             child: const Text(LABEL.UPDATE_NEW),
-            onPressed: () {
-              // TODO : mapOfCtrl에 저장된 controller들을 MRestaurant에 저장
-              MRestaurant mRestaurant = MRestaurant(
-                address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-                address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
-                address_eupmyeondong:
-                    mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
-                address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
-                address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
-                lat: double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text),
-                lng: double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text),
-                label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
-                contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
-                representative_menu:
-                    mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
-                closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,
-                operation_time: mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text,
-                sns_link: mapOfLink[KEY.ADMIN_SNS_LINK]!.text,
-                naver_map_link: mapOfLink[KEY.ADMIN_NAVER_MAP_LINK]!.text,
-                youtube_link: mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text,
-                youtube_uploadedAt:
-                    mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text,
-                baemin_link: mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text,
-              );
+            onPressed: () async {
+              print('save ${restaurant.map}');
 
-              print(mRestaurant);
-              print(mRestaurant.map);
+              GServiceAdmin.createRestaurant(
+                token: token,
+                restaurant: restaurant,
+              );
             },
           )
         : ElevatedButton(
@@ -143,7 +141,17 @@ class ViewAdminState extends State<ViewAdmin> {
               backgroundColor: MaterialStateProperty.all(COLOR.RED),
             ),
             child: const Text(LABEL.UPDATE_MODIFY),
-            onPressed: () {},
+            onPressed: () {
+              print('mod ${restaurant.map}');
+
+              String token =
+                  GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
+
+              GServiceAdmin.patchRestaurant(
+                token: token,
+                restaurant: restaurant,
+              );
+            },
           );
   }
 
@@ -209,107 +217,9 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
-  Widget buildManagementField() {
-    return Center(
-      child: SizedBox(
-        width: width * 0.7,
-        height: height * 0.7,
-        child: Card(
-          child: Row(
-            children: [
-              Column(
-                children: [
-                  buildSidoDropdownButton().expand(),
-                  buildSigunguDropdownButton().expand(),
-                  for (int i = 0; i < mapOfAddress.keys.length; i++)
-                    buildAdminTextField(
-                      mapOfAddress.keys.toList()[i],
-                      'address',
-                    ).expand(),
-                ],
-              ).expand(),
-              const VerticalDivider(),
-              Column(
-                children: [
-                  for (int i = 0; i < mapOfRestaurant.keys.length; i++)
-                    buildAdminTextField(
-                      mapOfRestaurant.keys.toList()[i],
-                      'restaurant',
-                    ).expand(),
-                ],
-              ).expand(),
-              const VerticalDivider(),
-              Column(
-                children: [
-                  for (int i = 0; i < mapOfLink.keys.length; i++)
-                    buildAdminTextField(
-                      mapOfLink.keys.toList()[i],
-                      'link',
-                    ).expand(),
-                ],
-              ).expand(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSidoDropdownButton() {
-    return DropdownButton(
-      value: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-      items: DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (dynamic value) {
-        setState(() {
-          mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
-          mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-              DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[
-                  mapOfDropdown[KEY.ADMIN_SIDO]!.text]![0];
-        });
-      },
-    );
-  }
-
-  Widget buildSigunguDropdownButton() {
-    return DropdownButton(
-      value: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
-      items: DISTRICT
-          .KOREA_ADMINISTRAIVE_DISTRICT[mapOfDropdown[KEY.ADMIN_SIDO]!.text]!
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (dynamic value) {
-        setState(() {
-          mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = value;
-        });
-      },
-    );
-  }
-
-  Widget buildAdminTextField(String key, String flag) {
-    late final TextEditingController ctrl;
-    switch (flag) {
-      case 'address':
-        ctrl = mapOfAddress[key]!;
-      case 'restaurant':
-        ctrl = mapOfRestaurant[key]!;
-      case 'link':
-        ctrl = mapOfLink[key]!;
-    }
-    return Center(
-      child: TextFormField(
-        controller: ctrl,
-        decoration: InputDecoration(
-          labelText: key,
-          hintText: key,
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
+    token = GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
     initCtrl();
     GServiceRestaurant.pagination();
     super.initState();
@@ -321,8 +231,24 @@ class ViewAdminState extends State<ViewAdmin> {
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys.toList()[0];
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
         DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[DISTRICT.INIT]![0];
-    mapOfAddress[KEY.ADMIN_LAT]!.text = '';
-    mapOfAddress[KEY.ADMIN_LNG]!.text = '';
+
+    // 컨트롤러를 초기화 하는 함수
+    void initController(Map<String, TextEditingController> mapOfInnerCtrl) {
+      for (String key in mapOfInnerCtrl.keys) {
+        mapOfInnerCtrl[key]!.text = '';
+      }
+    }
+
+    initController(mapOfAddress);
+    initController(mapOfLink);
+    initController(mapOfRestaurant);
+
+    $selectedRestaurantThumbnail.sink$(['']);
+  }
+
+  void addThumbnailImage(MRestaurant restaurant, List<String> base64String) {
+    GServiceRestaurant.$selectedRestaurant
+        .sink$(restaurant.copyWith(thumbnail: base64String[0]));
   }
 
   // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
@@ -334,6 +260,16 @@ class ViewAdminState extends State<ViewAdmin> {
         restaurant.address_eupmyeondong;
     mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
     mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
+  }
+
+  Future<void> getThumbnail(MRestaurant restaurant) async {
+    RestfulResult getThumbnail = await GServiceAdmin.getThumbnail(
+      token: token,
+      thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
+    );
+
+    $selectedRestaurantThumbnail
+        .sink$([getThumbnail.data['thumbnail']['image']]);
   }
 
   @override

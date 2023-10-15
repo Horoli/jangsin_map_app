@@ -1,4 +1,4 @@
-part of '../jangsin_map.dart';
+part of '../../jangsin_map.dart';
 
 class ViewAdminLogin extends StatefulWidget {
   const ViewAdminLogin({super.key});

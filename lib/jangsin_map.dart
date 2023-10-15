@@ -35,5 +35,5 @@ part 'service/admin.dart';
 part 'global.dart';
 
 part 'view/map.dart';
-part 'view/admin.dart';
-part 'view/admin_login.dart';
+part 'view/admin/admin.dart';
+part 'view/admin/admin_login.dart';

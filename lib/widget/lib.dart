@@ -1,6 +1,7 @@
 library widget;
 
 import 'package:flutter/material.dart';
+import 'package:jangsin_map/jangsin_map.dart';
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -15,4 +16,5 @@ import 'package:jangsin_map/preset/district.dart' as DISTRICT;
 
 part 'file_picker.dart';
 part 'tile_restaurant_unit.dart';
-part 'management_restaurant.dart';
+part 'admin/management_restaurant_info.dart';
+part 'admin/management_restaurant_image.dart';
