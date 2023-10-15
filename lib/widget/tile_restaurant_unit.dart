@@ -44,5 +44,14 @@ class TileRestaurantUnit extends StatelessWidget {
     );
   }
 
-  void asd() {}
+  // Future<List<String>> getThumbnail(MRestaurant restaurant) async {
+  //   RestfulResult getThumbnail = await GServiceRestaurant.getThumbnail(
+  //     thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
+  //   );
+
+  // $selectedRestaurantThumbnail
+  //     .sink$([getThumbnail.data['thumbnail']['image']]);
+
+  //   return [getThumbnail.data['thumbnail']['image']];
+  // }
 }

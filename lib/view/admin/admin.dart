@@ -62,8 +62,8 @@ class ViewAdminState extends State<ViewAdmin> {
       body: TStreamBuilder(
         stream: GServiceRestaurant.$selectedRestaurant.browse$,
         builder: (context, MRestaurant restaurant) {
-          print('restaurant ${restaurant.map}');
-          print('restaurant ${restaurant.thumbnail}');
+          // print('restaurant ${restaurant.map}');
+          // print('restaurant ${restaurant.thumbnail}');
           if (restaurant.id != "" &&
               restaurant.thumbnail != "" &&
               restaurant.thumbnail.length == 32) {
@@ -80,13 +80,11 @@ class ViewAdminState extends State<ViewAdmin> {
                     children: [
                       buildRestaurantList(restaurant).expand(),
                       const VerticalDivider(),
-                      // buildManagementField().expand(),
                       ManagementRestaurantInfo(
                         context: context,
                         restaurant: restaurant,
                         mapOfCtrl: mapOfMainCtrl,
                       ).expand(flex: 3),
-
                       // TODO : dev code add thumnail image
                       Column(
                         children: [
@@ -97,13 +95,23 @@ class ViewAdminState extends State<ViewAdmin> {
                                   addThumbnailImage(restaurant, image);
                                 });
                               }).expand(),
+                          // FutureBuilder(
+                          //     future: getThumbnail(restaurant),
+                          //     builder: (BuildContext context, snapshot) {
+                          //       if (!snapshot.hasData) {
+                          //         return const Text('empty');
+                          //       }
+                          //       return Image.memory(
+                          //           base64Decode(snapshot.data!.first));
+                          //     }).expand(),
                           TStreamBuilder(
-                              stream: $selectedRestaurantThumbnail.browse$,
-                              builder: (context, List<String> thumbnail) {
-                                return thumbnail[0] == ""
-                                    ? const Text('empty')
-                                    : Image.memory(base64Decode(thumbnail[0]));
-                              }).expand(),
+                            stream: $selectedRestaurantThumbnail.browse$,
+                            builder: (context, List<String> thumbnail) {
+                              return thumbnail[0] == ""
+                                  ? const Text('empty')
+                                  : Image.memory(base64Decode(thumbnail[0]));
+                            },
+                          ).expand(),
                         ],
                       ).expand(),
                     ],
@@ -126,8 +134,6 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_NEW),
             onPressed: () async {
-              print('save ${restaurant.map}');
-
               GServiceAdmin.createRestaurant(
                 token: token,
                 restaurant: restaurant,
@@ -140,8 +146,6 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_MODIFY),
             onPressed: () {
-              print('mod ${restaurant.map}');
-
               String token =
                   GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
 
@@ -158,7 +162,6 @@ class ViewAdminState extends State<ViewAdmin> {
       initialData: RestfulResult(statusCode: 400, message: '', data: null),
       stream: GServiceRestaurant.$pagination.browse$,
       builder: (BuildContext context, RestfulResult snapshot) {
-        print('snapshot $snapshot');
         if (snapshot.data == null) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -267,7 +270,7 @@ class ViewAdminState extends State<ViewAdmin> {
     $selectedRestaurantThumbnail.sink$([restaurant.thumbnail]);
   }
 
-  Future<void> getThumbnail(MRestaurant restaurant) async {
+  Future<List<String>> getThumbnail(MRestaurant restaurant) async {
     RestfulResult getThumbnail = await GServiceAdmin.getThumbnailAdmin(
       token: token,
       thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
@@ -275,6 +278,8 @@ class ViewAdminState extends State<ViewAdmin> {
 
     $selectedRestaurantThumbnail
         .sink$([getThumbnail.data['thumbnail']['image']]);
+
+    return [getThumbnail.data['thumbnail']['image']];
   }
 
   @override
