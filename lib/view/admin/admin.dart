@@ -62,12 +62,12 @@ class ViewAdminState extends State<ViewAdmin> {
       body: TStreamBuilder(
         stream: GServiceRestaurant.$selectedRestaurant.browse$,
         builder: (context, MRestaurant restaurant) {
-          print('restaurant.id ${restaurant.map}');
-          if (restaurant.id != "") {
-            // GServiceAdmin.getThumbnail(
-            //   token: token,
-            //   thumbnailId: restaurant.thumbnail,
-            // );
+          print('restaurant ${restaurant.map}');
+          print('restaurant ${restaurant.thumbnail}');
+          if (restaurant.id != "" &&
+              restaurant.thumbnail != "" &&
+              restaurant.thumbnail.length == 32) {
+            // 선택한 식당의 썸네일이 id인 경우(length == 32)
             getThumbnail(restaurant);
           }
           return Center(
@@ -85,7 +85,7 @@ class ViewAdminState extends State<ViewAdmin> {
                         context: context,
                         restaurant: restaurant,
                         mapOfCtrl: mapOfMainCtrl,
-                      ).expand(),
+                      ).expand(flex: 3),
 
                       // TODO : dev code add thumnail image
                       Column(
@@ -93,16 +93,14 @@ class ViewAdminState extends State<ViewAdmin> {
                           ElevatedButton(
                               child: Text('a'),
                               onPressed: () async {
-                                await selectImageFile().then((v) {
-                                  $selectedRestaurantThumbnail.sink$(v);
-                                  addThumbnailImage(restaurant, v);
+                                await selectImageFile().then((image) {
+                                  addThumbnailImage(restaurant, image);
                                 });
                               }).expand(),
                           TStreamBuilder(
                               stream: $selectedRestaurantThumbnail.browse$,
                               builder: (context, List<String> thumbnail) {
-                                print(thumbnail.length);
-                                return thumbnail.isEmpty
+                                return thumbnail[0] == ""
                                     ? const Text('empty')
                                     : Image.memory(base64Decode(thumbnail[0]));
                               }).expand(),
@@ -160,7 +158,12 @@ class ViewAdminState extends State<ViewAdmin> {
       initialData: RestfulResult(statusCode: 400, message: '', data: null),
       stream: GServiceRestaurant.$pagination.browse$,
       builder: (BuildContext context, RestfulResult snapshot) {
+        print('snapshot $snapshot');
         if (snapshot.data == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.statusCode != 200) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -247,6 +250,7 @@ class ViewAdminState extends State<ViewAdmin> {
   }
 
   void addThumbnailImage(MRestaurant restaurant, List<String> base64String) {
+    $selectedRestaurantThumbnail.sink$(base64String);
     GServiceRestaurant.$selectedRestaurant
         .sink$(restaurant.copyWith(thumbnail: base64String[0]));
   }
@@ -260,10 +264,11 @@ class ViewAdminState extends State<ViewAdmin> {
         restaurant.address_eupmyeondong;
     mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
     mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
+    $selectedRestaurantThumbnail.sink$([restaurant.thumbnail]);
   }
 
   Future<void> getThumbnail(MRestaurant restaurant) async {
-    RestfulResult getThumbnail = await GServiceAdmin.getThumbnail(
+    RestfulResult getThumbnail = await GServiceAdmin.getThumbnailAdmin(
       token: token,
       thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
     );
@@ -275,6 +280,7 @@ class ViewAdminState extends State<ViewAdmin> {
   @override
   void dispose() {
     GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
+    $selectedRestaurantThumbnail.dispose();
     // TODO : 모든 textController dispose
     super.dispose();
   }

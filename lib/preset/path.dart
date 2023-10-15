@@ -14,6 +14,7 @@ const String API_RESTAURANT_LATLNG = 'restaurant/latlng';
 const String API_RESTAURANT_PAGINATION = 'restaurant/pagination/';
 
 const String API_IMAGE_THUMBNAIL = 'image/thumbnail';
+const String API_IMAGE_THUMBNAIL_ADMIN = 'image/thumbnail_admin';
 
 const String API_USERS_SIGN_IN = 'users/sign_in';
 const String API_USERS_SIGN_UP = 'users/sign_up';

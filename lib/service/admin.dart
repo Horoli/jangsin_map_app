@@ -61,7 +61,7 @@ class ServiceAdmin {
       print(rawData);
 
       RestfulResult result = RestfulResult(
-        statusCode: rawData['status'],
+        statusCode: rawData['statusCode'],
         message: rawData['message'],
         data: rawData['data'],
       );
@@ -99,7 +99,7 @@ class ServiceAdmin {
       print(rawData);
 
       RestfulResult result = RestfulResult(
-        statusCode: rawData['status'],
+        statusCode: rawData['statusCode'],
         message: rawData['message'],
         data: rawData['data'],
       );
@@ -110,7 +110,7 @@ class ServiceAdmin {
     return completer.future;
   }
 
-  Future<RestfulResult> getThumbnail({
+  Future<RestfulResult> getThumbnailAdmin({
     required String token,
     required String thumbnailId,
   }) {
@@ -124,22 +124,23 @@ class ServiceAdmin {
     String jsonBody = jsonEncode({"thumbnail_id": thumbnailId});
 
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL);
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN)
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = jsonDecode(rep.body);
 
-      if (rawData['status'] != 200) {
-        return RestfulResult(
-          statusCode: rawData['status'],
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
           message: rawData['message'],
         );
+        completer.complete(errorResult);
+        return errorResult;
       }
 
-      print(rawData);
       RestfulResult result = RestfulResult(
-        statusCode: rawData['status'],
+        statusCode: rawData['statusCode'],
         message: rawData['message'],
         data: rawData['data'],
       );

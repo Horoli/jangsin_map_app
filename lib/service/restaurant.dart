@@ -36,33 +36,33 @@ class ServiceRestaurant {
     return completer.future;
   }
 
-  Future<RestfulResult> get() async {
-    Completer<RestfulResult> completer = Completer<RestfulResult>();
+  // Future<RestfulResult> get() async {
+  //   Completer<RestfulResult> completer = Completer<RestfulResult>();
 
-    Map<String, String> headers = {
-      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
-    };
+  //   Map<String, String> headers = {
+  //     "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+  //   };
 
-    Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
-        : Uri.http(PATH.FORIEGN_URL);
+  //   Uri query = PATH.IS_LOCAL
+  //       ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
+  //       : Uri.http(PATH.FORIEGN_URL);
 
-    http.get(query, headers: headers).then((rep) {
-      Map result = json.decode(rep.body);
+  //   http.get(query, headers: headers).then((rep) {
+  //     Map result = json.decode(rep.body);
 
-      List<MRestaurant> getRestaurant = List.from(result['data'])
-          .map((data) => MRestaurant.fromMap(data))
-          .toList();
+  //     List<MRestaurant> getRestaurant = List.from(result['data'])
+  //         .map((data) => MRestaurant.fromMap(data))
+  //         .toList();
 
-      completer.complete(RestfulResult(
-        statusCode: 200,
-        message: 'get Data complete',
-        data: getRestaurant,
-      ));
-    });
+  //     completer.complete(RestfulResult(
+  //       statusCode: 200,
+  //       message: 'get Data complete',
+  //       data: getRestaurant,
+  //     ));
+  //   });
 
-    return completer.future;
-  }
+  //   return completer.future;
+  // }
 
   Future<RestfulResult> pagination({
     int page = 1,
@@ -81,9 +81,21 @@ class ServiceRestaurant {
         : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
-      Map result = json.decode(rep.body);
+      Map rawData = json.decode(rep.body);
+      print(rawData);
+
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+        );
+        completer.complete(errorResult);
+        return errorResult;
+      }
+      print('step 1');
+
       List<MRestaurant> getRestaurant =
-          List.from(result['data']['pagination_data'])
+          List.from(rawData['data']['pagination_data'])
               .map((data) => MRestaurant.fromMap(data))
               .toList();
 
@@ -91,7 +103,7 @@ class ServiceRestaurant {
         statusCode: 200,
         message: 'get Data complete',
         data: {
-          "total_page": result['data']['total_page'],
+          "total_page": rawData['data']['total_page'],
           "current_page": page,
           "pagination_data": getRestaurant,
         },
@@ -105,17 +117,43 @@ class ServiceRestaurant {
     return completer.future;
   }
 
-  // Future<RestfulResult> update() async {
-  //   Completer<RestfulResult> completer = Completer<RestfulResult>();
-  //   Map<String, String> headers = {
-  //     "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
-  //   };
+  Future<RestfulResult> getThumbnail({
+    required String thumbnailId,
+  }) {
+    Completer<RestfulResult> completer = Completer<RestfulResult>();
 
-  //   Uri query = PATH.IS_LOCAL
-  //       ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
-  //       : Uri.http(PATH.FORIEGN_URL);
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+    };
 
-  //   http.post(query, headers:headers, body:)
+    String jsonBody = jsonEncode({"thumbnail_id": thumbnailId});
 
-  // }
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL)
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL);
+
+    http.post(query, headers: headers, body: jsonBody).then((rep) {
+      Map rawData = jsonDecode(rep.body);
+
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+        );
+        completer.complete(errorResult);
+        return errorResult;
+      }
+
+      RestfulResult result = RestfulResult(
+        statusCode: rawData['statusCode'],
+        message: rawData['message'],
+        data: rawData['data'],
+      );
+
+      completer.complete(result);
+    });
+
+    return completer.future;
+  }
 }
