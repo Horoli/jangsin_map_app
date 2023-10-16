@@ -66,7 +66,7 @@ class ServiceRestaurant {
 
   Future<RestfulResult> pagination({
     int page = 1,
-    int limit = 3,
+    int limit = 10,
   }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 

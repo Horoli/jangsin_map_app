@@ -12,7 +12,6 @@ class ViewMapState extends State<ViewMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(''),
         actions: [
           TextButton(
@@ -27,6 +26,7 @@ class ViewMapState extends State<ViewMap> {
       body: Row(
         children: [
           const HtmlElementView(viewType: 'naver-map').expand(),
+          const VerticalDivider(),
           buildMapList().expand(),
         ],
       ),
@@ -49,55 +49,83 @@ class ViewMapState extends State<ViewMap> {
 
           return Column(
             children: [
-              TStreamBuilder(
-                  stream: GServiceRestaurant.$selectedRestaurant.browse$,
-                  builder: (context, MRestaurant selectedRestaurant) {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => const Divider(),
-                      itemCount: restaurants.length,
-                      itemBuilder: (context, index) => SizedBox(
-                        height: 100,
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            // 선택한 가게 표시용 stack
-                            Container(
-                              color:
-                                  selectedRestaurant.id == restaurants[index].id
-                                      ? COLOR.RED
-                                      : COLOR.GREEN,
-                            ),
-                            // 가게 정보
-                            TileRestaurantUnit(
-                              restaurant: restaurants[index],
-                              clickEvent: () {
-                                if (selectedRestaurant.id ==
-                                    restaurants[index].id) {
-                                  GServiceRestaurant.$selectedRestaurant
-                                      .sink$(MRestaurant());
-                                  return;
-                                }
-                                GServiceRestaurant.$selectedRestaurant
-                                    .sink$(restaurants[index]);
+              ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: restaurants.length,
+                itemBuilder: (context, index) => SizedBox(
+                  height: 100,
+                  width: double.infinity,
+                  child: TileRestaurantUnit(
+                    restaurant: restaurants[index],
+                    $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+                    clickEvent: () {
+                      GServiceRestaurant.$selectedRestaurant
+                          .sink$(restaurants[index]);
 
-                                Map<String, dynamic> data = {
-                                  'type': 'set',
-                                  'data': {
-                                    'lat': restaurants[index].lat,
-                                    'lng': restaurants[index].lng
-                                  },
-                                };
+                      Map<String, dynamic> data = {
+                        'type': 'set',
+                        'data': {
+                          'lat': restaurants[index].lat,
+                          'lng': restaurants[index].lng
+                        },
+                      };
 
-                                String jsonData = jsonEncode(data);
+                      String jsonData = jsonEncode(data);
 
-                                html.window.postMessage(jsonData, '*');
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ).expand();
-                  }),
+                      html.window.postMessage(jsonData, '*');
+                    },
+                  ),
+                ),
+              ).expand(),
+              // TStreamBuilder(
+              //     stream: GServiceRestaurant.$selectedRestaurant.browse$,
+              //     builder: (context, MRestaurant selectedRestaurant) {
+              //       return ListView.separated(
+              //         separatorBuilder: (context, index) => const Divider(),
+              //         itemCount: restaurants.length,
+              //         itemBuilder: (context, index) => SizedBox(
+              //           height: 100,
+              //           width: double.infinity,
+              //           child: Stack(
+              //             children: [
+              //               // 선택한 가게 표시용 stack
+              //               Container(
+              //                 color:
+              //                     selectedRestaurant.id == restaurants[index].id
+              //                         ? COLOR.RED
+              //                         : COLOR.GREEN,
+              //               ),
+              //               // 가게 정보
+              //               TileRestaurantUnit(
+              //                 restaurant: restaurants[index],
+              //                 clickEvent: () {
+              //                   if (selectedRestaurant.id ==
+              //                       restaurants[index].id) {
+              //                     GServiceRestaurant.$selectedRestaurant
+              //                         .sink$(MRestaurant());
+              //                     return;
+              //                   }
+              //                   GServiceRestaurant.$selectedRestaurant
+              //                       .sink$(restaurants[index]);
+
+              //                   Map<String, dynamic> data = {
+              //                     'type': 'set',
+              //                     'data': {
+              //                       'lat': restaurants[index].lat,
+              //                       'lng': restaurants[index].lng
+              //                     },
+              //                   };
+
+              //                   String jsonData = jsonEncode(data);
+
+              //                   html.window.postMessage(jsonData, '*');
+              //                 },
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       );
+              //     }).expand(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: pages
@@ -130,7 +158,7 @@ class ViewMapState extends State<ViewMap> {
     await GServiceRestaurant.pagination();
     List latLngs = result.data;
     Future.delayed(
-        const Duration(milliseconds: 500), () => {postMessage(latLngs)});
+        const Duration(milliseconds: 500), () => {htmlInitLatLng(latLngs)});
   }
 
   Future<void> registerView() async {
@@ -140,11 +168,12 @@ class ViewMapState extends State<ViewMap> {
       (int id) => html.IFrameElement()
         ..style.width = '100%'
         ..style.height = '100%'
+        ..style.border = 'none'
         ..src = 'assets/html/map.html',
     );
   }
 
-  Future<void> postMessage(dynamic latLng) async {
+  Future<void> htmlInitLatLng(dynamic latLng) async {
     Map<String, dynamic> data = {
       'type': 'init',
       'data': latLng,

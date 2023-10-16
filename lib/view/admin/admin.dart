@@ -111,7 +111,8 @@ class ViewAdminState extends State<ViewAdmin> {
                   token: token, mapOfRestaurant: mapOfRestaurant);
 
               await GServiceRestaurant.pagination();
-              await inputCtrlSelectedRestaurant(restaurant);
+              // await inputCtrlSelectedRestaurant(restaurant);
+              initCtrl();
             },
           )
         : ElevatedButton(
@@ -190,6 +191,7 @@ class ViewAdminState extends State<ViewAdmin> {
                       ),
                       onPressed: () {
                         GServiceRestaurant.pagination(page: page);
+                        initCtrl();
                       },
                       child: Text('$page')))
                   .toList(),
