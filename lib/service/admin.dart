@@ -37,7 +37,7 @@ class ServiceAdmin {
 
   Future<RestfulResult> createRestaurant({
     required String token,
-    required MRestaurant restaurant,
+    required Map<String, dynamic> mapOfRestaurant,
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -46,19 +46,14 @@ class ServiceAdmin {
       "token": token,
     };
 
-    String jsonBody = jsonEncode(restaurant.map);
+    String jsonBody = jsonEncode(mapOfRestaurant);
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_CREATE)
         : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_CREATE);
 
-    print(jsonBody);
-    print(query);
-
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
-
-      print(rawData);
 
       RestfulResult result = RestfulResult(
         statusCode: rawData['statusCode'],
@@ -76,7 +71,7 @@ class ServiceAdmin {
 
   Future<RestfulResult> patchRestaurant({
     required String token,
-    required MRestaurant restaurant,
+    required Map<String, dynamic> mapOfRestaurant,
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -85,7 +80,7 @@ class ServiceAdmin {
       "token": token,
     };
 
-    String jsonBody = jsonEncode(restaurant.map);
+    String jsonBody = jsonEncode(mapOfRestaurant);
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_PATCH)
@@ -112,7 +107,7 @@ class ServiceAdmin {
 
   Future<RestfulResult> getThumbnailAdmin({
     required String token,
-    required String thumbnailId,
+    required String thumbnail,
   }) {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -121,7 +116,7 @@ class ServiceAdmin {
       "token": token,
     };
 
-    String jsonBody = jsonEncode({"thumbnail_id": thumbnailId});
+    String jsonBody = jsonEncode({"thumbnail": thumbnail});
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN)

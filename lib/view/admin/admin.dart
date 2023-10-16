@@ -48,8 +48,7 @@ class ViewAdminState extends State<ViewAdmin> {
   Map<String, TextEditingController> get mapOfLink =>
       mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
 
-  final TStream<List<String>> $selectedRestaurantThumbnail =
-      TStream<List<String>>();
+  final TStream<List<String>> $selectedNewThumbnail = TStream<List<String>>();
 
   late final String token;
 
@@ -72,60 +71,17 @@ class ViewAdminState extends State<ViewAdmin> {
                     children: [
                       buildRestaurantList(restaurant).expand(),
                       const VerticalDivider(),
-                      ManagementRestaurantInfo(
+                      ManagementInfo(
                         context: context,
                         restaurant: restaurant,
                         mapOfCtrl: mapOfMainCtrl,
                       ).expand(flex: 3),
-                      // TODO : dev code add thumnail image
-                      Column(
-                        children: [
-                          ElevatedButton(
-                              child: Text('a'),
-                              onPressed: () async {
-                                await selectImageFile().then((image) {
-                                  if (image.isEmpty) {
-                                    print('image empty');
-                                    return;
-                                  }
-
-                                  $selectedRestaurantThumbnail.sink$(image);
-                                  GServiceRestaurant.$selectedRestaurant.sink$(
-                                      restaurant.copyWith(
-                                          add_thumbnail: image[0]));
-                                });
-                              }).expand(),
-                          FutureBuilder(
-                              future: getThumbnail(restaurant),
-                              builder: (BuildContext context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const Text('empty');
-                                }
-                                return Column(
-                                  children: [
-                                    Text('after'),
-                                    Image.memory(
-                                            base64Decode(snapshot.data!.first))
-                                        .expand(),
-                                  ],
-                                );
-                              }).expand(),
-                          TStreamBuilder(
-                            stream: $selectedRestaurantThumbnail.browse$,
-                            builder: (context, List<String> thumbnail) {
-                              return thumbnail[0] == ""
-                                  ? const Text('empty')
-                                  : Column(
-                                      children: [
-                                        Text('before'),
-                                        Image.memory(base64Decode(thumbnail[0]))
-                                            .expand(),
-                                      ],
-                                    );
-                            },
-                          ).expand(),
-                        ],
-                      ).expand(),
+                      ManagementImage(
+                        context: context,
+                        restaurant: restaurant,
+                        token: token,
+                        $selectedNewThumbnail: $selectedNewThumbnail,
+                      ).expand()
                     ],
                   ).expand(),
                   buildUpdateButton(restaurant),
@@ -146,13 +102,16 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_NEW),
             onPressed: () async {
-              // 선택된 id가 없으면 create 함수를 실행
-              // 이떄,
-              MRestaurant newRestaurant = setRestaurantInfo(restaurant);
+              Map<String, dynamic> mapOfRestaurant =
+                  setRestaurantInfo(restaurant).map;
+              mapOfRestaurant['add_thumbnail'] =
+                  $selectedNewThumbnail.lastValue[0];
+
               GServiceAdmin.createRestaurant(
-                token: token,
-                restaurant: newRestaurant,
-              );
+                  token: token, mapOfRestaurant: mapOfRestaurant);
+
+              await GServiceRestaurant.pagination();
+              await inputCtrlSelectedRestaurant(restaurant);
             },
           )
         : ElevatedButton(
@@ -160,16 +119,17 @@ class ViewAdminState extends State<ViewAdmin> {
               backgroundColor: MaterialStateProperty.all(COLOR.RED),
             ),
             child: const Text(LABEL.UPDATE_MODIFY),
-            onPressed: () {
-              String token =
-                  GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
+            onPressed: () async {
+              Map<String, dynamic> mapOfRestaurant =
+                  setRestaurantInfo(restaurant).map;
+              mapOfRestaurant['add_thumbnail'] =
+                  $selectedNewThumbnail.lastValue[0];
 
-              setRestaurantInfo(restaurant);
-              MRestaurant modifyRestaurant = setRestaurantInfo(restaurant);
               GServiceAdmin.patchRestaurant(
-                token: token,
-                restaurant: modifyRestaurant,
-              );
+                  token: token, mapOfRestaurant: mapOfRestaurant);
+
+              await GServiceRestaurant.pagination();
+              await inputCtrlSelectedRestaurant(restaurant);
             },
           );
   }
@@ -266,11 +226,11 @@ class ViewAdminState extends State<ViewAdmin> {
     initController(mapOfLink);
     initController(mapOfRestaurant);
 
-    $selectedRestaurantThumbnail.sink$(['']);
+    $selectedNewThumbnail.sink$(['']);
   }
 
   // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
-  void inputCtrlSelectedRestaurant(MRestaurant restaurant) {
+  Future<void> inputCtrlSelectedRestaurant(MRestaurant restaurant) async {
     GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
     mapOfDropdown[KEY.ADMIN_SIDO]!.text = restaurant.address_sido;
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = restaurant.address_sigungu;
@@ -296,7 +256,6 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text =
         restaurant.youtube_uploadedAt.toString();
     mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text = restaurant.baemin_link.toString();
-    // $selectedRestaurantThumbnail.sink$([restaurant.thumbnail]);
 
     print('restaurant ${restaurant.thumbnail}');
   }
@@ -328,25 +287,15 @@ class ViewAdminState extends State<ViewAdmin> {
       youtube_link: mapOfLink[KEY.ADMIN_YOUTUBE_LINK]!.text,
       youtube_uploadedAt: mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text,
       baemin_link: mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text,
-      // 썸네일은 id가 아닌 이미지 데이터를 그대로 넣어줌
-      add_thumbnail: $selectedRestaurantThumbnail.lastValue[0],
     );
 
     return mRestaurant;
   }
 
-  Future<List<String>> getThumbnail(MRestaurant restaurant) async {
-    RestfulResult getThumbnail = await GServiceAdmin.getThumbnailAdmin(
-      token: token,
-      thumbnailId: restaurant.thumbnail == "" ? "" : restaurant.thumbnail,
-    );
-    return [getThumbnail.data['thumbnail']['image']];
-  }
-
   @override
   void dispose() {
     GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
-    $selectedRestaurantThumbnail.dispose();
+    $selectedNewThumbnail.dispose();
     // TODO : 모든 textController dispose
     super.dispose();
   }

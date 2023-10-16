@@ -1,10 +1,10 @@
 part of widget;
 
-class ManagementRestaurantInfo extends StatelessWidget {
+class ManagementInfo extends StatelessWidget {
   BuildContext context;
   MRestaurant restaurant;
   Map<String, Map<String, TextEditingController>> mapOfCtrl;
-  ManagementRestaurantInfo({
+  ManagementInfo({
     required this.context,
     required this.restaurant,
     required this.mapOfCtrl,

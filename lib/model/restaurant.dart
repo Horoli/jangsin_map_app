@@ -22,7 +22,6 @@ class MRestaurant extends CommonModel {
   final String youtube_link;
   final String baemin_link;
   final String thumbnail;
-  final String add_thumbnail;
   MRestaurant({
     this.id = "",
     this.label = "",
@@ -45,7 +44,6 @@ class MRestaurant extends CommonModel {
     this.youtube_link = "",
     this.baemin_link = "",
     this.thumbnail = "",
-    this.add_thumbnail = "",
   });
 
   @override
@@ -71,7 +69,6 @@ class MRestaurant extends CommonModel {
         'youtube_link': youtube_link,
         'baemin_link': baemin_link,
         'thumbnail': thumbnail,
-        'add_thumbnail': add_thumbnail,
       };
 
   MRestaurant copyWith({
@@ -120,7 +117,6 @@ class MRestaurant extends CommonModel {
         youtube_link: youtube_link ?? this.youtube_link,
         baemin_link: baemin_link ?? this.baemin_link,
         thumbnail: thumbnail ?? this.thumbnail,
-        add_thumbnail: add_thumbnail ?? this.add_thumbnail,
       );
 
   factory MRestaurant.fromMap(Map item) {
