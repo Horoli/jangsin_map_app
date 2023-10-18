@@ -23,8 +23,8 @@ class TileRestaurantUnit extends StatelessWidget {
               builder: (context, MRestaurant selectedRestaurant) {
                 return Container(
                   color: selectedRestaurant.id == restaurant.id
-                      ? Colors.blue
-                      : Colors.white,
+                      ? Colors.blue.withOpacity(0.3)
+                      : Colors.white.withOpacity(0.3),
                 );
               }),
           Row(
@@ -45,25 +45,61 @@ class TileRestaurantUnit extends StatelessWidget {
 
                   if (snapshot.data!.data['thumbnail'] == null) {
                     return const Center(child: Text("no image"));
-                    // return const Center(child: CircularProgressIndicator());
                   }
 
                   return Image.memory(
                       base64Decode(snapshot.data!.data['thumbnail']['image']));
                 },
               ).expand(),
-              Container().expand(),
-              Container().expand(),
-              IconButton(
-                icon: const Icon(Icons.open_in_new),
-                onPressed: () {
-                  js.context.callMethod('open', [restaurant.naver_map_link]);
-                },
-              ).expand(),
+              //
+              const Padding(padding: EdgeInsets.all(4)),
+              Column(
+                children: [
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(restaurant.label),
+                          const VerticalDivider(),
+                          Text(
+                              "${restaurant.address_sido} ${restaurant.address_sigungu} ${restaurant.address_eupmyeondong} ${restaurant.address_detail}"),
+                          const VerticalDivider(),
+                          Text(restaurant.address_street),
+                        ],
+                      ).expand(),
+                      Row(
+                        children: [],
+                      ).expand(),
+                    ],
+                  ).expand(),
+                  Row(
+                    children: [
+                      buildLinkIconButton(Icons.map, restaurant.naver_map_link)
+                          .expand(),
+                      buildLinkIconButton(
+                              Icons.restaurant_menu, restaurant.sns_link)
+                          .expand(),
+                      buildLinkIconButton(
+                              Icons.delivery_dining, restaurant.baemin_link)
+                          .expand(),
+                      buildLinkIconButton(Icons.slow_motion_video_rounded,
+                              restaurant.youtube_link)
+                          .expand(),
+                    ],
+                  ).expand(),
+                ],
+              ).expand(flex: 3),
             ],
           ),
         ],
       ),
     );
+  }
+
+  Widget buildLinkIconButton(IconData icon, String link) {
+    return IconButton(
+        onPressed: () => js.context.callMethod('open', [link]),
+        icon: Icon(icon));
   }
 }
