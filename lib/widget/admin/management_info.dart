@@ -71,15 +71,17 @@ class ManagementInfo extends StatelessWidget {
   }
 
   Widget buildSidoDropdownButton() {
-    return DropdownButton(
-      value: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-      items: DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys
+    return CustomDropdownField(
+      value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
+          ? DISTRICT.INIT
+          : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+      items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: (dynamic value) {
         mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
         mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-            DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[
+            DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[
                 mapOfDropdown[KEY.ADMIN_SIDO]!.text]![0];
         setAddressForRestaurant();
       },
@@ -87,10 +89,10 @@ class ManagementInfo extends StatelessWidget {
   }
 
   Widget buildSigunguDropdownButton() {
-    return DropdownButton(
+    return CustomDropdownField(
       value: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
       items: DISTRICT
-          .KOREA_ADMINISTRAIVE_DISTRICT[mapOfDropdown[KEY.ADMIN_SIDO]!.text]!
+          .KOREA_ADMINISTRATIVE_DISTRICT[mapOfDropdown[KEY.ADMIN_SIDO]!.text]!
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: (dynamic value) {

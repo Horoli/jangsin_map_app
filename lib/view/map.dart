@@ -8,6 +8,10 @@ class ViewMap extends StatefulWidget {
 }
 
 class ViewMapState extends State<ViewMap> {
+  final Map<String, TextEditingController> mapOfDropdown = {
+    KEY.ADMIN_SIDO: TextEditingController(),
+    KEY.ADMIN_SIGUNGU: TextEditingController(),
+  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +19,7 @@ class ViewMapState extends State<ViewMap> {
         title: const Text(''),
         actions: [
           TextButton(
-            child: Container(),
+            child: const Text(''),
             onPressed: () {},
             onLongPress: () {
               Navigator.of(context).pushNamed(PATH.ROUTE_ADMIN_LOGIN);
@@ -23,127 +27,96 @@ class ViewMapState extends State<ViewMap> {
           ),
         ],
       ),
-      body: Row(
-        children: [
-          const HtmlElementView(viewType: 'naver-map').expand(),
-          const VerticalDivider(),
-          buildMapList().expand(),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            const HtmlElementView(viewType: 'naver-map').expand(),
+            const VerticalDivider(),
+            buildMapList().expand(),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildMapList() {
     return TStreamBuilder(
-        initialData: RestfulResult(statusCode: 400, message: '', data: null),
-        stream: GServiceRestaurant.$pagination.browse$,
-        builder: (BuildContext context, RestfulResult snapshot) {
-          if (snapshot.data == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      initialData: RestfulResult(statusCode: 400, message: '', data: null),
+      stream: GServiceRestaurant.$pagination.browse$,
+      builder: (BuildContext context, RestfulResult snapshot) {
+        if (snapshot.data == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          List<MRestaurant> restaurants = snapshot.data['pagination_data'];
+        List<MRestaurant> restaurants = snapshot.data['pagination_data'];
 
-          List<int> pages =
-              List.generate(snapshot.data['total_page'], (index) => index + 1);
-
-          return Column(
-            children: [
-              ListView.separated(
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: restaurants.length,
-                itemBuilder: (context, index) => SizedBox(
-                  height: 100,
-                  width: double.infinity,
-                  child: TileRestaurantUnit(
-                    restaurant: restaurants[index],
-                    $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
-                    clickEvent: () {
+        return Column(
+          children: [
+            buildSidoDropdownButton(),
+            const Divider(),
+            ListView.separated(
+              separatorBuilder: (context, index) => const Divider(),
+              itemCount: restaurants.length,
+              itemBuilder: (context, index) => SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: TileRestaurantUnit(
+                  restaurant: restaurants[index],
+                  $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+                  clickEvent: () {
+                    // 선택한 식당이 같은 경우 빈 식당 sink$
+                    if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                        restaurants[index].id) {
                       GServiceRestaurant.$selectedRestaurant
-                          .sink$(restaurants[index]);
+                          .sink$(MRestaurant());
+                      return;
+                    }
 
-                      Map<String, dynamic> data = {
-                        'type': 'set',
-                        'data': {
-                          'lat': restaurants[index].lat,
-                          'lng': restaurants[index].lng
-                        },
-                      };
+                    // 선택한 식당이 다른 경우 해당 식당을 sink$
+                    GServiceRestaurant.$selectedRestaurant
+                        .sink$(restaurants[index]);
 
-                      String jsonData = jsonEncode(data);
-
-                      html.window.postMessage(jsonData, '*');
-                    },
-                  ),
+                    inputDataForHtml(
+                      dataType: 'set',
+                      data: {
+                        'lat': restaurants[index].lat,
+                        'lng': restaurants[index].lng
+                      },
+                    );
+                  },
                 ),
-              ).expand(),
-              // TStreamBuilder(
-              //     stream: GServiceRestaurant.$selectedRestaurant.browse$,
-              //     builder: (context, MRestaurant selectedRestaurant) {
-              //       return ListView.separated(
-              //         separatorBuilder: (context, index) => const Divider(),
-              //         itemCount: restaurants.length,
-              //         itemBuilder: (context, index) => SizedBox(
-              //           height: 100,
-              //           width: double.infinity,
-              //           child: Stack(
-              //             children: [
-              //               // 선택한 가게 표시용 stack
-              //               Container(
-              //                 color:
-              //                     selectedRestaurant.id == restaurants[index].id
-              //                         ? COLOR.RED
-              //                         : COLOR.GREEN,
-              //               ),
-              //               // 가게 정보
-              //               TileRestaurantUnit(
-              //                 restaurant: restaurants[index],
-              //                 clickEvent: () {
-              //                   if (selectedRestaurant.id ==
-              //                       restaurants[index].id) {
-              //                     GServiceRestaurant.$selectedRestaurant
-              //                         .sink$(MRestaurant());
-              //                     return;
-              //                   }
-              //                   GServiceRestaurant.$selectedRestaurant
-              //                       .sink$(restaurants[index]);
+              ),
+            ).expand(),
+            PaginationButton(
+              currentPage: snapshot.data['current_page'],
+              totalPage: snapshot.data['total_page'],
+              onPressed: (int page) {
+                GServiceRestaurant.pagination(
+                  page: page,
+                  sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-              //                   Map<String, dynamic> data = {
-              //                     'type': 'set',
-              //                     'data': {
-              //                       'lat': restaurants[index].lat,
-              //                       'lng': restaurants[index].lng
-              //                     },
-              //                   };
-
-              //                   String jsonData = jsonEncode(data);
-
-              //                   html.window.postMessage(jsonData, '*');
-              //                 },
-              //               ),
-              //             ],
-              //           ),
-              //         ),
-              //       );
-              //     }).expand(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: pages
-                    .map((page) => ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: page == snapshot.data['current_page']
-                              ? MaterialStateProperty.all(COLOR.RED)
-                              : MaterialStateProperty.all(COLOR.BLUE),
-                        ),
-                        onPressed: () {
-                          GServiceRestaurant.pagination(page: page);
-                        },
-                        child: Text('$page')))
-                    .toList(),
-              )
-            ],
-          );
-        });
+  Widget buildSidoDropdownButton() {
+    return CustomDropdownField(
+      value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
+          ? DISTRICT.INIT
+          : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+      items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
+          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+          .toList(),
+      onChanged: (dynamic value) {
+        mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
+        GServiceRestaurant.pagination(sido: value);
+      },
+    );
   }
 
   @override
@@ -155,10 +128,13 @@ class ViewMapState extends State<ViewMap> {
   Future<void> initMap() async {
     await registerView();
     RestfulResult result = await GServiceRestaurant.getLatLng();
-    await GServiceRestaurant.pagination();
     List latLngs = result.data;
-    Future.delayed(
-        const Duration(milliseconds: 500), () => {htmlInitLatLng(latLngs)});
+
+    mapOfDropdown[KEY.ADMIN_SIDO]!.text = DISTRICT.INIT;
+    GServiceRestaurant.pagination(page: 1);
+
+    Future.delayed(const Duration(milliseconds: 200),
+        () => {inputDataForHtml(dataType: 'init', data: latLngs)});
   }
 
   Future<void> registerView() async {
@@ -173,14 +149,16 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Future<void> htmlInitLatLng(dynamic latLng) async {
-    Map<String, dynamic> data = {
-      'type': 'init',
-      'data': latLng,
-      // 'src': dotenv.env['NAVER_MAP_CLIENT_SRC'],
+  Future<void> inputDataForHtml(
+      {required String dataType, required dynamic data}) async {
+    assert(dataType == 'init' || dataType == 'set',
+        'inputDataForHtml exception : dataType is not init or set');
+    Map<String, dynamic> mapOfData = {
+      'type': dataType,
+      'data': data,
     };
-    String jsonData = jsonEncode(data);
-    print('jsonData $jsonData');
+
+    String jsonData = jsonEncode(mapOfData);
     html.window.postMessage(jsonData, '*');
   }
 

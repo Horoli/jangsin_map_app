@@ -66,23 +66,36 @@ class ServiceRestaurant {
 
   Future<RestfulResult> pagination({
     int page = 1,
-    int limit = 10,
+    int limit = 5,
+    String? sido,
+    String? sigungu,
   }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
       "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
+
+    Map<String, String> queryByCondition = {
+      'page': page.toString(),
+      'limit': limit.toString(),
+      if (sido != null) 'sido': sido,
+      if (sido != null && sigungu != null) 'sigungu': sigungu,
+    };
+
+    print(queryByCondition);
+
     Uri query = PATH.IS_LOCAL
-        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_PAGINATION, {
-            'page': page.toString(),
-            'limit': limit.toString(),
-          })
+        ? Uri.http(
+            PATH.LOCAL_URL,
+            PATH.API_RESTAURANT_PAGINATION,
+            queryByCondition,
+          )
         : Uri.http(PATH.FORIEGN_URL);
 
     http.get(query, headers: headers).then((rep) {
       Map rawData = json.decode(rep.body);
-      print(rawData);
+      // print(rawData);
 
       if (rawData['statusCode'] != 200) {
         RestfulResult errorResult = RestfulResult(

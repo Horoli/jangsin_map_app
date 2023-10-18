@@ -150,8 +150,6 @@ class ViewAdminState extends State<ViewAdmin> {
 
         List<MRestaurant> restaurants = snapshot.data['pagination_data'];
 
-        List<int> pages =
-            List.generate(snapshot.data['total_page'], (index) => index + 1);
         return Column(
           children: [
             ListView.separated(
@@ -180,21 +178,13 @@ class ViewAdminState extends State<ViewAdmin> {
                 ),
               ),
             ).expand(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: pages
-                  .map((page) => ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: page == snapshot.data['current_page']
-                            ? MaterialStateProperty.all(COLOR.RED)
-                            : MaterialStateProperty.all(COLOR.BLUE),
-                      ),
-                      onPressed: () {
-                        GServiceRestaurant.pagination(page: page);
-                        initCtrl();
-                      },
-                      child: Text('$page')))
-                  .toList(),
+            PaginationButton(
+              currentPage: snapshot.data['current_page'],
+              totalPage: snapshot.data['total_page'],
+              onPressed: (int page) {
+                GServiceRestaurant.pagination(page: page);
+                initCtrl();
+              },
             )
           ],
         );
@@ -213,9 +203,9 @@ class ViewAdminState extends State<ViewAdmin> {
   Future<void> initCtrl() async {
     GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
     mapOfDropdown[KEY.ADMIN_SIDO]!.text =
-        DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT.keys.toList()[0];
+        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.toList()[0];
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-        DISTRICT.KOREA_ADMINISTRAIVE_DISTRICT[DISTRICT.INIT]![0];
+        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[DISTRICT.INIT]![0];
 
     // 컨트롤러를 초기화 하는 함수
     void initController(Map<String, TextEditingController> mapOfInnerCtrl) {

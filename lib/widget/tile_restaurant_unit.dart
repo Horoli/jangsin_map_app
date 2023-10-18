@@ -29,7 +29,6 @@ class TileRestaurantUnit extends StatelessWidget {
               }),
           Row(
             children: [
-              // Text('${restaurant.thumbnail}').expand(),
               FutureBuilder(
                 initialData:
                     RestfulResult(statusCode: 400, message: '', data: null),
