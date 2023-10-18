@@ -44,7 +44,8 @@ class TileRestaurantUnit extends StatelessWidget {
                   }
 
                   if (snapshot.data!.data['thumbnail'] == null) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: Text("no image"));
+                    // return const Center(child: CircularProgressIndicator());
                   }
 
                   return Image.memory(

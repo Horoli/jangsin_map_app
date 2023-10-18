@@ -21,7 +21,7 @@ class ServiceRestaurant {
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_LATLNG)
-        : Uri.http(PATH.FORIEGN_URL);
+        : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_LATLNG);
 
     http.get(query, headers: headers).then((rep) {
       Map result = json.decode(rep.body);
@@ -91,7 +91,11 @@ class ServiceRestaurant {
             PATH.API_RESTAURANT_PAGINATION,
             queryByCondition,
           )
-        : Uri.http(PATH.FORIEGN_URL);
+        : Uri.http(
+            PATH.FORIEGN_URL,
+            PATH.API_RESTAURANT_PAGINATION,
+            queryByCondition,
+          );
 
     http.get(query, headers: headers).then((rep) {
       Map rawData = json.decode(rep.body);
