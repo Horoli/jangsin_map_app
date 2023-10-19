@@ -195,8 +195,8 @@ class ViewAdminState extends State<ViewAdmin> {
   @override
   void initState() {
     token = GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
-    initCtrl();
     GServiceRestaurant.pagination();
+    initCtrl();
     super.initState();
   }
 

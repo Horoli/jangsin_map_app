@@ -74,7 +74,8 @@ class ViewMapState extends State<ViewMap> {
 
         return Column(
           children: [
-            buildSidoDropdownButton(),
+            // buildSidoDropdownButton(),
+            buildSelectSidoDialogButton(),
             const Divider(),
             ListView.separated(
               separatorBuilder: (context, index) => const Divider(),
@@ -125,20 +126,66 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Widget buildSidoDropdownButton() {
-    return CustomDropdownField(
-      value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
-          ? DISTRICT.INIT
-          : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-      items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (dynamic value) {
-        mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
-        GServiceRestaurant.pagination(sido: value);
+  Widget buildSelectSidoDialogButton() {
+    return ElevatedButton(
+      child: Text('sido'),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return PointerInterceptor(
+                child: AlertDialog(
+                  content: SizedBox(
+                    width: 500,
+                    height: 500,
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        // childAspectRatio: 1.0,
+                        crossAxisSpacing: 2.0,
+                        mainAxisSpacing: 2.0,
+                      ),
+                      itemCount:
+                          DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ElevatedButton(
+                          child: Text(
+                            DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
+                                .toList()[index],
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            GServiceRestaurant.pagination(
+                                sido: DISTRICT
+                                    .KOREA_ADMINISTRATIVE_DISTRICT.keys
+                                    .toList()[index]);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            });
       },
     );
   }
+
+  // Widget buildSidoDropdownButton() {
+  //   return CustomDropdownField(
+  //     value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
+  //         ? DISTRICT.INIT
+  //         : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+  //     items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
+  //         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+  //         .toList(),
+  //     onChanged: (dynamic value) {
+  //       mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
+  //       GServiceRestaurant.pagination(sido: value);
+  //     },
+  //   );
+  // }
 
   @override
   void initState() {
@@ -164,6 +211,9 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Future<void> registerView() async {
+    String htmlPath =
+        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
+
     // ignore: undefined_prefixed_name
     ui_web.platformViewRegistry.registerViewFactory(
       'naver-map',
@@ -171,7 +221,7 @@ class ViewMapState extends State<ViewMap> {
         ..style.width = '100%'
         ..style.height = '100%'
         ..style.border = 'none'
-        ..src = 'assets/html/map.html',
+        ..src = htmlPath,
     );
   }
 
