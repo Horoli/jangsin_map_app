@@ -15,6 +15,10 @@ class TileRestaurantUnit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: COLOR.WHITE,
+        iconColor: COLOR.WHITE,
+      ),
       onPressed: clickEvent,
       child: Stack(
         children: [
@@ -23,8 +27,8 @@ class TileRestaurantUnit extends StatelessWidget {
               builder: (context, MRestaurant selectedRestaurant) {
                 return Container(
                   color: selectedRestaurant.id == restaurant.id
-                      ? Colors.blue.withOpacity(0.3)
-                      : Colors.white.withOpacity(0.3),
+                      ? COLOR.BLUE.withOpacity(0.3)
+                      : COLOR.WHITE.withOpacity(0.3),
                 );
               }),
           Row(
@@ -33,12 +37,9 @@ class TileRestaurantUnit extends StatelessWidget {
                 initialData:
                     RestfulResult(statusCode: 400, message: '', data: null),
                 future: GServiceRestaurant.getThumbnail(
-                  thumbnail: restaurant.thumbnail,
-                ),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<RestfulResult> snapshot,
-                ) {
+                    thumbnail: restaurant.thumbnail),
+                builder: (BuildContext context,
+                    AsyncSnapshot<RestfulResult> snapshot) {
                   if (snapshot.data!.statusCode != 200) {
                     return const Center(child: CircularProgressIndicator());
                   }

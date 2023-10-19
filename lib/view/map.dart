@@ -8,10 +8,14 @@ class ViewMap extends StatefulWidget {
 }
 
 class ViewMapState extends State<ViewMap> {
+  MediaQueryData get mediaQuery => MediaQuery.of(context);
+  bool get isPort => mediaQuery.orientation == Orientation.portrait;
+
   final Map<String, TextEditingController> mapOfDropdown = {
     KEY.ADMIN_SIDO: TextEditingController(),
     KEY.ADMIN_SIGUNGU: TextEditingController(),
   };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +31,32 @@ class ViewMapState extends State<ViewMap> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            const HtmlElementView(viewType: 'naver-map').expand(),
-            const VerticalDivider(),
-            buildMapList().expand(),
-          ],
-        ),
+      body: isPort ? buildPortait() : buildLandscape(),
+    );
+  }
+
+  Widget buildPortait() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          const HtmlElementView(viewType: 'naver-map').expand(),
+          const Divider(),
+          buildMapList().expand(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildLandscape() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          const HtmlElementView(viewType: 'naver-map').expand(),
+          const VerticalDivider(),
+          buildMapList().expand(),
+        ],
       ),
     );
   }
