@@ -11,6 +11,7 @@ class ServiceAdmin {
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
+      "access-control-allow-origin": "*",
       // "": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
@@ -18,7 +19,7 @@ class ServiceAdmin {
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_USERS_SIGN_IN)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_USERS_SIGN_IN);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_USERS_SIGN_IN);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
@@ -43,6 +44,7 @@ class ServiceAdmin {
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
+      "access-control-allow-origin": "*",
       "token": token,
     };
 
@@ -50,7 +52,7 @@ class ServiceAdmin {
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_CREATE)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_CREATE);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_CREATE);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
@@ -84,7 +86,7 @@ class ServiceAdmin {
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_PATCH)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_PATCH);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_PATCH);
 
     print(jsonBody);
     print(query);
@@ -120,7 +122,7 @@ class ServiceAdmin {
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL_ADMIN);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = jsonDecode(rep.body);

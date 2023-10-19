@@ -149,6 +149,11 @@ class ViewMapState extends State<ViewMap> {
   Future<void> initMap() async {
     await registerView();
     RestfulResult result = await GServiceRestaurant.getLatLng();
+    print('result ${result.map}');
+    // late List latLngs;
+    // if (result.statusCode == 200) {
+    //   // return;
+    // }
     List latLngs = result.data;
 
     mapOfDropdown[KEY.ADMIN_SIDO]!.text = DISTRICT.INIT;

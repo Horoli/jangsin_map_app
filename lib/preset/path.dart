@@ -1,6 +1,6 @@
-const bool IS_LOCAL = true;
+const bool IS_LOCAL = false;
 const String LOCAL_URL = 'localhost:4003';
-const String FORIEGN_URL = 'https://jangsin-api.horoli.kr';
+const String FORIEGN_URL = 'jangsin-api.horoli.kr';
 
 const String ROUTE_MAP = '/';
 const String ROUTE_ADMIN = '/admin';

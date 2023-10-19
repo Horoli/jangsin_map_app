@@ -16,20 +16,32 @@ class ServiceRestaurant {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
-      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "access-control-allow-origin": "*",
     };
+
+    print('get latlng $headers');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_LATLNG)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_RESTAURANT_LATLNG);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_LATLNG);
 
     http.get(query, headers: headers).then((rep) {
-      Map result = json.decode(rep.body);
+      Map rawData = json.decode(rep.body);
+
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+        );
+        completer.complete(errorResult);
+        return errorResult;
+      }
 
       completer.complete(RestfulResult(
         statusCode: 200,
         message: 'get Data complete',
-        data: result['data'],
+        data: rawData['data'],
       ));
     });
 
@@ -73,7 +85,8 @@ class ServiceRestaurant {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
-      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "access-control-allow-origin": "*",
     };
 
     Map<String, String> queryByCondition = {
@@ -91,7 +104,7 @@ class ServiceRestaurant {
             PATH.API_RESTAURANT_PAGINATION,
             queryByCondition,
           )
-        : Uri.http(
+        : Uri.https(
             PATH.FORIEGN_URL,
             PATH.API_RESTAURANT_PAGINATION,
             queryByCondition,
@@ -141,14 +154,15 @@ class ServiceRestaurant {
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
-      "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "access-control-allow-origin": "*",
+      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
     String jsonBody = jsonEncode({"thumbnail": thumbnail});
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL)
-        : Uri.http(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL);
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_IMAGE_THUMBNAIL);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = jsonDecode(rep.body);
