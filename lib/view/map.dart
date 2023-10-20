@@ -43,7 +43,7 @@ class ViewMapState extends State<ViewMap> {
                       const Padding(padding: EdgeInsets.all(8)),
                       TextField(
                         // style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           // focusColor: Colors.black,
                           border: OutlineInputBorder(),
                           labelText: LABEL.SELECT_REGION,
@@ -54,7 +54,7 @@ class ViewMapState extends State<ViewMap> {
                     ],
                   ),
                 ),
-                const HtmlElementView(viewType: 'portait-naver-map').expand(),
+                const HtmlElementView(viewType: 'naver-map').expand(),
               ],
             ).expand(),
             const Divider(),
@@ -84,7 +84,7 @@ class ViewMapState extends State<ViewMap> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            const HtmlElementView(viewType: 'landscape-naver-map').expand(),
+            const HtmlElementView(viewType: 'naver-map').expand(),
             const VerticalDivider(),
             buildMapList().expand(),
           ],
@@ -228,7 +228,7 @@ class ViewMapState extends State<ViewMap> {
         PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
 
     ui_web.platformViewRegistry.registerViewFactory(
-      'portait-naver-map',
+      'naver-map',
       (int id) => html.IFrameElement()
         ..style.width = '100%'
         ..style.height = '100%'
@@ -236,14 +236,14 @@ class ViewMapState extends State<ViewMap> {
         ..src = htmlPath,
     );
 
-    ui_web.platformViewRegistry.registerViewFactory(
-      'landscape-naver-map',
-      (int id) => html.IFrameElement()
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.border = 'none'
-        ..src = htmlPath,
-    );
+    // ui_web.platformViewRegistry.registerViewFactory(
+    //   'landscape-naver-map',
+    //   (int id) => html.IFrameElement()
+    //     ..style.width = '100%'
+    //     ..style.height = '100%'
+    //     ..style.border = 'none'
+    //     ..src = htmlPath,
+    // );
   }
 
   Future<void> inputDataForHtml(
