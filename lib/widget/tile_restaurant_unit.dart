@@ -14,12 +14,13 @@ class TileRestaurantUnit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        foregroundColor: COLOR.WHITE,
-        iconColor: COLOR.WHITE,
-      ),
-      onPressed: clickEvent,
+    return InkWell(
+      // style: TextButton.styleFrom(
+      //   foregroundColor: COLOR.WHITE,
+      //   iconColor: COLOR.WHITE,
+      // ),
+      onTap: clickEvent,
+      // onPressed: clickEvent,
       child: Stack(
         children: [
           TStreamBuilder(

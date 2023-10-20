@@ -48,28 +48,12 @@
             var mapHeight = window.innerHeight;
 
             var setWidth = Math.min(mapWidth, 80 * mapWidth / 100) + 'px';
-            var setHeight = Math.min(mapHeight, mapHeight / 1.05) + 'px';
+            var setHeight = Math.min(mapHeight, mapHeight / 1.2) + 'px';
 
             document.getElementById('map').style.width = setWidth;
             document.getElementById('map').style.height = setHeight;
             map.setSize(new naver.maps.Size(parseInt(setWidth), parseInt(setHeight)));
         }
-
-        //     function setHeaderSrc(e){
-        //         console.log('src :', e['src']);
-        //         const getSrc = document.head.getElementsByTagName('script');
-        //         // console.log('oldSrc.length ', oldSrc[0]);
-        // // const oldSrc =            document.getElementsByTagName('script');
-        // // console.log('oldSrc', oldSrc);
-
-        // for(var i = 0; i < getSrc.length; i++){
-        //     getSrc[i].src = e['src']
-        //     console.log(getSrc[i].src);
-        // }
-
-        // console.log(getSrc);
-
-        //     }
 
         // initData create marker
         function initMarker(e) {

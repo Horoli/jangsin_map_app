@@ -22,6 +22,8 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   Widget build(BuildContext context) {
+    print('mediaQuery.viewPadding.top ${mediaQuery.viewPadding.top}');
+
     return isPort ? buildPortait() : buildLandscape();
   }
 
@@ -209,11 +211,6 @@ class ViewMapState extends State<ViewMap> {
   Future<void> initMap() async {
     await registerView();
     RestfulResult result = await GServiceRestaurant.getLatLng();
-    print('result ${result.map}');
-    // late List latLngs;
-    // if (result.statusCode == 200) {
-    //   // return;
-    // }
     List latLngs = result.data;
 
     ctrlSido.text = DISTRICT.INIT;
@@ -235,15 +232,6 @@ class ViewMapState extends State<ViewMap> {
         ..style.border = 'none'
         ..src = htmlPath,
     );
-
-    // ui_web.platformViewRegistry.registerViewFactory(
-    //   'landscape-naver-map',
-    //   (int id) => html.IFrameElement()
-    //     ..style.width = '100%'
-    //     ..style.height = '100%'
-    //     ..style.border = 'none'
-    //     ..src = htmlPath,
-    // );
   }
 
   Future<void> inputDataForHtml(
