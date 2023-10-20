@@ -3,24 +3,25 @@ part of widget;
 class TileRestaurantUnit extends StatelessWidget {
   final MRestaurant restaurant;
   final TStream<MRestaurant> $selectedRestaurant;
-  final VoidCallback clickEvent;
+  final VoidCallback onPressed;
 
   const TileRestaurantUnit({
     required this.restaurant,
     required this.$selectedRestaurant,
-    required this.clickEvent,
+    required this.onPressed,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      // style: TextButton.styleFrom(
-      //   foregroundColor: COLOR.WHITE,
-      //   iconColor: COLOR.WHITE,
-      // ),
-      onTap: clickEvent,
-      // onPressed: clickEvent,
+    return TextButton(
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: const Size(50, 30),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        foregroundColor: COLOR.WHITE,
+      ),
+      onPressed: onPressed,
       child: Stack(
         children: [
           TStreamBuilder(

@@ -117,14 +117,14 @@ class ViewMapState extends State<ViewMap> {
                 child: TileRestaurantUnit(
                   restaurant: restaurants[index],
                   $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
-                  clickEvent: () {
+                  onPressed: () {
                     // 선택한 식당이 같은 경우 빈 식당 sink$
-                    if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
-                        restaurants[index].id) {
-                      GServiceRestaurant.$selectedRestaurant
-                          .sink$(MRestaurant());
-                      return;
-                    }
+                    // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                    //     restaurants[index].id) {
+                    //   GServiceRestaurant.$selectedRestaurant
+                    //       .sink$(MRestaurant());
+                    //   return;
+                    // }
 
                     // 선택한 식당이 다른 경우 해당 식당을 sink$
                     GServiceRestaurant.$selectedRestaurant
