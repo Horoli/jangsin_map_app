@@ -168,16 +168,15 @@ class ViewMapState extends State<ViewMap> {
               child: AlertDialog(
                 content: SizedBox(
                   width: isPort ? width * 0.8 : width * 0.4,
-                  height: isPort ? height * 0.4 : height * 0.4,
-                  child: ListView.separated(
-                    // gridDelegate:
-                    //     const SliverGridDelegateWithFixedCrossAxisCount(
-                    //   crossAxisCount: 3,
-                    // childAspectRatio: 1.0,
-                    // crossAxisSpacing: 2.0,
-                    // mainAxisSpacing: 2.0,
-                    // ),
-                    separatorBuilder: (context, index) => const Divider(),
+                  height: isPort ? height * 0.3 : height * 0.4,
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 4.0,
+                      crossAxisSpacing: 3.0,
+                      mainAxisSpacing: 3.0,
+                    ),
                     itemCount:
                         DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
                     itemBuilder: (BuildContext context, int index) {
