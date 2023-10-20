@@ -10,14 +10,63 @@ class ViewMap extends StatefulWidget {
 class ViewMapState extends State<ViewMap> {
   MediaQueryData get mediaQuery => MediaQuery.of(context);
   bool get isPort => mediaQuery.orientation == Orientation.portrait;
+  double get width => mediaQuery.size.width;
+  double get height => mediaQuery.size.height;
 
-  final Map<String, TextEditingController> mapOfDropdown = {
-    KEY.ADMIN_SIDO: TextEditingController(),
-    KEY.ADMIN_SIGUNGU: TextEditingController(),
-  };
+  final TextEditingController ctrlSido = TextEditingController();
+
+  // final Map<String, TextEditingController> mapOfDropdown = {
+  //   KEY.ADMIN_SIDO: TextEditingController(),
+  //   KEY.ADMIN_SIGUNGU: TextEditingController(),
+  // };
 
   @override
   Widget build(BuildContext context) {
+    return isPort ? buildPortait() : buildLandscape();
+  }
+
+  // TODO : 세로모드(mobile) 인 경우, appBar 미출력
+  Widget buildPortait() {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                Container(
+                  height: kToolbarHeight,
+                  // color: Colors.amber,
+                  child: Row(
+                    children: [
+                      buildSelectSidoDialogButton(),
+                      const Padding(padding: EdgeInsets.all(8)),
+                      TextField(
+                        // style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          // focusColor: Colors.black,
+                          border: OutlineInputBorder(),
+                          labelText: LABEL.SELECT_REGION,
+                        ),
+                        controller: ctrlSido,
+                        readOnly: true,
+                      ).expand(),
+                    ],
+                  ),
+                ),
+                const HtmlElementView(viewType: 'portait-naver-map').expand(),
+              ],
+            ).expand(),
+            const Divider(),
+            buildMapList().expand(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // TODO : 가로모드인 경우, appBar 출력
+  Widget buildLandscape() {
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),
@@ -31,32 +80,15 @@ class ViewMapState extends State<ViewMap> {
           ),
         ],
       ),
-      body: isPort ? buildPortait() : buildLandscape(),
-    );
-  }
-
-  Widget buildPortait() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          const HtmlElementView(viewType: 'naver-map').expand(),
-          const Divider(),
-          buildMapList().expand(),
-        ],
-      ),
-    );
-  }
-
-  Widget buildLandscape() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          const HtmlElementView(viewType: 'naver-map').expand(),
-          const VerticalDivider(),
-          buildMapList().expand(),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            const HtmlElementView(viewType: 'landscape-naver-map').expand(),
+            const VerticalDivider(),
+            buildMapList().expand(),
+          ],
+        ),
       ),
     );
   }
@@ -74,9 +106,6 @@ class ViewMapState extends State<ViewMap> {
 
         return Column(
           children: [
-            // buildSidoDropdownButton(),
-            buildSelectSidoDialogButton(),
-            const Divider(),
             ListView.separated(
               separatorBuilder: (context, index) => const Divider(),
               itemCount: restaurants.length,
@@ -116,7 +145,7 @@ class ViewMapState extends State<ViewMap> {
               onPressed: (int page) {
                 GServiceRestaurant.pagination(
                   page: page,
-                  sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
+                  sido: ctrlSido.text,
                 );
               },
             ),
@@ -128,64 +157,48 @@ class ViewMapState extends State<ViewMap> {
 
   Widget buildSelectSidoDialogButton() {
     return ElevatedButton(
-      child: Text('sido'),
+      child: const Text(LABEL.SELECT_REGION),
       onPressed: () {
         showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return PointerInterceptor(
-                child: AlertDialog(
-                  content: SizedBox(
-                    width: 500,
-                    height: 500,
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        // childAspectRatio: 1.0,
-                        crossAxisSpacing: 2.0,
-                        mainAxisSpacing: 2.0,
-                      ),
-                      itemCount:
-                          DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ElevatedButton(
-                          child: Text(
-                            DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
-                                .toList()[index],
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            GServiceRestaurant.pagination(
-                                sido: DISTRICT
-                                    .KOREA_ADMINISTRATIVE_DISTRICT.keys
-                                    .toList()[index]);
-                          },
-                        );
-                      },
-                    ),
+          context: context,
+          builder: (BuildContext context) {
+            return PointerInterceptor(
+              child: AlertDialog(
+                content: SizedBox(
+                  width: isPort ? width * 0.8 : width * 0.4,
+                  height: isPort ? height * 0.4 : height * 0.4,
+                  child: ListView.separated(
+                    // gridDelegate:
+                    //     const SliverGridDelegateWithFixedCrossAxisCount(
+                    //   crossAxisCount: 3,
+                    // childAspectRatio: 1.0,
+                    // crossAxisSpacing: 2.0,
+                    // mainAxisSpacing: 2.0,
+                    // ),
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount:
+                        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      String sido = DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
+                          .toList()[index];
+                      return ElevatedButton(
+                        child: AutoSizeText(sido, maxLines: 2),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          GServiceRestaurant.pagination(sido: sido);
+                          ctrlSido.text = sido;
+                        },
+                      );
+                    },
                   ),
                 ),
-              );
-            });
+              ),
+            );
+          },
+        );
       },
     );
   }
-
-  // Widget buildSidoDropdownButton() {
-  //   return CustomDropdownField(
-  //     value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
-  //         ? DISTRICT.INIT
-  //         : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-  //     items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
-  //         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-  //         .toList(),
-  //     onChanged: (dynamic value) {
-  //       mapOfDropdown[KEY.ADMIN_SIDO]!.text = value;
-  //       GServiceRestaurant.pagination(sido: value);
-  //     },
-  //   );
-  // }
 
   @override
   void initState() {
@@ -203,7 +216,7 @@ class ViewMapState extends State<ViewMap> {
     // }
     List latLngs = result.data;
 
-    mapOfDropdown[KEY.ADMIN_SIDO]!.text = DISTRICT.INIT;
+    ctrlSido.text = DISTRICT.INIT;
     GServiceRestaurant.pagination(page: 1);
 
     Future.delayed(const Duration(milliseconds: 200),
@@ -214,9 +227,17 @@ class ViewMapState extends State<ViewMap> {
     String htmlPath =
         PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
 
-    // ignore: undefined_prefixed_name
     ui_web.platformViewRegistry.registerViewFactory(
-      'naver-map',
+      'portait-naver-map',
+      (int id) => html.IFrameElement()
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.border = 'none'
+        ..src = htmlPath,
+    );
+
+    ui_web.platformViewRegistry.registerViewFactory(
+      'landscape-naver-map',
       (int id) => html.IFrameElement()
         ..style.width = '100%'
         ..style.height = '100%'

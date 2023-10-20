@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tnd_core/tnd_core.dart';
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:file_picker/file_picker.dart';
 
 part 'app_root.dart';

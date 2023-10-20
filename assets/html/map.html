@@ -19,9 +19,11 @@
 
         const lat = 37.4824419369998;
         const lng = 126.84983521857548;
+        var map = new naver.maps.Map('map', mapOptions);
+        resize();
         var center = new naver.maps.LatLng(lat, lng);
         var mapOptions = { zoom: 10 };
-        var map = new naver.maps.Map('map', mapOptions);
+        window.addEventListener('resize', resize);
 
         var marker = new naver.maps.Marker({
             position: center,
@@ -32,13 +34,25 @@
         function handleMessage(e) {
             const getData = JSON.parse(e.data);
             if (getData.type === "set") {
-                clickMoveCurrentMapScreen(getData);
+                clickMoveToSelectedRestaurantLocation(getData);
             }
 
             if (getData.type === "init") {
                 // setHeaderSrc(getData);
                 initMarker(getData);
             }
+        }
+
+        function resize() {
+            var mapWidth = window.innerWidth;
+            var mapHeight = window.innerHeight;
+
+            var setWidth = Math.min(mapWidth, 80 * mapWidth / 100) + 'px';
+            var setHeight = Math.min(mapHeight, mapHeight / 1.05) + 'px';
+
+            document.getElementById('map').style.width = setWidth;
+            document.getElementById('map').style.height = setHeight;
+            map.setSize(new naver.maps.Size(parseInt(setWidth), parseInt(setHeight)));
         }
 
         //     function setHeaderSrc(e){
@@ -57,17 +71,9 @@
 
         //     }
 
-
-
         // initData create marker
         function initMarker(e) {
-            // var position = new naver.maps.LatLng(e[lat], e[lng])
-            //     var newMarker = new naver.maps.Marker({
-            //         position: position,
-            //         map: map,
-            //     })
             Object.keys(e.data).forEach((key) => {
-
                 var position = new naver.maps.LatLng(e.data[key].lat, e.data[key].lng);
                 var newMarker = new naver.maps.Marker({
                     position: position,
@@ -77,12 +83,20 @@
         }
 
         // 선택하면 입력된 좌표로 지도화면 이동
-        function clickMoveCurrentMapScreen(e) {
+        function clickMoveToSelectedRestaurantLocation(e) {
             var position = new naver.maps.LatLng(e.data.lat, e.data.lng);
+
+            var newMarker = new naver.maps.Marker({
+                position: position,
+                map: map,
+            })
             map.setCenter(position)
             map.setZoom(17)
             // map.fitBounds(position);
             // marker.setPosition(position);
+
+            // var position = new naver.maps.LatLng(e[lat], e[lng])
+
         }
 
         // naver.maps.Event.addListener(map, 'click', function (e) {

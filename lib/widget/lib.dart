@@ -2,6 +2,7 @@ library widget;
 
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:jangsin_map/jangsin_map.dart';
 import 'package:tnd_core/tnd_core.dart';
