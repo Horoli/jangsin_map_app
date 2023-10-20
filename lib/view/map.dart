@@ -213,7 +213,7 @@ class ViewMapState extends State<ViewMap> {
     RestfulResult result = await GServiceRestaurant.getLatLng();
     List latLngs = result.data;
 
-    ctrlSido.text = DISTRICT.INIT;
+    ctrlSido.text = "전체";
     GServiceRestaurant.pagination(page: 1);
 
     Future.delayed(const Duration(milliseconds: 200),
