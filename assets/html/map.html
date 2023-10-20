@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div id="map" style="width:100%;height:500px;margin:0 auto;"></div>
+    <div id="map" style="width:100%;height:600px;margin:0 auto;"></div>
     <script>
         window.parent.addEventListener('message', handleMessage, false);
         // window.parent.addEventListener('set', setMarker, false);
@@ -48,7 +48,7 @@
             var mapHeight = window.innerHeight;
 
             var setWidth = Math.min(mapWidth, 80 * mapWidth / 100) + 'px';
-            var setHeight = Math.min(mapHeight, mapHeight / 1.2) + 'px';
+            var setHeight = Math.min(mapHeight, mapHeight / 1.1) + 'px';
 
             document.getElementById('map').style.width = setWidth;
             document.getElementById('map').style.height = setHeight;

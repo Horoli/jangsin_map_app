@@ -9,6 +9,7 @@ class AppRoot extends StatelessWidget {
       PATH.ROUTE_ADMIN_LOGIN: (BuildContext context) => const ViewAdminLogin(),
     };
     return MaterialApp(
+      title: '장사의 신 - Jangsin Map',
       theme: ThemeData.dark(),
       initialRoute: PATH.ROUTE_MAP,
       routes: routes,
