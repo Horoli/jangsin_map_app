@@ -13,6 +13,7 @@ const String ADMIN_EUPMYEONDONG = "address_eupmyeondong";
 const String ADMIN_DETAIL = "address_detail";
 const String ADMIN_STREET = "address_street";
 const String ADMIN_LABEL = "label";
+const String ADMIN_SOURCE = "source";
 const String ADMIN_CONTACT = "contact";
 const String ADMIN_REPRESENTATIVE_MENU = "representative_menu";
 const String ADMIN_LAT = "lat";

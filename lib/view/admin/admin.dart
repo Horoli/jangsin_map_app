@@ -25,6 +25,7 @@ class ViewAdminState extends State<ViewAdmin> {
     },
     KEY.ADMIN_MAP_OF_CTRL_RESTAURANT: {
       KEY.ADMIN_LABEL: TextEditingController(),
+      KEY.ADMIN_SOURCE: TextEditingController(),
       KEY.ADMIN_CONTACT: TextEditingController(),
       KEY.ADMIN_REPRESENTATIVE_MENU: TextEditingController(),
       KEY.ADMIN_CLOSED_DAYS: TextEditingController(),
@@ -233,6 +234,7 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfAddress[KEY.ADMIN_DETAIL]!.text = restaurant.address_detail.toString();
     mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
     mapOfRestaurant[KEY.ADMIN_LABEL]!.text = restaurant.label.toString();
+    mapOfRestaurant[KEY.ADMIN_SOURCE]!.text = restaurant.source.toString();
     mapOfRestaurant[KEY.ADMIN_CONTACT]!.text = restaurant.contact.toString();
     mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text =
         restaurant.representative_menu.toString();
@@ -270,6 +272,7 @@ class ViewAdminState extends State<ViewAdmin> {
       lat: lat,
       lng: lng,
       label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
+      source: mapOfRestaurant[KEY.ADMIN_SOURCE]!.text,
       contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
       representative_menu: mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
       closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,

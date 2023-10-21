@@ -2,6 +2,7 @@ part of 'lib.dart';
 
 class MRestaurant extends CommonModel {
   final String id;
+  final String source;
   final String label;
   final String contact;
   final String representative_menu;
@@ -22,8 +23,12 @@ class MRestaurant extends CommonModel {
   final String youtube_link;
   final String baemin_link;
   final String thumbnail;
+  final int createdAt;
+  final int updatedAt;
+
   MRestaurant({
     this.id = "",
+    this.source = "",
     this.label = "",
     this.contact = "",
     this.representative_menu = "",
@@ -44,11 +49,14 @@ class MRestaurant extends CommonModel {
     this.youtube_link = "",
     this.baemin_link = "",
     this.thumbnail = "",
+    this.createdAt = 0,
+    this.updatedAt = 0,
   });
 
   @override
   Map<String, dynamic> get map => {
         'id': id,
+        'source': source,
         'label': label,
         'contact': contact,
         'representative_menu': representative_menu,
@@ -69,10 +77,13 @@ class MRestaurant extends CommonModel {
         'youtube_link': youtube_link,
         'baemin_link': baemin_link,
         'thumbnail': thumbnail,
+        'createdAt': createdAt,
+        'updatedAt': updatedAt,
       };
 
   MRestaurant copyWith({
     String? id,
+    String? source,
     String? label,
     String? contact,
     String? representative_menu,
@@ -94,9 +105,12 @@ class MRestaurant extends CommonModel {
     String? baemin_link,
     String? thumbnail,
     String? add_thumbnail,
+    int? createdAt,
+    int? updatedAt,
   }) =>
       MRestaurant(
         id: id ?? this.id,
+        source: source ?? this.source,
         label: label ?? this.label,
         contact: contact ?? this.contact,
         representative_menu: representative_menu ?? this.representative_menu,
@@ -117,10 +131,14 @@ class MRestaurant extends CommonModel {
         youtube_link: youtube_link ?? this.youtube_link,
         baemin_link: baemin_link ?? this.baemin_link,
         thumbnail: thumbnail ?? this.thumbnail,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
 
   factory MRestaurant.fromMap(Map item) {
-    assert(item.containsKey('id'), 'MRestaurant.fromMap : ids is null value');
+    assert(item.containsKey('id'), 'MRestaurant.fromMap : id is null value');
+    assert(item.containsKey('source'),
+        'MRestaurant.fromMap : source is null value');
     assert(item.containsKey('label'),
         'MRestaurant.fromMap : labels is null value');
     assert(item.containsKey('contact'),
@@ -159,12 +177,17 @@ class MRestaurant extends CommonModel {
         'MRestaurant.fromMap : baemin_links is null value');
     assert(item.containsKey('thumbnail'),
         'MRestaurant.fromMap : thumbnails is null value');
+    assert(item.containsKey('createdAt'),
+        'MRestaurant.fromMap : createdAt is null value');
+    assert(item.containsKey('updatedAt'),
+        'MRestaurant.fromMap : updatedAt is null value');
 
     // assert(item.containsKey('add_thumbnail'),
     //     'MRestaurant.fromMap : thumbnails is null value');
 
     return MRestaurant(
       id: item['id'],
+      source: item['source'],
       label: item['label'],
       contact: item['contact'],
       representative_menu: item['representative_menu'],
@@ -185,6 +208,9 @@ class MRestaurant extends CommonModel {
       youtube_link: item['youtube_link'],
       baemin_link: item['baemin_link'],
       thumbnail: item['thumbnail'],
+      createdAt: item['createdAt'],
+      updatedAt: item['updatedAt'],
+
       // add_thumbnail: item['add_thumbnail'],
     );
   }
