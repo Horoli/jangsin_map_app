@@ -73,7 +73,7 @@ class ManagementInfo extends StatelessWidget {
   Widget buildSidoDropdownButton() {
     return CustomDropdownField(
       value: mapOfDropdown[KEY.ADMIN_SIDO]!.text == ""
-          ? DISTRICT.INIT
+          ? DISTRICT.CTRL_INIT
           : mapOfDropdown[KEY.ADMIN_SIDO]!.text,
       items: DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))

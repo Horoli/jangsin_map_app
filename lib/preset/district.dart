@@ -1,4 +1,5 @@
-const String INIT = "서울특별시";
+const String ALL = '전체';
+const String CTRL_INIT = "서울특별시";
 
 const Map<String, List<String>> KOREA_ADMINISTRATIVE_DISTRICT = {
   "서울특별시": [

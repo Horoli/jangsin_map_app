@@ -36,29 +36,13 @@ class ViewMapState extends State<ViewMap> {
           children: [
             Column(
               children: [
-                Container(
+                SizedBox(
                   height: kToolbarHeight,
-                  // color: Colors.amber,
-                  child: Row(
-                    children: [
-                      buildSelectSidoDialogButton(),
-                      const Padding(padding: EdgeInsets.all(8)),
-                      TextField(
-                        // style: TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          // focusColor: Colors.black,
-                          border: OutlineInputBorder(),
-                          labelText: LABEL.SELECT_REGION,
-                        ),
-                        controller: ctrlSido,
-                        readOnly: true,
-                      ).expand(),
-                    ],
-                  ),
-                ),
-                const HtmlElementView(viewType: 'naver-map').expand(),
+                  child: buildSidoField(),
+                )
               ],
-            ).expand(),
+            ),
+            const HtmlElementView(viewType: 'naver-map').expand(),
             const Divider(),
             buildMapList().expand(),
           ],
@@ -88,10 +72,38 @@ class ViewMapState extends State<ViewMap> {
           children: [
             const HtmlElementView(viewType: 'naver-map').expand(),
             const VerticalDivider(),
-            buildMapList().expand(),
+            Column(
+              children: [
+                SizedBox(
+                  height: kToolbarHeight,
+                  child: buildSidoField(),
+                ),
+                const Divider(),
+                buildMapList().expand(),
+              ],
+            ).expand(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildSidoField() {
+    return Row(
+      children: [
+        TextField(
+          // style: TextStyle(color: Colors.black),
+          decoration: const InputDecoration(
+            // focusColor: Colors.black,
+            border: OutlineInputBorder(),
+            labelText: LABEL.SELECT_REGION,
+          ),
+          controller: ctrlSido,
+          readOnly: true,
+        ).expand(),
+        const Padding(padding: EdgeInsets.all(8)),
+        buildSelectSidoDialogButton(),
+      ],
     );
   }
 
@@ -108,6 +120,15 @@ class ViewMapState extends State<ViewMap> {
 
         return Column(
           children: [
+            Row(
+              children: [
+                ctrlSido.text == "전체"
+                    ? const AutoSizeText('모든 식당')
+                    : AutoSizeText('${ctrlSido.text}에 위치한 식당'),
+                AutoSizeText(' : ${snapshot.data['dataCount']} 개'),
+              ],
+            ),
+            const Divider(),
             ListView.separated(
               separatorBuilder: (context, index) => const Divider(),
               itemCount: restaurants.length,
@@ -158,6 +179,9 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Widget buildSelectSidoDialogButton() {
+    List<String> sidoList =
+        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.toList();
+    sidoList.insert(0, DISTRICT.ALL);
     return ElevatedButton(
       child: const Text(LABEL.SELECT_REGION),
       onPressed: () {
@@ -178,13 +202,24 @@ class ViewMapState extends State<ViewMap> {
                       mainAxisSpacing: 3.0,
                     ),
                     itemCount:
-                        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
+                        // DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
+                        sidoList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      String sido = DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
-                          .toList()[index];
+                      // String sido = DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
+                      //     .toList()[index];
+                      String sido = sidoList[index];
                       return ElevatedButton(
                         child: AutoSizeText(sido, maxLines: 2),
                         onPressed: () {
+                          if (sido == DISTRICT.ALL) {
+                            Navigator.pop(context);
+                            ctrlSido.text = DISTRICT.ALL;
+                            GServiceRestaurant.pagination(page: 1);
+                            return;
+                          }
+                          // if(ctrlSido.text != '전체'){
+
+                          // }
                           Navigator.pop(context);
                           GServiceRestaurant.pagination(sido: sido);
                           ctrlSido.text = sido;

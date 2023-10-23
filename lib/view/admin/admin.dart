@@ -206,7 +206,7 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfDropdown[KEY.ADMIN_SIDO]!.text =
         DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.toList()[0];
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[DISTRICT.INIT]![0];
+        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[DISTRICT.CTRL_INIT]![0];
 
     // 컨트롤러를 초기화 하는 함수
     void initController(Map<String, TextEditingController> mapOfInnerCtrl) {

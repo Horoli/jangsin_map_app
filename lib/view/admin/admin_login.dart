@@ -11,7 +11,7 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
 
-  final Map<String, TextEditingController> mapOfCtl = {
+  final Map<String, TextEditingController> mapOfCtrl = {
     "id": TextEditingController(),
     "pw": TextEditingController(),
   };
@@ -37,8 +37,10 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
                       child: const Text('login'),
                       onPressed: () async {
                         RestfulResult result = await GServiceAdmin.signIn(
-                          id: "aaaaa",
-                          pw: "asd",
+                          id: mapOfCtrl['id']!.text,
+                          pw: mapOfCtrl['pw']!.text,
+                          // id: "aaaaa",
+                          // pw: "asd",
                         );
 
                         if (result.statusCode != 200) return;
@@ -65,7 +67,7 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
   Widget buildIdField() {
     String id = "id";
     return TextFormField(
-      controller: mapOfCtl[id],
+      controller: mapOfCtrl[id],
       decoration: InputDecoration(
         hintText: id,
         labelText: id,
@@ -76,7 +78,7 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
   Widget buildPasswordField() {
     String pw = "pw";
     return TextFormField(
-      controller: mapOfCtl[pw],
+      controller: mapOfCtrl[pw],
       obscureText: true,
       decoration: InputDecoration(
         hintText: pw,

@@ -81,6 +81,8 @@ class TileRestaurantUnit extends StatelessWidget {
           ),
         ).expand(),
         const VerticalDivider(),
+        AutoSizeText(restaurant.representative_menu),
+        const VerticalDivider(),
         AutoSizeText(restaurant.operation_time),
         const VerticalDivider(),
         AutoSizeText(restaurant.closed_days),

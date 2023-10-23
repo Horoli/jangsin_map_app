@@ -122,7 +122,7 @@ class ServiceRestaurant {
         completer.complete(errorResult);
         return errorResult;
       }
-      print('step 1');
+      // print('step 1');
 
       List<MRestaurant> getRestaurant =
           List.from(rawData['data']['pagination_data'])
@@ -133,6 +133,7 @@ class ServiceRestaurant {
         statusCode: 200,
         message: 'get Data complete',
         data: {
+          "dataCount": rawData['data']['dataCount'],
           "total_page": rawData['data']['total_page'],
           "current_page": page,
           "pagination_data": getRestaurant,
