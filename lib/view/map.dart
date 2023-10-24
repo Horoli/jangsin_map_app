@@ -70,8 +70,6 @@ class ViewMapState extends State<ViewMap> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            const HtmlElementView(viewType: 'naver-map').expand(),
-            const VerticalDivider(),
             Column(
               children: [
                 SizedBox(
@@ -82,6 +80,8 @@ class ViewMapState extends State<ViewMap> {
                 buildMapList().expand(),
               ],
             ).expand(),
+            const VerticalDivider(),
+            const HtmlElementView(viewType: 'naver-map').expand(),
           ],
         ),
       ),
@@ -201,12 +201,8 @@ class ViewMapState extends State<ViewMap> {
                       crossAxisSpacing: 3.0,
                       mainAxisSpacing: 3.0,
                     ),
-                    itemCount:
-                        // DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.length,
-                        sidoList.length,
+                    itemCount: sidoList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      // String sido = DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys
-                      //     .toList()[index];
                       String sido = sidoList[index];
                       return ElevatedButton(
                         child: AutoSizeText(sido, maxLines: 2),

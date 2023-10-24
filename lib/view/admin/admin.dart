@@ -19,9 +19,6 @@ class ViewAdminState extends State<ViewAdmin> {
     KEY.ADMIN_MAP_OF_CTRL_ADDRESS: {
       KEY.ADMIN_EUPMYEONDONG: TextEditingController(),
       KEY.ADMIN_DETAIL: TextEditingController(),
-      // KEY.ADMIN_STREET: TextEditingController(),
-      // KEY.ADMIN_LAT: TextEditingController(),
-      // KEY.ADMIN_LNG: TextEditingController(),
     },
     KEY.ADMIN_MAP_OF_CTRL_RESTAURANT: {
       KEY.ADMIN_LABEL: TextEditingController(),
@@ -61,7 +58,7 @@ class ViewAdminState extends State<ViewAdmin> {
       ),
       body: TStreamBuilder(
         stream: GServiceRestaurant.$selectedRestaurant.browse$,
-        builder: (context, MRestaurant restaurant) {
+        builder: (context, MRestaurant selectedRestaurant) {
           return Center(
             child: SizedBox(
               width: width * 0.8,
@@ -70,22 +67,46 @@ class ViewAdminState extends State<ViewAdmin> {
                 children: [
                   Row(
                     children: [
-                      buildRestaurantList(restaurant).expand(),
+                      buildRestaurantList(selectedRestaurant).expand(),
                       const VerticalDivider(),
                       ManagementInfo(
                         context: context,
-                        restaurant: restaurant,
+                        restaurant: selectedRestaurant,
                         mapOfCtrl: mapOfMainCtrl,
                       ).expand(flex: 3),
                       ManagementImage(
                         context: context,
-                        restaurant: restaurant,
+                        restaurant: selectedRestaurant,
                         token: token,
                         $selectedNewThumbnail: $selectedNewThumbnail,
                       ).expand()
                     ],
                   ).expand(),
-                  buildUpdateButton(restaurant),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildUpdateButton(selectedRestaurant),
+                      if (selectedRestaurant.id != '')
+                        ElevatedButton(
+                          child: const Text('delete'),
+                          onPressed: () async {
+                            updateConfirmDialog(
+                              '정말 삭제하시겠습니까?',
+                              acceptFunction: () async {
+                                Navigator.pop(context);
+                                await GServiceAdmin.delete(
+                                    id: selectedRestaurant.id);
+
+                                initCtrl();
+                                GServiceRestaurant.$selectedRestaurant
+                                    .sink$(selectedRestaurant);
+                              },
+                              cancelFunction: () => Navigator.pop(context),
+                            );
+                          },
+                        )
+                    ],
+                  ).sizedBox(height: kToolbarHeight),
                 ],
               ),
             ),
@@ -105,19 +126,22 @@ class ViewAdminState extends State<ViewAdmin> {
             onPressed: () async {
               // TODO : 정말 등록하시겠습니까 팝업 띄우고
               // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+              updateConfirmDialog(
+                '정말 저장하시겠습니까?',
+                acceptFunction: () async {
+                  Map<String, dynamic> mapOfRestaurant =
+                      setRestaurantInfo(restaurant).map;
+                  mapOfRestaurant['add_thumbnail'] =
+                      $selectedNewThumbnail.lastValue[0];
 
-              Map<String, dynamic> mapOfRestaurant =
-                  setRestaurantInfo(restaurant).map;
-              mapOfRestaurant['add_thumbnail'] =
-                  $selectedNewThumbnail.lastValue[0];
+                  await GServiceAdmin.createRestaurant(
+                      token: token, mapOfRestaurant: mapOfRestaurant);
 
-              GServiceAdmin.createRestaurant(
-                  token: token, mapOfRestaurant: mapOfRestaurant);
-
-              // await inputCtrlSelectedRestaurant(restaurant);
-              initCtrl();
-              // await GServiceRestaurant.pagination();
-              GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
+                  initCtrl();
+                  GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
+                },
+                cancelFunction: () => Navigator.pop(context),
+              );
             },
           )
         : ElevatedButton(
@@ -128,20 +152,50 @@ class ViewAdminState extends State<ViewAdmin> {
             onPressed: () async {
               // TODO : 정말 변경하시겠습니까 팝업 띄우고
               // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+              updateConfirmDialog(
+                '정말 변경하시겠습니까?',
+                acceptFunction: () async {
+                  Navigator.pop(context);
 
-              Map<String, dynamic> mapOfRestaurant =
-                  setRestaurantInfo(restaurant).map;
+                  Map<String, dynamic> mapOfRestaurant =
+                      setRestaurantInfo(restaurant).map;
 
-              mapOfRestaurant['add_thumbnail'] =
-                  $selectedNewThumbnail.lastValue[0];
-
-              GServiceAdmin.patchRestaurant(
-                  token: token, mapOfRestaurant: mapOfRestaurant);
-
-              await GServiceRestaurant.pagination();
-              // await inputCtrlSelectedRestaurant(restaurant);
+                  mapOfRestaurant['add_thumbnail'] =
+                      $selectedNewThumbnail.lastValue[0];
+                  await GServiceAdmin.patchRestaurant(
+                      token: token, mapOfRestaurant: mapOfRestaurant);
+                  initCtrl();
+                  await GServiceRestaurant.pagination();
+                },
+                cancelFunction: () => Navigator.pop(context),
+              );
             },
           );
+  }
+
+  Future<void> updateConfirmDialog(
+    String label, {
+    required VoidCallback acceptFunction,
+    required VoidCallback cancelFunction,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text(label),
+          children: [
+            SimpleDialogOption(
+              onPressed: acceptFunction,
+              child: const Text('예'),
+            ),
+            SimpleDialogOption(
+              onPressed: cancelFunction,
+              child: const Text('아니오'),
+            )
+          ],
+        );
+      },
+    );
   }
 
   Widget buildRestaurantList(MRestaurant selectedRestaurant) {
@@ -217,15 +271,16 @@ class ViewAdminState extends State<ViewAdmin> {
         DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[DISTRICT.CTRL_INIT]![0];
 
     // 컨트롤러를 초기화 하는 함수
-    void initController(Map<String, TextEditingController> mapOfInnerCtrl) {
+    Future<void> initController(
+        Map<String, TextEditingController> mapOfInnerCtrl) async {
       for (String key in mapOfInnerCtrl.keys) {
         mapOfInnerCtrl[key]!.text = '';
       }
     }
 
-    initController(mapOfAddress);
-    initController(mapOfLink);
-    initController(mapOfRestaurant);
+    await initController(mapOfAddress);
+    await initController(mapOfLink);
+    await initController(mapOfRestaurant);
 
     $selectedNewThumbnail.sink$(['']);
   }

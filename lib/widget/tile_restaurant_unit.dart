@@ -40,13 +40,16 @@ class TileRestaurantUnit extends StatelessWidget {
                     RestfulResult(statusCode: 400, message: '', data: null),
                 future: GServiceRestaurant.getThumbnail(
                     thumbnail: restaurant.thumbnail),
-                builder: (BuildContext context,
-                    AsyncSnapshot<RestfulResult> snapshot) {
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<RestfulResult> snapshot,
+                ) {
                   if (snapshot.data!.statusCode != 200) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (snapshot.data!.data['thumbnail'] == null) {
+                  if (snapshot.data!.data['thumbnail'] == null ||
+                      snapshot.data!.data['thumbnail']['image'] == "") {
                     return const Center(child: Text("no image"));
                   }
 

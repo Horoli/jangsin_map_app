@@ -48,34 +48,6 @@ class ServiceRestaurant {
     return completer.future;
   }
 
-  // Future<RestfulResult> get() async {
-  //   Completer<RestfulResult> completer = Completer<RestfulResult>();
-
-  //   Map<String, String> headers = {
-  //     "app_info": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
-  //   };
-
-  //   Uri query = PATH.IS_LOCAL
-  //       ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_GET)
-  //       : Uri.http(PATH.FORIEGN_URL);
-
-  //   http.get(query, headers: headers).then((rep) {
-  //     Map result = json.decode(rep.body);
-
-  //     List<MRestaurant> getRestaurant = List.from(result['data'])
-  //         .map((data) => MRestaurant.fromMap(data))
-  //         .toList();
-
-  //     completer.complete(RestfulResult(
-  //       statusCode: 200,
-  //       message: 'get Data complete',
-  //       data: getRestaurant,
-  //     ));
-  //   });
-
-  //   return completer.future;
-  // }
-
   Future<RestfulResult> pagination({
     int page = 1,
     int limit = 5,
@@ -96,7 +68,7 @@ class ServiceRestaurant {
       if (sido != null && sigungu != null) 'sigungu': sigungu,
     };
 
-    print(queryByCondition);
+    print('queryByCondition $queryByCondition');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(

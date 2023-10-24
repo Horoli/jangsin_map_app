@@ -42,7 +42,8 @@ class ManagementImage extends StatelessWidget {
                 return const Text('empty');
               }
 
-              if (snapshot.data!.data['thumbnail'] == null) {
+              if (snapshot.data!.data['thumbnail'] == null ||
+                  snapshot.data!.data['thumbnail']['image'] == "") {
                 return const Center(child: Text("no image"));
               }
 
