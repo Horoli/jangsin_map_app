@@ -103,6 +103,9 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_NEW),
             onPressed: () async {
+              // TODO : 정말 등록하시겠습니까 팝업 띄우고
+              // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+
               Map<String, dynamic> mapOfRestaurant =
                   setRestaurantInfo(restaurant).map;
               mapOfRestaurant['add_thumbnail'] =
@@ -111,9 +114,10 @@ class ViewAdminState extends State<ViewAdmin> {
               GServiceAdmin.createRestaurant(
                   token: token, mapOfRestaurant: mapOfRestaurant);
 
-              await GServiceRestaurant.pagination();
               // await inputCtrlSelectedRestaurant(restaurant);
               initCtrl();
+              // await GServiceRestaurant.pagination();
+              GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
             },
           )
         : ElevatedButton(
@@ -122,8 +126,12 @@ class ViewAdminState extends State<ViewAdmin> {
             ),
             child: const Text(LABEL.UPDATE_MODIFY),
             onPressed: () async {
+              // TODO : 정말 변경하시겠습니까 팝업 띄우고
+              // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+
               Map<String, dynamic> mapOfRestaurant =
                   setRestaurantInfo(restaurant).map;
+
               mapOfRestaurant['add_thumbnail'] =
                   $selectedNewThumbnail.lastValue[0];
 
@@ -131,7 +139,7 @@ class ViewAdminState extends State<ViewAdmin> {
                   token: token, mapOfRestaurant: mapOfRestaurant);
 
               await GServiceRestaurant.pagination();
-              await inputCtrlSelectedRestaurant(restaurant);
+              // await inputCtrlSelectedRestaurant(restaurant);
             },
           );
   }
@@ -230,9 +238,6 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text =
         restaurant.address_eupmyeondong;
     mapOfAddress[KEY.ADMIN_DETAIL]!.text = restaurant.address_detail.toString();
-    // mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
-    // mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
-    // mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
     mapOfRestaurant[KEY.ADMIN_LABEL]!.text = restaurant.label.toString();
     mapOfRestaurant[KEY.ADMIN_SOURCE]!.text = restaurant.source.toString();
     mapOfRestaurant[KEY.ADMIN_CONTACT]!.text = restaurant.contact.toString();
@@ -250,27 +255,15 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfLink[KEY.ADMIN_YOUTUBE_UPLOADED_AT]!.text =
         restaurant.youtube_uploadedAt.toString();
     mapOfLink[KEY.ADMIN_BAEMIN_LINK]!.text = restaurant.baemin_link.toString();
-
-    print('restaurant ${restaurant.thumbnail}');
   }
 
   MRestaurant setRestaurantInfo(MRestaurant restaurant) {
-    // double lat = mapOfAddress[KEY.ADMIN_LAT]!.text == ""
-    //     ? 0
-    //     : double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text);
-    // double lng = mapOfAddress[KEY.ADMIN_LNG]!.text == ""
-    //     ? 0
-    //     : double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text);
-
     MRestaurant mRestaurant = MRestaurant(
       id: restaurant.id == '' ? '' : restaurant.id,
       address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
       address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
       address_eupmyeondong: mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
       address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
-      // address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
-      // lat: lat,
-      // lng: lng,
       label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
       source: mapOfRestaurant[KEY.ADMIN_SOURCE]!.text,
       contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
