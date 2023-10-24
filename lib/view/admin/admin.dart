@@ -19,9 +19,9 @@ class ViewAdminState extends State<ViewAdmin> {
     KEY.ADMIN_MAP_OF_CTRL_ADDRESS: {
       KEY.ADMIN_EUPMYEONDONG: TextEditingController(),
       KEY.ADMIN_DETAIL: TextEditingController(),
-      KEY.ADMIN_STREET: TextEditingController(),
-      KEY.ADMIN_LAT: TextEditingController(),
-      KEY.ADMIN_LNG: TextEditingController(),
+      // KEY.ADMIN_STREET: TextEditingController(),
+      // KEY.ADMIN_LAT: TextEditingController(),
+      // KEY.ADMIN_LNG: TextEditingController(),
     },
     KEY.ADMIN_MAP_OF_CTRL_RESTAURANT: {
       KEY.ADMIN_LABEL: TextEditingController(),
@@ -229,10 +229,10 @@ class ViewAdminState extends State<ViewAdmin> {
     mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = restaurant.address_sigungu;
     mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text =
         restaurant.address_eupmyeondong;
-    mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
-    mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
     mapOfAddress[KEY.ADMIN_DETAIL]!.text = restaurant.address_detail.toString();
-    mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
+    // mapOfAddress[KEY.ADMIN_LAT]!.text = restaurant.lat.toString();
+    // mapOfAddress[KEY.ADMIN_LNG]!.text = restaurant.lng.toString();
+    // mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
     mapOfRestaurant[KEY.ADMIN_LABEL]!.text = restaurant.label.toString();
     mapOfRestaurant[KEY.ADMIN_SOURCE]!.text = restaurant.source.toString();
     mapOfRestaurant[KEY.ADMIN_CONTACT]!.text = restaurant.contact.toString();
@@ -255,12 +255,12 @@ class ViewAdminState extends State<ViewAdmin> {
   }
 
   MRestaurant setRestaurantInfo(MRestaurant restaurant) {
-    double lat = mapOfAddress[KEY.ADMIN_LAT]!.text == ""
-        ? 0
-        : double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text);
-    double lng = mapOfAddress[KEY.ADMIN_LNG]!.text == ""
-        ? 0
-        : double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text);
+    // double lat = mapOfAddress[KEY.ADMIN_LAT]!.text == ""
+    //     ? 0
+    //     : double.parse(mapOfAddress[KEY.ADMIN_LAT]!.text);
+    // double lng = mapOfAddress[KEY.ADMIN_LNG]!.text == ""
+    //     ? 0
+    //     : double.parse(mapOfAddress[KEY.ADMIN_LNG]!.text);
 
     MRestaurant mRestaurant = MRestaurant(
       id: restaurant.id == '' ? '' : restaurant.id,
@@ -268,9 +268,9 @@ class ViewAdminState extends State<ViewAdmin> {
       address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
       address_eupmyeondong: mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
       address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
-      address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
-      lat: lat,
-      lng: lng,
+      // address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
+      // lat: lat,
+      // lng: lng,
       label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
       source: mapOfRestaurant[KEY.ADMIN_SOURCE]!.text,
       contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,

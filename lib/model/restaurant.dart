@@ -70,7 +70,7 @@ class MRestaurant extends CommonModel {
         'address_detail': address_detail,
         'address_street': address_street,
         'closed_days': closed_days,
-        'opertaion_time': operation_time,
+        'operation_time': operation_time,
         'sns_link': sns_link,
         'naver_map_link': naver_map_link,
         'youtube_uploadedAt': youtube_uploadedAt,
@@ -163,8 +163,8 @@ class MRestaurant extends CommonModel {
         'MRestaurant.fromMap : address_streets is null value');
     assert(item.containsKey('closed_days'),
         'MRestaurant.fromMap : closed_dayss is null value');
-    assert(item.containsKey('opertaion_time'),
-        'MRestaurant.fromMap : opertaion_times is null value');
+    assert(item.containsKey('operation_time'),
+        'MRestaurant.fromMap : operation_times is null value');
     assert(item.containsKey('sns_link'),
         'MRestaurant.fromMap : sns_links is null value');
     assert(item.containsKey('naver_map_link'),
@@ -201,7 +201,7 @@ class MRestaurant extends CommonModel {
       address_detail: item['address_detail'],
       address_street: item['address_street'],
       closed_days: item['closed_days'],
-      operation_time: item['opertaion_time'],
+      operation_time: item['operation_time'],
       sns_link: item['sns_link'],
       naver_map_link: item['naver_map_link'],
       youtube_uploadedAt: item['youtube_uploadedAt'],
