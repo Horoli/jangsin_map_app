@@ -39,7 +39,7 @@ class ManagementInfo extends StatelessWidget {
                   for (int i = 0; i < mapOfAddress.keys.length; i++)
                     buildAdminTextField(
                       mapOfAddress.keys.toList()[i],
-                      'address',
+                      LABEL.CTRL_ADDRESS,
                     ).expand(),
                 ],
               ).expand(),
@@ -49,7 +49,7 @@ class ManagementInfo extends StatelessWidget {
                   for (int i = 0; i < mapOfRestaurant.keys.length; i++)
                     buildAdminTextField(
                       mapOfRestaurant.keys.toList()[i],
-                      'restaurant',
+                      LABEL.CTRL_RESTAURANT,
                     ).expand(),
                 ],
               ).expand(),
@@ -59,7 +59,7 @@ class ManagementInfo extends StatelessWidget {
                   for (int i = 0; i < mapOfLink.keys.length; i++)
                     buildAdminTextField(
                       mapOfLink.keys.toList()[i],
-                      'link',
+                      LABEL.CTRL_LINK,
                     ).expand(),
                 ],
               ).expand(),
@@ -105,11 +105,11 @@ class ManagementInfo extends StatelessWidget {
   Widget buildAdminTextField(String key, String flag) {
     late final TextEditingController ctrl;
     switch (flag) {
-      case 'address':
+      case LABEL.CTRL_ADDRESS:
         ctrl = mapOfAddress[key]!;
-      case 'restaurant':
+      case LABEL.CTRL_RESTAURANT:
         ctrl = mapOfRestaurant[key]!;
-      case 'link':
+      case LABEL.CTRL_LINK:
         ctrl = mapOfLink[key]!;
     }
     return Center(

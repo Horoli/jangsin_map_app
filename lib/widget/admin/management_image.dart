@@ -18,11 +18,10 @@ class ManagementImage extends StatelessWidget {
     return Column(
       children: [
         ElevatedButton(
-            child: Text('a'),
+            child: const Text(LABEL.SELECT_IMAGE),
             onPressed: () async {
               await selectImageFile().then((image) {
                 if (image.isEmpty) {
-                  print('image empty');
                   return;
                 }
 
@@ -39,12 +38,12 @@ class ManagementImage extends StatelessWidget {
             builder:
                 (BuildContext context, AsyncSnapshot<RestfulResult> snapshot) {
               if (snapshot.data!.data == null) {
-                return const Text('empty');
+                return const Text(LABEL.IMAGE_EMPTY);
               }
 
               if (snapshot.data!.data['thumbnail'] == null ||
                   snapshot.data!.data['thumbnail']['image'] == "") {
-                return const Center(child: Text("no image"));
+                return const Center(child: Text(LABEL.IMAGE_EMPTY));
               }
 
               return Column(

@@ -88,10 +88,10 @@ class ViewAdminState extends State<ViewAdmin> {
                       buildUpdateButton(selectedRestaurant),
                       if (selectedRestaurant.id != '')
                         ElevatedButton(
-                          child: const Text('delete'),
+                          child: const Text(LABEL.UPDATE_DELETE),
                           onPressed: () async {
                             updateConfirmDialog(
-                              '정말 삭제하시겠습니까?',
+                              LABEL.CONFIRM_DELETE,
                               acceptFunction: () async {
                                 Navigator.pop(context);
                                 await GServiceAdmin.delete(
@@ -127,7 +127,7 @@ class ViewAdminState extends State<ViewAdmin> {
               // TODO : 정말 등록하시겠습니까 팝업 띄우고
               // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
               updateConfirmDialog(
-                '정말 저장하시겠습니까?',
+                LABEL.CONFIRM_SAVE,
                 acceptFunction: () async {
                   Map<String, dynamic> mapOfRestaurant =
                       setRestaurantInfo(restaurant).map;
@@ -153,7 +153,7 @@ class ViewAdminState extends State<ViewAdmin> {
               // TODO : 정말 변경하시겠습니까 팝업 띄우고
               // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
               updateConfirmDialog(
-                '정말 변경하시겠습니까?',
+                LABEL.CONFRIM_MODIFY,
                 acceptFunction: () async {
                   Navigator.pop(context);
 
@@ -186,11 +186,11 @@ class ViewAdminState extends State<ViewAdmin> {
           children: [
             SimpleDialogOption(
               onPressed: acceptFunction,
-              child: const Text('예'),
+              child: const Text(LABEL.YES),
             ),
             SimpleDialogOption(
               onPressed: cancelFunction,
-              child: const Text('아니오'),
+              child: const Text(LABEL.NO),
             )
           ],
         );

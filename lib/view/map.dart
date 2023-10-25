@@ -122,8 +122,8 @@ class ViewMapState extends State<ViewMap> {
           children: [
             Row(
               children: [
-                ctrlSido.text == "전체"
-                    ? const AutoSizeText('모든 식당')
+                ctrlSido.text == LABEL.ALL
+                    ? const AutoSizeText(LABEL.SELECT_ALL_RESTAURANTS)
                     : AutoSizeText('${ctrlSido.text}에 위치한 식당'),
                 AutoSizeText(' : ${snapshot.data['dataCount']} 개'),
               ],
@@ -243,7 +243,7 @@ class ViewMapState extends State<ViewMap> {
     RestfulResult result = await GServiceRestaurant.getLatLng();
     List latLngs = result.data;
 
-    ctrlSido.text = "전체";
+    ctrlSido.text = LABEL.ALL;
     GServiceRestaurant.pagination(page: 1);
 
     Future.delayed(const Duration(milliseconds: 200),
