@@ -23,8 +23,8 @@ class MRestaurant extends CommonModel {
   final String youtube_link;
   final String baemin_link;
   final String thumbnail;
-  final int createdAt;
-  final int updatedAt;
+  final int created_at;
+  final int updated_at;
 
   MRestaurant({
     this.id = "",
@@ -49,8 +49,8 @@ class MRestaurant extends CommonModel {
     this.youtube_link = "",
     this.baemin_link = "",
     this.thumbnail = "",
-    this.createdAt = 0,
-    this.updatedAt = 0,
+    this.created_at = 0,
+    this.updated_at = 0,
   });
 
   @override
@@ -77,8 +77,8 @@ class MRestaurant extends CommonModel {
         'youtube_link': youtube_link,
         'baemin_link': baemin_link,
         'thumbnail': thumbnail,
-        'createdAt': createdAt,
-        'updatedAt': updatedAt,
+        'created_at': created_at,
+        'updated_at': updated_at,
       };
 
   MRestaurant copyWith({
@@ -105,8 +105,8 @@ class MRestaurant extends CommonModel {
     String? baemin_link,
     String? thumbnail,
     String? add_thumbnail,
-    int? createdAt,
-    int? updatedAt,
+    int? created_at,
+    int? updated_at,
   }) =>
       MRestaurant(
         id: id ?? this.id,
@@ -131,8 +131,8 @@ class MRestaurant extends CommonModel {
         youtube_link: youtube_link ?? this.youtube_link,
         baemin_link: baemin_link ?? this.baemin_link,
         thumbnail: thumbnail ?? this.thumbnail,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
+        created_at: created_at ?? this.created_at,
+        updated_at: updated_at ?? this.updated_at,
       );
 
   factory MRestaurant.fromMap(Map item) {
@@ -177,10 +177,10 @@ class MRestaurant extends CommonModel {
         'MRestaurant.fromMap : baemin_links is null value');
     assert(item.containsKey('thumbnail'),
         'MRestaurant.fromMap : thumbnails is null value');
-    assert(item.containsKey('createdAt'),
-        'MRestaurant.fromMap : createdAt is null value');
-    assert(item.containsKey('updatedAt'),
-        'MRestaurant.fromMap : updatedAt is null value');
+    assert(item.containsKey('created_at'),
+        'MRestaurant.fromMap : created_at is null value');
+    assert(item.containsKey('updated_at'),
+        'MRestaurant.fromMap : updated_at is null value');
 
     // assert(item.containsKey('add_thumbnail'),
     //     'MRestaurant.fromMap : thumbnails is null value');
@@ -208,8 +208,8 @@ class MRestaurant extends CommonModel {
       youtube_link: item['youtube_link'],
       baemin_link: item['baemin_link'],
       thumbnail: item['thumbnail'],
-      createdAt: item['createdAt'],
-      updatedAt: item['updatedAt'],
+      created_at: item['created_at'],
+      updated_at: item['updated_at'],
 
       // add_thumbnail: item['add_thumbnail'],
     );

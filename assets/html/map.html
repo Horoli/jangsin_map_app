@@ -11,8 +11,8 @@
         src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rey7y37ny0"></script>
 </head>
 
-<body>
-    <div id="map" style="width:100%;height:600px;margin:0 auto;"></div>
+<body style=" overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div id="map" style="width:100%;height:100vh;border-radius: 10px;"></div>
     <script>
         window.parent.addEventListener('message', handleMessage, false);
         // window.parent.addEventListener('set', setMarker, false);

@@ -79,7 +79,7 @@ class ViewAdminState extends State<ViewAdmin> {
                         restaurant: selectedRestaurant,
                         token: token,
                         $selectedNewThumbnail: $selectedNewThumbnail,
-                      ).expand()
+                      ).expand(),
                     ],
                   ).expand(),
                   Row(
