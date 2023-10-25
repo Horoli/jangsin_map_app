@@ -23,6 +23,14 @@ class ServiceAdmin {
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
+      if (rawData['statusCode'] != 200) {
+        RestfulResult result = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+          data: rawData['data'],
+        );
+        return completer.complete(result);
+      }
 
       RestfulResult result = RestfulResult(
         statusCode: 200,
@@ -88,12 +96,12 @@ class ServiceAdmin {
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_PATCH)
         : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_PATCH);
 
-    print(jsonBody);
-    print(query);
+    (jsonBody);
+    (query);
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
-      print(rawData);
+      (rawData);
 
       RestfulResult result = RestfulResult(
         statusCode: rawData['statusCode'],
@@ -164,7 +172,7 @@ class ServiceAdmin {
         : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_DELETE);
 
     String jsonBody = jsonEncode({"id": id});
-    print('jsonBody $jsonBody');
+    ('jsonBody $jsonBody');
 
     http.delete(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);

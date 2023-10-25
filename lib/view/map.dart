@@ -22,7 +22,7 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   Widget build(BuildContext context) {
-    print('mediaQuery.viewPadding.top ${mediaQuery.viewPadding.top}');
+    ('mediaQuery.viewPadding.top ${mediaQuery.viewPadding.top}');
 
     return isPort ? buildPortait() : buildLandscape();
   }

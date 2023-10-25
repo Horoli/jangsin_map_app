@@ -19,7 +19,7 @@ Future<List<String>> selectImageFile({bool multiSelect = false}) async {
   // List<Uint8List> imageBytes =
   //     platformFiles.map((PlatformFile file) => file.bytes!).toList();
 
-  print('imageBase64 ${imageBase64.length}');
+  ('imageBase64 ${imageBase64.length}');
 
   return imageBase64;
 }

@@ -37,13 +37,15 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
                       child: const Text('login'),
                       onPressed: () async {
                         RestfulResult result = await GServiceAdmin.signIn(
-                          // id: mapOfCtrl['id']!.text,
-                          // pw: mapOfCtrl['pw']!.text,
-                          id: "aaaaa",
-                          pw: "asd",
+                          id: mapOfCtrl['id']!.text,
+                          pw: mapOfCtrl['pw']!.text,
+                          // id: "aaaaa",
+                          // pw: "asd",
                         );
 
-                        if (result.statusCode != 200) return;
+                        if (result.statusCode != 200) {
+                          return errorDialog(result);
+                        }
 
                         GSharedPreferences.setString(
                           KEY.LOCAL_DB_TOKEN_KEY,
@@ -61,6 +63,20 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> errorDialog(RestfulResult result) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const SimpleDialog(
+          children: [
+            Center(child: Text('로그인 실패')),
+            Center(child: Text('id와 pw를 확인해주세요')),
+          ],
+        );
+      },
     );
   }
 

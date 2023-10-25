@@ -20,7 +20,7 @@ class ServiceRestaurant {
       "access-control-allow-origin": "*",
     };
 
-    print('get latlng $headers');
+    ('get latlng $headers');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_LATLNG)
@@ -68,7 +68,7 @@ class ServiceRestaurant {
       if (sido != null && sigungu != null) 'sigungu': sigungu,
     };
 
-    print('queryByCondition $queryByCondition');
+    ('queryByCondition $queryByCondition');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(
@@ -84,7 +84,7 @@ class ServiceRestaurant {
 
     http.get(query, headers: headers).then((rep) {
       Map rawData = json.decode(rep.body);
-      // print(rawData);
+      // (rawData);
 
       if (rawData['statusCode'] != 200) {
         RestfulResult errorResult = RestfulResult(
@@ -94,7 +94,7 @@ class ServiceRestaurant {
         completer.complete(errorResult);
         return errorResult;
       }
-      // print('step 1');
+      // ('step 1');
 
       List<MRestaurant> getRestaurant =
           List.from(rawData['data']['pagination_data'])
