@@ -51,7 +51,7 @@ class ViewMapState extends State<ViewMap> {
   Widget buildLandscape() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: const Text('Jangsin Map'),
         actions: [
           TextButton(
             child: const Text(''),
