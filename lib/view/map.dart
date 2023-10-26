@@ -90,7 +90,7 @@ class ViewMapState extends State<ViewMap> {
 
   Widget buildRegionSelectField() {
     return TextField(
-      onTap: () => selectRegionDialog(),
+      controller: ctrlSido,
       decoration: const InputDecoration(
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
@@ -104,8 +104,9 @@ class ViewMapState extends State<ViewMap> {
         border: OutlineInputBorder(),
         labelText: LABEL.SELECT_REGION,
       ),
-      controller: ctrlSido,
       readOnly: true,
+      autocorrect: false,
+      onTap: () => selectRegionDialog(),
     );
   }
 
@@ -121,7 +122,6 @@ class ViewMapState extends State<ViewMap> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            print(snapshot.map);
             List<MRestaurant> restaurants = snapshot.data['pagination_data'];
 
             return Column(
@@ -220,14 +220,27 @@ class ViewMapState extends State<ViewMap> {
                     onPressed: () async {
                       if (sido == DISTRICT.ALL) {
                         Navigator.pop(context);
-                        ctrlSido.text = DISTRICT.ALL;
+                        ctrlSido.value = ctrlSido.value.copyWith(
+                          text: DISTRICT.ALL,
+                          selection: const TextSelection.collapsed(
+                              offset: DISTRICT.ALL.length),
+                          composing: TextRange.empty,
+                        );
                         GServiceRestaurant.pagination(page: 1);
                         return;
                       }
 
                       Navigator.pop(context);
                       GServiceRestaurant.pagination(sido: sido);
-                      ctrlSido.text = sido;
+                      // ctrlSido.text = sido;
+                      // ctrlSido.selection =
+                      //     TextSelection.collapsed(offset: sido.length);
+
+                      ctrlSido.value = ctrlSido.value.copyWith(
+                        text: sido,
+                        selection: TextSelection.collapsed(offset: sido.length),
+                        composing: TextRange.empty,
+                      );
                     },
                   );
                 },

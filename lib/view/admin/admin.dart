@@ -133,6 +133,7 @@ class ViewAdminState extends State<ViewAdmin> {
             buildSelectCsvButton(),
             const Padding(padding: EdgeInsets.all(3)),
             TextField(
+              focusNode: FocusNode(canRequestFocus: false),
               maxLength: ctrlCSV.text.length,
               decoration: const InputDecoration(
                 suffixIcon: Row(
