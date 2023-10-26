@@ -195,4 +195,44 @@ class ServiceAdmin {
 
     return completer.future;
   }
+
+  Future<RestfulResult> csvUpload({
+    required List<List<dynamic>> csv,
+  }) async {
+    Completer<RestfulResult> completer = Completer<RestfulResult>();
+
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "access-control-allow-origin": "*",
+    };
+
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_CSV_UPLOAD)
+        : Uri.https(PATH.FORIEGN_URL, PATH.API_RESTAURANT_CSV_UPLOAD);
+
+    String jsonBody = jsonEncode({"csv": csv});
+
+    http.post(query, headers: headers, body: jsonBody).then((rep) {
+      Map rawData = json.decode(rep.body);
+      print(rawData);
+
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+        );
+        completer.complete(errorResult);
+        return errorResult;
+      }
+
+      completer.complete(RestfulResult(
+        statusCode: 200,
+        message: 'get Data complete',
+        data: rawData['data'],
+      ));
+    });
+
+    return completer.future;
+  }
 }

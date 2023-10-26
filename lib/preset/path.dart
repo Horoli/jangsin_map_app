@@ -16,6 +16,7 @@ const String API_RESTAURANT_GET = 'restaurant/get';
 const String API_RESTAURANT_LATLNG = 'restaurant/latlng';
 const String API_RESTAURANT_PAGINATION = 'restaurant/pagination/';
 const String API_RESTAURANT_DELETE = 'restaurant/delete';
+const String API_RESTAURANT_CSV_UPLOAD = 'restaurant/create_csv_upload';
 
 const String API_IMAGE_THUMBNAIL = 'image/thumbnail';
 const String API_IMAGE_THUMBNAIL_ADMIN = 'image/thumbnail_admin';

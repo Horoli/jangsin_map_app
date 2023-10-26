@@ -17,11 +17,6 @@ class ViewMapState extends State<ViewMap> {
 
   final TextEditingController ctrlSido = TextEditingController();
 
-  // final Map<String, TextEditingController> mapOfDropdown = {
-  //   KEY.ADMIN_SIDO: TextEditingController(),
-  //   KEY.ADMIN_SIGUNGU: TextEditingController(),
-  // };
-
   @override
   Widget build(BuildContext context) {
     return isPort ? buildPortait() : buildLandscape();

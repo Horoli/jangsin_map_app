@@ -107,6 +107,14 @@ class ViewAdminState extends State<ViewAdmin> {
                         )
                     ],
                   ).sizedBox(height: kToolbarHeight),
+                  ElevatedButton(
+                    child: Text('csv picker test'),
+                    onPressed: () async {
+                      List<List<dynamic>> csv = await selectCSVFile();
+
+                      await GServiceAdmin.csvUpload(csv: csv);
+                    },
+                  ).expand(),
                 ],
               ),
             ),
