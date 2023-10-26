@@ -157,13 +157,15 @@ class ServiceAdmin {
   }
 
   Future<RestfulResult> delete({
+    required String token,
     required String id,
   }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
-      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      // "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "token": token,
       "access-control-allow-origin": "*",
     };
 
@@ -200,14 +202,15 @@ class ServiceAdmin {
       TStream<List<List<dynamic>>>();
 
   Future<RestfulResult> csvUpload({
+    required String token,
     required List<List<dynamic>> csv,
   }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
-      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
       "access-control-allow-origin": "*",
+      "token": token,
     };
 
     Uri query = PATH.IS_LOCAL

@@ -99,7 +99,9 @@ class ViewAdminState extends State<ViewAdmin> {
                               acceptFunction: () async {
                                 Navigator.pop(context);
                                 await GServiceAdmin.delete(
-                                    id: selectedRestaurant.id);
+                                  token: token,
+                                  id: selectedRestaurant.id,
+                                );
 
                                 initCtrl();
                                 GServiceRestaurant.$selectedRestaurant
@@ -152,7 +154,7 @@ class ViewAdminState extends State<ViewAdmin> {
               readOnly: true,
               onTap: () async {
                 RestfulResult csvUpload =
-                    await GServiceAdmin.csvUpload(csv: snapshot);
+                    await GServiceAdmin.csvUpload(token: token, csv: snapshot);
                 print('csvUpload ${csvUpload.map}');
                 await uploadDialog(csvUpload);
 
@@ -173,7 +175,7 @@ class ViewAdminState extends State<ViewAdmin> {
           return AlertDialog(
             title: result.statusCode == 200
                 ? const Text('업로드 완료')
-                : const Text('업로드할 데이터가 없습니다(중복 데이터 포함)'),
+                : const Text('업로드할 데이터가 없습니다.'),
           );
         });
   }
