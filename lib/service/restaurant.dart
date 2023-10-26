@@ -50,7 +50,7 @@ class ServiceRestaurant {
 
   Future<RestfulResult> pagination({
     int page = 1,
-    int limit = 5,
+    int limit = 10,
     String? sido,
     String? sigungu,
   }) async {
@@ -105,6 +105,7 @@ class ServiceRestaurant {
         statusCode: 200,
         message: 'get Data complete',
         data: {
+          "limit": rawData['data']['limit'],
           "dataCount": rawData['data']['dataCount'],
           "total_page": rawData['data']['total_page'],
           "current_page": page,

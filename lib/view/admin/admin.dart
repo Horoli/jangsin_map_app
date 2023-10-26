@@ -47,6 +47,9 @@ class ViewAdminState extends State<ViewAdmin> {
       mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_LINK]!;
 
   final TStream<List<String>> $selectedNewThumbnail = TStream<List<String>>();
+  final TStream<List<List<dynamic>>> $csv = TStream<List<List<dynamic>>>()
+    ..sink$([]);
+  final TextEditingController ctrlCSV = TextEditingController();
 
   late final String token;
 
@@ -65,6 +68,7 @@ class ViewAdminState extends State<ViewAdmin> {
               height: height * 0.7,
               child: Column(
                 children: [
+                  buildSelectAndUploadCsvField(),
                   Row(
                     children: [
                       buildRestaurantList(selectedRestaurant).expand(),
@@ -107,20 +111,80 @@ class ViewAdminState extends State<ViewAdmin> {
                         )
                     ],
                   ).sizedBox(height: kToolbarHeight),
-                  ElevatedButton(
-                    child: Text('csv picker test'),
-                    onPressed: () async {
-                      List<List<dynamic>> csv = await selectCSVFile();
-
-                      await GServiceAdmin.csvUpload(csv: csv);
-                    },
-                  ).expand(),
                 ],
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget buildSelectAndUploadCsvField() {
+    return TStreamBuilder(
+      stream: $csv.browse$,
+      builder: (BuildContext context, List<List<dynamic>> snapshot) {
+        if (snapshot.isEmpty) {
+          return buildSelectCsvButton();
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildSelectCsvButton(),
+            const Padding(padding: EdgeInsets.all(3)),
+            TextField(
+              maxLength: ctrlCSV.text.length,
+              decoration: const InputDecoration(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    VerticalDivider(),
+                    Icon(Icons.upload),
+                    Padding(padding: EdgeInsets.all(4)),
+                  ],
+                ),
+                suffixIconColor: COLOR.WHITE,
+                border: OutlineInputBorder(),
+                labelText: 'CSV 파일 업로드',
+              ),
+              controller: ctrlCSV,
+              readOnly: true,
+              onTap: () async {
+                RestfulResult csvUpload =
+                    await GServiceAdmin.csvUpload(csv: snapshot);
+                print('csvUpload ${csvUpload.map}');
+                await uploadDialog(csvUpload);
+
+                await GServiceRestaurant.pagination(page: 1);
+                $csv.sink$([]);
+              },
+            ).expand(),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> uploadDialog(RestfulResult result) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: result.statusCode == 200
+                ? const Text('업로드 완료')
+                : const Text('업로드할 데이터가 없습니다(중복 데이터 포함)'),
+          );
+        });
+  }
+
+  Widget buildSelectCsvButton() {
+    return ElevatedButton(
+      child: const Text('CSV 파일 업로드'),
+      onPressed: () async {
+        List<List<dynamic>> csv = await selectCsvFile();
+        $csv.sink$(csv);
+        ctrlCSV.text = 'csv 업로드 하시려면 우측 화살표 버튼을 누르세요';
+      },
     );
   }
 

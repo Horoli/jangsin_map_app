@@ -136,9 +136,10 @@ class TileRestaurantUnit extends StatelessWidget {
             .expand(),
         buildLinkIconButton(Icons.delivery_dining, restaurant.baemin_link)
             .expand(),
-        buildLinkIconButton(
-                Icons.slow_motion_video_rounded, restaurant.youtube_link)
-            .expand(),
+        if (restaurant.youtube_link != '')
+          buildLinkIconButton(
+                  Icons.slow_motion_video_rounded, restaurant.youtube_link)
+              .expand(),
       ],
     );
   }

@@ -121,12 +121,19 @@ class ViewMapState extends State<ViewMap> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            print(snapshot.map);
             List<MRestaurant> restaurants = snapshot.data['pagination_data'];
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AutoSizeText('검색결과 : ${snapshot.data['dataCount']}개'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AutoSizeText('검색결과 : ${snapshot.data['dataCount']}개'),
+                    // AutoSizeText('${snapshot.data['limit']}개'),
+                  ],
+                ),
                 const Divider(),
                 ListView.separated(
                   separatorBuilder: (context, index) => const Divider(),
@@ -195,14 +202,15 @@ class ViewMapState extends State<ViewMap> {
         return PointerInterceptor(
           child: AlertDialog(
             content: SizedBox(
-              width: isPort ? width * 1.8 : width * 0.4,
-              height: isPort ? height * 1.3 : height * 0.4,
+              width: isPort ? width * 0.8 : width * 0.4,
+              height: isPort ? height * 0.7 : height * 0.4,
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3.0,
-                  crossAxisSpacing: 2.0,
-                  mainAxisSpacing: 2.0,
+                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isPort ? 2 : 5,
+                  childAspectRatio: isPort ? 2.0 : 1.5,
+                  crossAxisSpacing: 5.0,
+                  mainAxisSpacing: 5.0,
                 ),
                 itemCount: sidoList.length,
                 itemBuilder: (BuildContext context, int index) {

@@ -196,6 +196,9 @@ class ServiceAdmin {
     return completer.future;
   }
 
+  final TStream<List<List<dynamic>>> $testImage =
+      TStream<List<List<dynamic>>>();
+
   Future<RestfulResult> csvUpload({
     required List<List<dynamic>> csv,
   }) async {
@@ -213,9 +216,11 @@ class ServiceAdmin {
 
     String jsonBody = jsonEncode({"csv": csv});
 
-    http.post(query, headers: headers, body: jsonBody).then((rep) {
+    http
+        .post(query, headers: headers, body: jsonBody)
+        .timeout(const Duration(seconds: 10))
+        .then((rep) {
       Map rawData = json.decode(rep.body);
-      print(rawData);
 
       if (rawData['statusCode'] != 200) {
         RestfulResult errorResult = RestfulResult(
@@ -223,12 +228,13 @@ class ServiceAdmin {
           message: rawData['message'],
         );
         completer.complete(errorResult);
+
         return errorResult;
       }
 
       completer.complete(RestfulResult(
-        statusCode: 200,
-        message: 'get Data complete',
+        statusCode: rawData['statusCode'],
+        message: rawData['message'],
         data: rawData['data'],
       ));
     });
