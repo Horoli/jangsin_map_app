@@ -97,11 +97,17 @@ class ViewAdminState extends State<ViewAdmin> {
                             updateConfirmDialog(
                               LABEL.CONFIRM_DELETE,
                               acceptFunction: () async {
-                                Navigator.pop(context);
-                                await GServiceAdmin.delete(
+                                RestfulResult deleteResult =
+                                    await GServiceAdmin.delete(
                                   token: token,
                                   id: selectedRestaurant.id,
                                 );
+
+                                if (deleteResult.statusCode == 403) {
+                                  return tokenExpiredDialog(deleteResult);
+                                }
+
+                                Navigator.pop(context);
 
                                 initCtrl();
                                 GServiceRestaurant.$selectedRestaurant
@@ -153,15 +159,38 @@ class ViewAdminState extends State<ViewAdmin> {
               controller: ctrlCSV,
               readOnly: true,
               onTap: () async {
-                RestfulResult csvUpload =
+                RestfulResult csvUploadResult =
                     await GServiceAdmin.csvUpload(token: token, csv: snapshot);
-                print('csvUpload ${csvUpload.map}');
-                await uploadDialog(csvUpload);
+                if (csvUploadResult.statusCode == 403) {
+                  return tokenExpiredDialog(csvUploadResult);
+                }
+                print('csvUpload ${csvUploadResult.map}');
+                await uploadDialog(csvUploadResult);
 
                 await GServiceRestaurant.pagination(page: 1);
                 $csv.sink$([]);
               },
             ).expand(),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> tokenExpiredDialog(RestfulResult result) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('토큰 시간이 만료되었습니다'),
+          children: [
+            ElevatedButton(
+              child: Text('다시 로그인하기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, PATH.ROUTE_ADMIN_LOGIN);
+              },
+            ),
           ],
         );
       },
@@ -209,8 +238,13 @@ class ViewAdminState extends State<ViewAdmin> {
                   mapOfRestaurant['add_thumbnail'] =
                       $selectedNewThumbnail.lastValue[0];
 
-                  await GServiceAdmin.createRestaurant(
-                      token: token, mapOfRestaurant: mapOfRestaurant);
+                  RestfulResult updateResult =
+                      await GServiceAdmin.createRestaurant(
+                          token: token, mapOfRestaurant: mapOfRestaurant);
+
+                  if (updateResult.statusCode == 403) {
+                    return tokenExpiredDialog(updateResult);
+                  }
 
                   initCtrl();
                   GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
