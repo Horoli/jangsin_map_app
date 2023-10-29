@@ -137,7 +137,7 @@ class ViewAdminState extends State<ViewAdmin> {
                   return tokenExpiredDialog(csvUploadResult);
                 }
 
-                await uploadDialog(csvUploadResult);
+                await csvUploadDialog(csvUploadResult);
 
                 await GServiceRestaurant.pagination(page: 1);
                 $csv.sink$([]);
@@ -448,14 +448,21 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
-  Future<void> uploadDialog(RestfulResult result) async {
+  Future<void> csvUploadDialog(RestfulResult result) async {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           print(result.map);
           return AlertDialog(
             title: result.statusCode == 200
-                ? Text('식당 ${result.data['count']}개 업로드 완료')
+                ? Column(
+                    children: [
+                      Text('식당 ${result.data['completeCount']}개 업로드 완료'),
+                      const Divider(),
+                      const Text('업로드 실패, 주소확인 필요'),
+                      Text('${result.data['undefinedAddressRestaurants']}'),
+                    ],
+                  )
                 : const Text('업로드할 데이터가 없습니다.'),
           );
         });

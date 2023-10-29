@@ -37,8 +37,9 @@ class ViewAdminLoginState extends State<ViewAdminLogin> {
                       child: const Text('login'),
                       onPressed: () async {
                         RestfulResult result = await GServiceAdmin.signIn(
-                            id: mapOfCtrl['id']!.text,
-                            pw: mapOfCtrl['pw']!.text);
+                          id: mapOfCtrl['id']!.text,
+                          pw: mapOfCtrl['pw']!.text,
+                        );
 
                         if (result.statusCode != 200) {
                           return errorDialog(result);
