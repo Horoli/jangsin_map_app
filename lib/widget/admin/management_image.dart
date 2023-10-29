@@ -26,8 +26,7 @@ class ManagementImage extends StatelessWidget {
                 }
 
                 $selectedNewThumbnail.sink$(image);
-                GServiceRestaurant.$selectedRestaurant
-                    .sink$(restaurant.copyWith(add_thumbnail: image[0]));
+                GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
               });
             }).expand(),
         FutureBuilder(

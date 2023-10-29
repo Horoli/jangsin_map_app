@@ -12,18 +12,15 @@ class ViewAdminState extends State<ViewAdmin> {
   double get height => MediaQuery.of(context).size.height;
 
   final Map<String, Map<String, TextEditingController>> mapOfMainCtrl = {
-    KEY.ADMIN_MAP_OF_CTRL_DROPDOWN: {
-      KEY.ADMIN_SIDO: TextEditingController(),
-      KEY.ADMIN_SIGUNGU: TextEditingController(),
-    },
     KEY.ADMIN_MAP_OF_CTRL_ADDRESS: {
-      KEY.ADMIN_EUPMYEONDONG: TextEditingController(),
+      KEY.ADMIN_STREET: TextEditingController(),
       KEY.ADMIN_DETAIL: TextEditingController(),
     },
     KEY.ADMIN_MAP_OF_CTRL_RESTAURANT: {
       KEY.ADMIN_LABEL: TextEditingController(),
       KEY.ADMIN_SOURCE: TextEditingController(),
       KEY.ADMIN_CONTACT: TextEditingController(),
+      KEY.ADMIN_MENU_CATEGORY: TextEditingController(),
       KEY.ADMIN_REPRESENTATIVE_MENU: TextEditingController(),
       KEY.ADMIN_CLOSED_DAYS: TextEditingController(),
       KEY.ADMIN_OPERATION_TIME: TextEditingController(),
@@ -37,8 +34,6 @@ class ViewAdminState extends State<ViewAdmin> {
     },
   };
 
-  Map<String, TextEditingController> get mapOfDropdown =>
-      mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_DROPDOWN]!;
   Map<String, TextEditingController> get mapOfAddress =>
       mapOfMainCtrl[KEY.ADMIN_MAP_OF_CTRL_ADDRESS]!;
   Map<String, TextEditingController> get mapOfRestaurant =>
@@ -89,34 +84,11 @@ class ViewAdminState extends State<ViewAdmin> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      buildUpdateButton(selectedRestaurant),
+                      selectedRestaurant.id != ''
+                          ? buildModifyButton(selectedRestaurant)
+                          : buildCreateButton(selectedRestaurant),
                       if (selectedRestaurant.id != '')
-                        ElevatedButton(
-                          child: const Text(LABEL.UPDATE_DELETE),
-                          onPressed: () async {
-                            updateConfirmDialog(
-                              LABEL.CONFIRM_DELETE,
-                              acceptFunction: () async {
-                                RestfulResult deleteResult =
-                                    await GServiceAdmin.delete(
-                                  token: token,
-                                  id: selectedRestaurant.id,
-                                );
-
-                                if (deleteResult.statusCode == 503) {
-                                  return tokenExpiredDialog(deleteResult);
-                                }
-
-                                Navigator.pop(context);
-
-                                initCtrl();
-                                GServiceRestaurant.$selectedRestaurant
-                                    .sink$(selectedRestaurant);
-                              },
-                              cancelFunction: () => Navigator.pop(context),
-                            );
-                          },
-                        )
+                        buildDeleteButton(selectedRestaurant),
                     ],
                   ).sizedBox(height: kToolbarHeight),
                 ],
@@ -164,7 +136,8 @@ class ViewAdminState extends State<ViewAdmin> {
                 if (csvUploadResult.statusCode == 503) {
                   return tokenExpiredDialog(csvUploadResult);
                 }
-                print('csvUpload ${csvUploadResult.map}');
+
+                // print('csvUpload ${csvUploadResult.map}');
                 await uploadDialog(csvUploadResult);
 
                 await GServiceRestaurant.pagination(page: 1);
@@ -175,38 +148,6 @@ class ViewAdminState extends State<ViewAdmin> {
         );
       },
     );
-  }
-
-  Future<void> tokenExpiredDialog(RestfulResult result) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('토큰 시간이 만료되었습니다'),
-          children: [
-            ElevatedButton(
-              child: Text('다시 로그인하기'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, PATH.ROUTE_ADMIN_LOGIN);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> uploadDialog(RestfulResult result) async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: result.statusCode == 200
-                ? const Text('업로드 완료')
-                : const Text('업로드할 데이터가 없습니다.'),
-          );
-        });
   }
 
   Widget buildSelectCsvButton() {
@@ -220,88 +161,105 @@ class ViewAdminState extends State<ViewAdmin> {
     );
   }
 
-  Widget buildUpdateButton(MRestaurant restaurant) {
-    return restaurant.id == ''
-        ? ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(COLOR.BLUE),
-            ),
-            child: const Text(LABEL.UPDATE_NEW),
-            onPressed: () async {
-              // TODO : 정말 등록하시겠습니까 팝업 띄우고
-              // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
-              updateConfirmDialog(
-                LABEL.CONFIRM_SAVE,
-                acceptFunction: () async {
-                  Map<String, dynamic> mapOfRestaurant =
-                      setRestaurantInfo(restaurant).map;
-                  mapOfRestaurant['add_thumbnail'] =
-                      $selectedNewThumbnail.lastValue[0];
+  Widget buildCreateButton(MRestaurant restaurant) {
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(COLOR.BLUE),
+      ),
+      child: const Text(LABEL.UPDATE_NEW),
+      onPressed: () async {
+        // TODO : 정말 등록하시겠습니까 팝업 띄우고
+        print(setRestaurantInfo(restaurant).map);
+        // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+        updateConfirmDialog(
+          LABEL.CONFIRM_SAVE,
+          acceptFunction: () async {
+            Map<String, dynamic> mapOfRestaurant =
+                setRestaurantInfo(restaurant).map;
+            mapOfRestaurant['add_thumbnail'] =
+                $selectedNewThumbnail.lastValue[0];
 
-                  RestfulResult updateResult =
-                      await GServiceAdmin.createRestaurant(
-                          token: token, mapOfRestaurant: mapOfRestaurant);
+            RestfulResult updateResult = await GServiceAdmin.createRestaurant(
+                token: token, mapOfRestaurant: mapOfRestaurant);
 
-                  if (updateResult.statusCode == 503) {
-                    return tokenExpiredDialog(updateResult);
-                  }
+            print('updateResult ${updateResult.map}');
 
-                  initCtrl();
-                  GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
-                },
-                cancelFunction: () => Navigator.pop(context),
-              );
-            },
-          )
-        : ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(COLOR.RED),
-            ),
-            child: const Text(LABEL.UPDATE_MODIFY),
-            onPressed: () async {
-              // TODO : 정말 변경하시겠습니까 팝업 띄우고
-              // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
-              updateConfirmDialog(
-                LABEL.CONFRIM_MODIFY,
-                acceptFunction: () async {
-                  Navigator.pop(context);
+            if (updateResult.statusCode == 503) {
+              return tokenExpiredDialog(updateResult);
+            }
+            Navigator.pop(context);
 
-                  Map<String, dynamic> mapOfRestaurant =
-                      setRestaurantInfo(restaurant).map;
+            initCtrl();
+            GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
 
-                  mapOfRestaurant['add_thumbnail'] =
-                      $selectedNewThumbnail.lastValue[0];
-                  await GServiceAdmin.patchRestaurant(
-                      token: token, mapOfRestaurant: mapOfRestaurant);
-                  initCtrl();
-                  await GServiceRestaurant.pagination();
-                },
-                cancelFunction: () => Navigator.pop(context),
-              );
-            },
-          );
+            int page =
+                GServiceRestaurant.$pagination.lastValue.data['current_page'];
+            await GServiceRestaurant.pagination(page: page);
+          },
+          cancelFunction: () => Navigator.pop(context),
+        );
+      },
+    );
   }
 
-  Future<void> updateConfirmDialog(
-    String label, {
-    required VoidCallback acceptFunction,
-    required VoidCallback cancelFunction,
-  }) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: Text(label),
-          children: [
-            SimpleDialogOption(
-              onPressed: acceptFunction,
-              child: const Text(LABEL.YES),
-            ),
-            SimpleDialogOption(
-              onPressed: cancelFunction,
-              child: const Text(LABEL.NO),
-            )
-          ],
+  Widget buildModifyButton(MRestaurant restaurant) {
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(COLOR.RED),
+      ),
+      child: const Text(LABEL.UPDATE_MODIFY),
+      onPressed: () async {
+        // TODO : 정말 변경하시겠습니까 팝업 띄우고
+        // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
+        updateConfirmDialog(
+          LABEL.CONFRIM_MODIFY,
+          acceptFunction: () async {
+            Navigator.pop(context);
+
+            Map<String, dynamic> mapOfRestaurant =
+                setRestaurantInfo(restaurant).map;
+
+            mapOfRestaurant['add_thumbnail'] =
+                $selectedNewThumbnail.lastValue[0];
+            await GServiceAdmin.patchRestaurant(
+                token: token, mapOfRestaurant: mapOfRestaurant);
+            initCtrl();
+            int page =
+                GServiceRestaurant.$pagination.lastValue.data['current_page'];
+
+            await GServiceRestaurant.pagination(page: page);
+          },
+          cancelFunction: () => Navigator.pop(context),
+        );
+      },
+    );
+  }
+
+  Widget buildDeleteButton(MRestaurant restaurant) {
+    return ElevatedButton(
+      child: const Text(LABEL.UPDATE_DELETE),
+      onPressed: () async {
+        updateConfirmDialog(
+          LABEL.CONFIRM_DELETE,
+          acceptFunction: () async {
+            RestfulResult deleteResult = await GServiceAdmin.delete(
+              token: token,
+              id: restaurant.id,
+            );
+
+            if (deleteResult.statusCode == 503) {
+              return tokenExpiredDialog(deleteResult);
+            }
+
+            Navigator.pop(context);
+
+            initCtrl();
+            GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
+            int page =
+                GServiceRestaurant.$pagination.lastValue.data['current_page'];
+            await GServiceRestaurant.pagination(page: page);
+          },
+          cancelFunction: () => Navigator.pop(context),
         );
       },
     );
@@ -339,6 +297,7 @@ class ViewAdminState extends State<ViewAdmin> {
                   ),
                   child: Text(restaurants[index].label),
                   onPressed: () {
+                    // print('${restaurants[index].map}');
                     // TODO : 선택을 해제하면 입력된 값을 모두 초기화
                     if (selectedRestaurant.id == restaurants[index].id) {
                       initCtrl();
@@ -367,17 +326,19 @@ class ViewAdminState extends State<ViewAdmin> {
   @override
   void initState() {
     token = GSharedPreferences.getString(KEY.LOCAL_DB_TOKEN_KEY)!;
-    GServiceRestaurant.pagination();
+    init();
     initCtrl();
     super.initState();
   }
 
+  Future<void> init() async {
+    Future.delayed(const Duration(milliseconds: 200), () async {
+      await GServiceRestaurant.pagination();
+    });
+  }
+
   Future<void> initCtrl() async {
     GServiceRestaurant.$selectedRestaurant.sink$(MRestaurant());
-    mapOfDropdown[KEY.ADMIN_SIDO]!.text =
-        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.toList()[0];
-    mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text =
-        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT[DISTRICT.CTRL_INIT]![0];
 
     // 컨트롤러를 초기화 하는 함수
     Future<void> initController(
@@ -397,14 +358,14 @@ class ViewAdminState extends State<ViewAdmin> {
   // TODO : 선택이 되면 입력 필드에 선택한 restaurant의 데이터를 입력
   Future<void> inputCtrlSelectedRestaurant(MRestaurant restaurant) async {
     GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
-    mapOfDropdown[KEY.ADMIN_SIDO]!.text = restaurant.address_sido;
-    mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text = restaurant.address_sigungu;
-    mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text =
-        restaurant.address_eupmyeondong;
     mapOfAddress[KEY.ADMIN_DETAIL]!.text = restaurant.address_detail.toString();
+    mapOfAddress[KEY.ADMIN_STREET]!.text = restaurant.address_street.toString();
     mapOfRestaurant[KEY.ADMIN_LABEL]!.text = restaurant.label.toString();
     mapOfRestaurant[KEY.ADMIN_SOURCE]!.text = restaurant.source.toString();
     mapOfRestaurant[KEY.ADMIN_CONTACT]!.text = restaurant.contact.toString();
+
+    mapOfRestaurant[KEY.ADMIN_MENU_CATEGORY]!.text =
+        restaurant.menu_category.toString();
     mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text =
         restaurant.representative_menu.toString();
     mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text =
@@ -424,13 +385,12 @@ class ViewAdminState extends State<ViewAdmin> {
   MRestaurant setRestaurantInfo(MRestaurant restaurant) {
     MRestaurant mRestaurant = MRestaurant(
       id: restaurant.id == '' ? '' : restaurant.id,
-      address_sido: mapOfDropdown[KEY.ADMIN_SIDO]!.text,
-      address_sigungu: mapOfDropdown[KEY.ADMIN_SIGUNGU]!.text,
-      address_eupmyeondong: mapOfAddress[KEY.ADMIN_EUPMYEONDONG]!.text,
       address_detail: mapOfAddress[KEY.ADMIN_DETAIL]!.text,
+      address_street: mapOfAddress[KEY.ADMIN_STREET]!.text,
       label: mapOfRestaurant[KEY.ADMIN_LABEL]!.text,
       source: mapOfRestaurant[KEY.ADMIN_SOURCE]!.text,
       contact: mapOfRestaurant[KEY.ADMIN_CONTACT]!.text,
+      menu_category: mapOfRestaurant[KEY.ADMIN_MENU_CATEGORY]!.text,
       representative_menu: mapOfRestaurant[KEY.ADMIN_REPRESENTATIVE_MENU]!.text,
       closed_days: mapOfRestaurant[KEY.ADMIN_CLOSED_DAYS]!.text,
       operation_time: mapOfRestaurant[KEY.ADMIN_OPERATION_TIME]!.text,
@@ -442,6 +402,63 @@ class ViewAdminState extends State<ViewAdmin> {
     );
 
     return mRestaurant;
+  }
+
+  Future<void> updateConfirmDialog(
+    String label, {
+    required VoidCallback acceptFunction,
+    required VoidCallback cancelFunction,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text(label),
+          children: [
+            SimpleDialogOption(
+              onPressed: acceptFunction,
+              child: const Text(LABEL.YES),
+            ),
+            SimpleDialogOption(
+              onPressed: cancelFunction,
+              child: const Text(LABEL.NO),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> tokenExpiredDialog(RestfulResult result) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('토큰 시간이 만료되었습니다'),
+          children: [
+            ElevatedButton(
+              child: const Text('다시 로그인하기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, PATH.ROUTE_ADMIN_LOGIN);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> uploadDialog(RestfulResult result) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: result.statusCode == 200
+                ? const Text('업로드 완료')
+                : const Text('업로드할 데이터가 없습니다.'),
+          );
+        });
   }
 
   @override

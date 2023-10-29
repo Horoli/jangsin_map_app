@@ -5,6 +5,7 @@ class MRestaurant extends CommonModel {
   final String source;
   final String label;
   final String contact;
+  final String menu_category;
   final String representative_menu;
   final String info;
   final String description;
@@ -31,6 +32,7 @@ class MRestaurant extends CommonModel {
     this.source = "",
     this.label = "",
     this.contact = "",
+    this.menu_category = "",
     this.representative_menu = "",
     this.info = "",
     this.description = "",
@@ -59,6 +61,7 @@ class MRestaurant extends CommonModel {
         'source': source,
         'label': label,
         'contact': contact,
+        'menu_category': menu_category,
         'representative_menu': representative_menu,
         'info': info,
         'description': description,
@@ -86,6 +89,7 @@ class MRestaurant extends CommonModel {
     String? source,
     String? label,
     String? contact,
+    String? menu_category,
     String? representative_menu,
     String? info,
     String? description,
@@ -104,7 +108,7 @@ class MRestaurant extends CommonModel {
     String? youtube_link,
     String? baemin_link,
     String? thumbnail,
-    String? add_thumbnail,
+    // String? add_thumbnail,
     int? created_at,
     int? updated_at,
   }) =>
@@ -113,6 +117,7 @@ class MRestaurant extends CommonModel {
         source: source ?? this.source,
         label: label ?? this.label,
         contact: contact ?? this.contact,
+        menu_category: menu_category ?? this.menu_category,
         representative_menu: representative_menu ?? this.representative_menu,
         info: info ?? this.info,
         description: description ?? this.description,
@@ -143,8 +148,10 @@ class MRestaurant extends CommonModel {
         'MRestaurant.fromMap : labels is null value');
     assert(item.containsKey('contact'),
         'MRestaurant.fromMap : contacts is null value');
+    assert(item.containsKey('menu_category'),
+        'MRestaurant.fromMap : menu_category is null value');
     assert(item.containsKey('representative_menu'),
-        'MRestaurant.fromMap : representative_menus is null value');
+        'MRestaurant.fromMap : representative_menu is null value');
     assert(
         item.containsKey('info'), 'MRestaurant.fromMap : infos is null value');
     assert(item.containsKey('description'),
@@ -190,6 +197,7 @@ class MRestaurant extends CommonModel {
       source: item['source'],
       label: item['label'],
       contact: item['contact'],
+      menu_category: item['menu_category'],
       representative_menu: item['representative_menu'],
       info: item['info'],
       description: item['description'],

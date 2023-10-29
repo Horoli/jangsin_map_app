@@ -121,7 +121,7 @@ class TileRestaurantUnit extends StatelessWidget {
           children: [
             AutoSizeText(restaurant.operation_time),
             const VerticalDivider(),
-            AutoSizeText(restaurant.closed_days),
+            AutoSizeText('휴무일 : ${restaurant.closed_days}'),
           ],
         ).expand(),
       ],
@@ -132,10 +132,12 @@ class TileRestaurantUnit extends StatelessWidget {
     return Row(
       children: [
         buildLinkIconButton(Icons.map, restaurant.naver_map_link).expand(),
-        buildLinkIconButton(Icons.restaurant_menu, restaurant.sns_link)
-            .expand(),
-        buildLinkIconButton(Icons.delivery_dining, restaurant.baemin_link)
-            .expand(),
+        if (restaurant.sns_link != '')
+          buildLinkIconButton(Icons.restaurant_menu, restaurant.sns_link)
+              .expand(),
+        if (restaurant.baemin_link != '')
+          buildLinkIconButton(Icons.delivery_dining, restaurant.baemin_link)
+              .expand(),
         if (restaurant.youtube_link != '')
           buildLinkIconButton(
                   Icons.slow_motion_video_rounded, restaurant.youtube_link)

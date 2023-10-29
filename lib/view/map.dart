@@ -131,7 +131,7 @@ class ViewMapState extends State<ViewMap> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AutoSizeText('검색결과 : ${snapshot.data['dataCount']}개'),
-                    // AutoSizeText('${snapshot.data['limit']}개'),
+                    AutoSizeText('페이지 당 ${snapshot.data['limit']}개 표시'),
                   ],
                 ),
                 const Divider(),

@@ -15,6 +15,7 @@ const String ADMIN_STREET = "address_street";
 const String ADMIN_LABEL = "label";
 const String ADMIN_SOURCE = "source";
 const String ADMIN_CONTACT = "contact";
+const String ADMIN_MENU_CATEGORY = 'menu_category';
 const String ADMIN_REPRESENTATIVE_MENU = "representative_menu";
 const String ADMIN_LAT = "lat";
 const String ADMIN_LNG = "lng";

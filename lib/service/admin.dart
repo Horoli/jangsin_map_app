@@ -221,7 +221,7 @@ class ServiceAdmin {
 
     http
         .post(query, headers: headers, body: jsonBody)
-        .timeout(const Duration(seconds: 10))
+        .timeout(const Duration(seconds: 30))
         .then((rep) {
       Map rawData = json.decode(rep.body);
 
