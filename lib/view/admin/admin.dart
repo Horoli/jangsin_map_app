@@ -137,7 +137,6 @@ class ViewAdminState extends State<ViewAdmin> {
                   return tokenExpiredDialog(csvUploadResult);
                 }
 
-                // print('csvUpload ${csvUploadResult.map}');
                 await uploadDialog(csvUploadResult);
 
                 await GServiceRestaurant.pagination(page: 1);
@@ -453,9 +452,10 @@ class ViewAdminState extends State<ViewAdmin> {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
+          print(result.map);
           return AlertDialog(
             title: result.statusCode == 200
-                ? const Text('업로드 완료')
+                ? Text('식당 ${result.data['count']}개 업로드 완료')
                 : const Text('업로드할 데이터가 없습니다.'),
           );
         });
