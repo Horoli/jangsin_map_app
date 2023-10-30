@@ -14,9 +14,8 @@ class ViewMapState extends State<ViewMap> {
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
 
-  final ScrollController ctrlScroll = ScrollController();
-
   final TextEditingController ctrlSido = TextEditingController();
+  final TextEditingController ctrlSigungu = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class ViewMapState extends State<ViewMap> {
       initialData: RestfulResult(statusCode: 400, message: '', data: null),
       stream: GServiceRestaurant.$pagination.browse$,
       builder: (BuildContext context, RestfulResult snapshot) {
-        print('snapshot.statusCode ${snapshot.statusCode}');
+        ('snapshot.statusCode ${snapshot.statusCode}');
         if (snapshot.statusCode == 403) {
           return ViewServerDisconnect();
         }
@@ -44,16 +43,23 @@ class ViewMapState extends State<ViewMap> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Column(
+            Row(
               children: [
-                SizedBox(
-                  height: kToolbarHeight,
-                  child: buildRegionSelectField(),
-                )
+                buildRegionSelectField(
+                  controller: ctrlSido,
+                  selectRegion: LABEL.SELECT_REGION_SIDO,
+                  selectedRegionFunction: selectRegionSidoDialog,
+                ).expand(),
+                const Padding(padding: EdgeInsets.all(4)),
+                if (ctrlSido.text != DISTRICT.ALL)
+                  buildRegionSelectField(
+                    controller: ctrlSigungu,
+                    selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+                    selectedRegionFunction: selectRegionSigunguDialog,
+                  ).expand()
               ],
-            ),
+            ).sizedBox(height: kToolbarHeight),
             const HtmlElementView(viewType: 'naver-map').expand(),
-            // Container(color: Colors.red).expand(),
             const Divider(),
             buildMapList(snapshot).expand(),
           ],
@@ -83,10 +89,22 @@ class ViewMapState extends State<ViewMap> {
           children: [
             Column(
               children: [
-                SizedBox(
-                  height: kToolbarHeight,
-                  child: buildRegionSelectField(),
-                ),
+                Row(
+                  children: [
+                    buildRegionSelectField(
+                      controller: ctrlSido,
+                      selectRegion: LABEL.SELECT_REGION_SIDO,
+                      selectedRegionFunction: selectRegionSidoDialog,
+                    ).expand(),
+                    const Padding(padding: EdgeInsets.all(4)),
+                    if (ctrlSido.text != DISTRICT.ALL)
+                      buildRegionSelectField(
+                        controller: ctrlSigungu,
+                        selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+                        selectedRegionFunction: selectRegionSigunguDialog,
+                      ).expand()
+                  ],
+                ).sizedBox(height: kToolbarHeight),
                 const Divider(),
                 Row(
                   children: [
@@ -103,11 +121,15 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Widget buildRegionSelectField() {
+  Widget buildRegionSelectField({
+    required String selectRegion,
+    required TextEditingController controller,
+    required Function() selectedRegionFunction,
+  }) {
     return TextField(
-      controller: ctrlSido,
-      decoration: const InputDecoration(
-        suffixIcon: Row(
+      controller: controller,
+      decoration: InputDecoration(
+        suffixIcon: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             VerticalDivider(),
@@ -116,12 +138,12 @@ class ViewMapState extends State<ViewMap> {
           ],
         ),
         suffixIconColor: COLOR.WHITE,
-        border: OutlineInputBorder(),
-        labelText: LABEL.SELECT_REGION,
+        border: const OutlineInputBorder(),
+        labelText: selectRegion,
       ),
       readOnly: true,
       autocorrect: false,
-      onTap: () => selectRegionDialog(),
+      onTap: selectedRegionFunction,
     );
   }
 
@@ -147,30 +169,37 @@ class ViewMapState extends State<ViewMap> {
               itemBuilder: (context, index) => SizedBox(
                 height: 100,
                 width: double.infinity,
-                child: TileRestaurantUnit(
-                  restaurant: restaurants[index],
-                  $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
-                  onPressed: () {
-                    // 선택한 식당이 같은 경우 빈 식당 sink$
-                    // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
-                    //     restaurants[index].id) {
-                    //   GServiceRestaurant.$selectedRestaurant
-                    //       .sink$(MRestaurant());
-                    //   return;
-                    // }
+                child: Row(
+                  children: [
+                    Text('${index + 1}'),
+                    const Padding(padding: EdgeInsets.all(4)),
+                    TileRestaurantUnit(
+                      restaurant: restaurants[index],
+                      $selectedRestaurant:
+                          GServiceRestaurant.$selectedRestaurant,
+                      onPressed: () {
+                        // 선택한 식당이 같은 경우 빈 식당 sink$
+                        // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                        //     restaurants[index].id) {
+                        //   GServiceRestaurant.$selectedRestaurant
+                        //       .sink$(MRestaurant());
+                        //   return;
+                        // }
 
-                    // 선택한 식당이 다른 경우 해당 식당을 sink$
-                    GServiceRestaurant.$selectedRestaurant
-                        .sink$(restaurants[index]);
+                        // 선택한 식당이 다른 경우 해당 식당을 sink$
+                        GServiceRestaurant.$selectedRestaurant
+                            .sink$(restaurants[index]);
 
-                    inputDataForHtml(
-                      dataType: 'set',
-                      data: {
-                        'lat': restaurants[index].lat,
-                        'lng': restaurants[index].lng
+                        inputDataForHtml(
+                          dataType: 'set',
+                          data: {
+                            'lat': restaurants[index].lat,
+                            'lng': restaurants[index].lng
+                          },
+                        );
                       },
-                    );
-                  },
+                    ).expand(),
+                  ],
                 ),
               ),
             ).expand(),
@@ -183,9 +212,11 @@ class ViewMapState extends State<ViewMap> {
                   GServiceRestaurant.pagination(page: page);
                   return;
                 }
+                // 쿼리에 null 값이 들어가게 설정
                 GServiceRestaurant.pagination(
                   page: page,
                   sido: ctrlSido.text,
+                  sigungu: ctrlSigungu.text == "" ? null : ctrlSigungu.text,
                 );
               },
             ),
@@ -195,56 +226,108 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Future<void> selectRegionDialog() {
-    List<String> sidoList =
-        DISTRICT.KOREA_ADMINISTRATIVE_DISTRICT.keys.toList();
-    sidoList.insert(0, DISTRICT.ALL);
+  Future<void> selectRegionSidoDialog() async {
+    RestfulResult district = await GServiceRestaurant.getDistrict();
+    List<String> getSidoList = district.data;
+    getSidoList.insert(0, DISTRICT.ALL);
+    // ignore: use_build_context_synchronously
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return PointerInterceptor(
           child: AlertDialog(
             content: SizedBox(
-              width: isPort ? width * 0.8 : width * 0.4,
+              width: isPort ? width * 0.4 : width * 0.4,
               height: isPort ? height * 0.7 : height * 0.4,
-              child: GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isPort ? 2 : 5,
-                  childAspectRatio: isPort ? 2.0 : 1.5,
-                  crossAxisSpacing: 5.0,
-                  mainAxisSpacing: 5.0,
-                ),
-                itemCount: sidoList.length,
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: getSidoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  String sido = sidoList[index];
-                  return ElevatedButton(
-                    child: AutoSizeText(sido, maxLines: 1),
-                    onPressed: () async {
-                      if (sido == DISTRICT.ALL) {
-                        Navigator.pop(context);
-                        ctrlSido.value = ctrlSido.value.copyWith(
-                          text: DISTRICT.ALL,
-                          selection: const TextSelection.collapsed(
-                              offset: DISTRICT.ALL.length),
-                          composing: TextRange.empty,
-                        );
-                        GServiceRestaurant.pagination(page: 1);
-                        return;
-                      }
+                  String sido = getSidoList[index];
+                  return Row(
+                    children: [
+                      Text('${index + 1}'),
+                      const VerticalDivider(),
+                      ElevatedButton(
+                        child: AutoSizeText(sido, maxLines: 1),
+                        onPressed: () async {
+                          if (sido == DISTRICT.ALL) {
+                            Navigator.pop(context);
+                            ctrlSido.value = ctrlSido.value.copyWith(
+                              text: DISTRICT.ALL,
+                              selection: const TextSelection.collapsed(
+                                  offset: DISTRICT.ALL.length),
+                              composing: TextRange.empty,
+                            );
+                            GServiceRestaurant.pagination(page: 1);
+                            ctrlSigungu.text = '';
+                            return;
+                          }
 
-                      Navigator.pop(context);
-                      GServiceRestaurant.pagination(sido: sido);
-                      // ctrlSido.text = sido;
-                      // ctrlSido.selection =
-                      //     TextSelection.collapsed(offset: sido.length);
+                          Navigator.pop(context);
+                          GServiceRestaurant.pagination(sido: sido);
 
-                      ctrlSido.value = ctrlSido.value.copyWith(
-                        text: sido,
-                        selection: TextSelection.collapsed(offset: sido.length),
-                        composing: TextRange.empty,
-                      );
-                    },
+                          ctrlSido.value = ctrlSido.value.copyWith(
+                            text: sido,
+                            selection:
+                                TextSelection.collapsed(offset: sido.length),
+                            composing: TextRange.empty,
+                          );
+                          ctrlSigungu.text = '';
+                        },
+                      ).expand(),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> selectRegionSigunguDialog() async {
+    await GServiceRestaurant.getDistrict(sido: ctrlSido.text);
+    List<String> getSigunguList =
+        GServiceRestaurant.$districtSigungu.lastValue.data;
+    // ignore: use_build_context_synchronously
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return PointerInterceptor(
+          child: AlertDialog(
+            content: SizedBox(
+              width: isPort ? width * 0.4 : width * 0.4,
+              height: isPort ? height * 0.7 : height * 0.4,
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: getSigunguList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  String sigungu = getSigunguList[index];
+                  return Row(
+                    children: [
+                      Text('${index + 1}'),
+                      const VerticalDivider(),
+                      ElevatedButton(
+                        child: AutoSizeText(sigungu, maxLines: 1),
+                        onPressed: () async {
+                          Navigator.pop(context);
+
+                          ctrlSigungu.value = ctrlSigungu.value.copyWith(
+                            text: sigungu,
+                            selection:
+                                TextSelection.collapsed(offset: sigungu.length),
+                            composing: TextRange.empty,
+                          );
+
+                          GServiceRestaurant.pagination(
+                            sido: ctrlSido.text,
+                            sigungu: ctrlSigungu.text,
+                          );
+                        },
+                      ).expand(),
+                    ],
                   );
                 },
               ),
@@ -266,6 +349,7 @@ class ViewMapState extends State<ViewMap> {
     await registerNaverMap();
     await GUtility.wait(splashDuration);
     await GServiceRestaurant.pagination();
+
     RestfulResult latLng = await GServiceRestaurant.getLatLng();
     await Future.delayed(const Duration(milliseconds: 200), () async {
       await inputDataForHtml(dataType: 'init', data: latLng.data);

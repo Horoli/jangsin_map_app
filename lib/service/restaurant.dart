@@ -7,11 +7,13 @@ class ServiceRestaurant {
 
   ServiceRestaurant._internal();
 
-  TStream<MRestaurant> $selectedRestaurant = TStream<MRestaurant>()
+  final TStream<MRestaurant> $selectedRestaurant = TStream<MRestaurant>()
     ..sink$(MRestaurant());
 
-  TStream<RestfulResult> $pagination = TStream<RestfulResult>();
-  TStream<RestfulResult> $latLng = TStream<RestfulResult>();
+  final TStream<RestfulResult> $pagination = TStream<RestfulResult>();
+  final TStream<RestfulResult> $latLng = TStream<RestfulResult>();
+  final TStream<RestfulResult> $districtSido = TStream<RestfulResult>();
+  final TStream<RestfulResult> $districtSigungu = TStream<RestfulResult>();
 
   Future<RestfulResult> getLatLng() async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
@@ -52,6 +54,72 @@ class ServiceRestaurant {
     return completer.future;
   }
 
+  Future<RestfulResult> getDistrict({String? sido}) async {
+    Completer<RestfulResult> completer = Completer<RestfulResult>();
+
+    Map<String, String> headers = {
+      "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
+      "access-control-allow-origin": "*",
+    };
+
+    Map<String, String> queryByCondition = {
+      if (sido != null) 'sido': sido,
+    };
+
+    Uri query = PATH.IS_LOCAL
+        ? Uri.http(
+            PATH.LOCAL_URL,
+            PATH.API_RESTAURANT_DISTRICT,
+            queryByCondition,
+          )
+        : Uri.https(
+            PATH.FORIEGN_URL,
+            PATH.API_RESTAURANT_DISTRICT,
+            queryByCondition,
+          );
+
+    http.get(query, headers: headers).then((rep) {
+      Map rawData = json.decode(rep.body);
+      (rawData);
+
+      if (rawData['statusCode'] != 200) {
+        RestfulResult errorResult = RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: rawData['message'],
+        );
+        completer.complete(errorResult);
+        return errorResult;
+      }
+
+      List<String> convertSido = List<String>.from(rawData['data']['sido']);
+
+      // sido가 입력됐으면
+      List<String> convertSigungu = [];
+      if (sido != null) {
+        convertSigungu = List<String>.from(rawData['data']['sigungu']);
+        $districtSigungu.sink$(RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: 'get district sigungu complete',
+          data: convertSigungu,
+        ));
+      }
+
+      $districtSido.sink$(RestfulResult(
+        statusCode: rawData['statusCode'],
+        message: 'get district sido complete',
+        data: convertSido,
+      ));
+
+      completer.complete(RestfulResult(
+        statusCode: 200,
+        message: 'get Data complete',
+        data: convertSido,
+      ));
+    });
+
+    return completer.future;
+  }
+
   Future<RestfulResult> pagination({
     int page = 1,
     int limit = 10,
@@ -65,14 +133,15 @@ class ServiceRestaurant {
       "access-control-allow-origin": "*",
     };
 
+    // sido와 sigungu가 있으면 쿼리에 추가
     Map<String, String> queryByCondition = {
       'page': page.toString(),
       'limit': limit.toString(),
+      // 'menu': 'zzz',
+      // 'source': 'xxx',
       if (sido != null) 'sido': sido,
       if (sido != null && sigungu != null) 'sigungu': sigungu,
     };
-
-    ('queryByCondition $queryByCondition');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(
@@ -85,56 +154,6 @@ class ServiceRestaurant {
             PATH.API_RESTAURANT_PAGINATION,
             queryByCondition,
           );
-
-    // try {
-    //   final Future<Response> request = http.get(query, headers: headers);
-
-    //   request.timeout(const Duration(seconds: 3));
-
-    //   request.then((rep) {
-    //     Map rawData = json.decode(rep.body);
-
-    //     if (rawData['statusCode'] != 200) {
-    //       RestfulResult errorResult = RestfulResult(
-    //         statusCode: rawData['statusCode'],
-    //         message: rawData['message'],
-    //       );
-    //       completer.complete(errorResult);
-    //       return errorResult;
-    //     }
-
-    //     List<MRestaurant> getRestaurant =
-    //         List.from(rawData['data']['pagination_data'])
-    //             .map((data) => MRestaurant.fromMap(data))
-    //             .toList();
-
-    //     RestfulResult restfulResult = RestfulResult(
-    //       statusCode: 200,
-    //       message: 'get Data complete',
-    //       data: {
-    //         "limit": rawData['data']['limit'],
-    //         "dataCount": rawData['data']['dataCount'],
-    //         "total_page": rawData['data']['total_page'],
-    //         "current_page": page,
-    //         "pagination_data": getRestaurant,
-    //       },
-    //     );
-
-    //     $pagination.sink$(restfulResult);
-
-    //     completer.complete(restfulResult);
-    //   });
-    // } on TimeoutException catch (timeout) {
-    //   print('timeout $timeout');
-    //   RestfulResult timeOutResult =
-    //       RestfulResult(statusCode: 403, message: 'timeout');
-    //   $pagination.sink$(timeOutResult);
-    //   completer.complete(timeOutResult);
-    // } catch (error) {
-    //   print('error $error');
-    // }
-
-    // return completer.future;
 
     http.get(query, headers: headers).timeout(const Duration(seconds: 5),
         onTimeout: () async {

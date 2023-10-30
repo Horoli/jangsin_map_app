@@ -47,11 +47,11 @@ class ViewSplashState extends State<ViewSplash>
 
   Future<void> loadData() async {
     // RestfulResult latLng = await GServiceRestaurant.getLatLng();
-    // print('latLng ${latLng.isSuccess}');
+    // ('latLng ${latLng.isSuccess}');
 
     // if (latLng.isSuccess == true) {
     //   $splash.sink$(false);
-    //   print('splash ${$splash.lastValue}');
+    //   ('splash ${$splash.lastValue}');
     //   if ($splash.lastValue == false) {
     //     Navigator.pushNamedAndRemoveUntil(
     //         context, PATH.ROUTE_MAP, (route) => false);

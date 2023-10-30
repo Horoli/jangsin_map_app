@@ -15,6 +15,7 @@ const String API_RESTAURANT_PATCH = 'restaurant/patch';
 //
 const String API_RESTAURANT_GET = 'restaurant/get';
 const String API_RESTAURANT_LATLNG = 'restaurant/latlng';
+const String API_RESTAURANT_DISTRICT = 'restaurant/district/';
 const String API_RESTAURANT_PAGINATION = 'restaurant/pagination/';
 const String API_RESTAURANT_DELETE = 'restaurant/delete';
 const String API_RESTAURANT_CSV_UPLOAD = 'restaurant/create_csv_upload';

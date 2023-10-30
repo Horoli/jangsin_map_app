@@ -168,7 +168,6 @@ class ViewAdminState extends State<ViewAdmin> {
       child: const Text(LABEL.UPDATE_NEW),
       onPressed: () async {
         // TODO : 정말 등록하시겠습니까 팝업 띄우고
-        print(setRestaurantInfo(restaurant).map);
         // 변경 완료된 경우 선택 해제 및 페이지네이션은 현재 페이지로 고정
         updateConfirmDialog(
           LABEL.CONFIRM_SAVE,
@@ -180,8 +179,6 @@ class ViewAdminState extends State<ViewAdmin> {
 
             RestfulResult updateResult = await GServiceAdmin.createRestaurant(
                 token: token, mapOfRestaurant: mapOfRestaurant);
-
-            print('updateResult ${updateResult.map}');
 
             if (updateResult.statusCode == 503) {
               return tokenExpiredDialog(updateResult);
@@ -296,7 +293,6 @@ class ViewAdminState extends State<ViewAdmin> {
                   ),
                   child: Text(restaurants[index].label),
                   onPressed: () {
-                    // print('${restaurants[index].map}');
                     // TODO : 선택을 해제하면 입력된 값을 모두 초기화
                     if (selectedRestaurant.id == restaurants[index].id) {
                       initCtrl();

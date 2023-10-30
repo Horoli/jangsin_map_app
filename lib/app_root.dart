@@ -15,7 +15,6 @@ class AppRootState extends State<AppRoot> {
   };
   @override
   Widget build(BuildContext context) {
-    // print('appRoot ${isRefresh}');
     return MaterialApp(
       title: '장사의 신 - Jangsin Map',
       theme: ThemeData.dark(),
