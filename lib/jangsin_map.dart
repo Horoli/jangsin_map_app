@@ -2,8 +2,10 @@ library jangin_map;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,6 +39,11 @@ part 'service/admin.dart';
 
 part 'global.dart';
 
+part 'utility.dart';
+
+part 'view/splash.dart';
+part 'view/server_disconnect.dart';
+part 'view/loading.dart';
 part 'view/map.dart';
 part 'view/admin/admin.dart';
 part 'view/admin/admin_login.dart';

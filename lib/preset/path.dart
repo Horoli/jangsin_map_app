@@ -5,6 +5,7 @@ const String FORIEGN_URL = 'jangsin-api.horoli.kr';
 const String MAP_HTML_LOCAL = 'assets/html/map.html';
 const String MAP_HTML_FORIEGN = 'assets/assets/html/map.html';
 
+// const String ROUTE_SPLASH = '/';
 const String ROUTE_MAP = '/';
 const String ROUTE_ADMIN = '/admin';
 const String ROUTE_ADMIN_LOGIN = '/admin_login';

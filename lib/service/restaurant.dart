@@ -11,6 +11,7 @@ class ServiceRestaurant {
     ..sink$(MRestaurant());
 
   TStream<RestfulResult> $pagination = TStream<RestfulResult>();
+  TStream<RestfulResult> $latLng = TStream<RestfulResult>();
 
   Future<RestfulResult> getLatLng() async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
@@ -19,8 +20,6 @@ class ServiceRestaurant {
       "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
       "access-control-allow-origin": "*",
     };
-
-    ('get latlng $headers');
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_RESTAURANT_LATLNG)
@@ -37,6 +36,11 @@ class ServiceRestaurant {
         completer.complete(errorResult);
         return errorResult;
       }
+
+      $latLng.sink$(RestfulResult(
+          statusCode: rawData['statusCode'],
+          message: 'get Data complete',
+          data: rawData['data']));
 
       completer.complete(RestfulResult(
         statusCode: 200,
@@ -82,9 +86,65 @@ class ServiceRestaurant {
             queryByCondition,
           );
 
-    http.get(query, headers: headers).then((rep) {
+    // try {
+    //   final Future<Response> request = http.get(query, headers: headers);
+
+    //   request.timeout(const Duration(seconds: 3));
+
+    //   request.then((rep) {
+    //     Map rawData = json.decode(rep.body);
+
+    //     if (rawData['statusCode'] != 200) {
+    //       RestfulResult errorResult = RestfulResult(
+    //         statusCode: rawData['statusCode'],
+    //         message: rawData['message'],
+    //       );
+    //       completer.complete(errorResult);
+    //       return errorResult;
+    //     }
+
+    //     List<MRestaurant> getRestaurant =
+    //         List.from(rawData['data']['pagination_data'])
+    //             .map((data) => MRestaurant.fromMap(data))
+    //             .toList();
+
+    //     RestfulResult restfulResult = RestfulResult(
+    //       statusCode: 200,
+    //       message: 'get Data complete',
+    //       data: {
+    //         "limit": rawData['data']['limit'],
+    //         "dataCount": rawData['data']['dataCount'],
+    //         "total_page": rawData['data']['total_page'],
+    //         "current_page": page,
+    //         "pagination_data": getRestaurant,
+    //       },
+    //     );
+
+    //     $pagination.sink$(restfulResult);
+
+    //     completer.complete(restfulResult);
+    //   });
+    // } on TimeoutException catch (timeout) {
+    //   print('timeout $timeout');
+    //   RestfulResult timeOutResult =
+    //       RestfulResult(statusCode: 403, message: 'timeout');
+    //   $pagination.sink$(timeOutResult);
+    //   completer.complete(timeOutResult);
+    // } catch (error) {
+    //   print('error $error');
+    // }
+
+    // return completer.future;
+
+    http.get(query, headers: headers).timeout(const Duration(seconds: 5),
+        onTimeout: () async {
+      RestfulResult timeOutResult =
+          RestfulResult(statusCode: 403, message: 'timeout');
+      $pagination.sink$(timeOutResult);
+      completer.complete(timeOutResult);
+      throw TimeoutException('Connection time out');
+    }).then((rep) {
       Map rawData = json.decode(rep.body);
-      // (rawData);
 
       if (rawData['statusCode'] != 200) {
         RestfulResult errorResult = RestfulResult(
@@ -94,7 +154,6 @@ class ServiceRestaurant {
         completer.complete(errorResult);
         return errorResult;
       }
-      // ('step 1');
 
       List<MRestaurant> getRestaurant =
           List.from(rawData['data']['pagination_data'])
@@ -116,6 +175,12 @@ class ServiceRestaurant {
       $pagination.sink$(restfulResult);
 
       completer.complete(restfulResult);
+    }).catchError((onError) {
+      RestfulResult timeOutResult =
+          RestfulResult(statusCode: 403, message: 'timeout');
+      $pagination.sink$(timeOutResult);
+      // completer.complete(timeOutResult);
+      throw TimeoutException('Connection time out');
     });
 
     return completer.future;

@@ -405,8 +405,8 @@ class ViewAdminState extends State<ViewAdmin> {
 
   Future<void> updateConfirmDialog(
     String label, {
-    required VoidCallback acceptFunction,
-    required VoidCallback cancelFunction,
+    required Function() acceptFunction,
+    required Function() cancelFunction,
   }) {
     return showDialog(
       context: context,

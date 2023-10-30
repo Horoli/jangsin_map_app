@@ -17,18 +17,18 @@
         window.parent.addEventListener('message', handleMessage, false);
         // window.parent.addEventListener('set', setMarker, false);
 
-        const lat = 37.4824419369998;
-        const lng = 126.84983521857548;
+        // const lat = 37.4824419369998;
+        // const lng = 126.84983521857548;
         var map = new naver.maps.Map('map', mapOptions);
         resize();
-        var center = new naver.maps.LatLng(lat, lng);
+        // var center = new naver.maps.LatLng(lat, lng);
         var mapOptions = { zoom: 10 };
         window.addEventListener('resize', resize);
 
-        var marker = new naver.maps.Marker({
-            position: center,
-            map: map,
-        });
+        // var marker = new naver.maps.Marker({
+        //     position: center,
+        //     map: map,
+        // });
 
 
         function handleMessage(e) {

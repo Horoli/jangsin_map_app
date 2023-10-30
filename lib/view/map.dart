@@ -12,6 +12,7 @@ class ViewMapState extends State<ViewMap> {
   bool get isPort => mediaQuery.orientation == Orientation.portrait;
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
+  final int splashDuration = 2000;
 
   final ScrollController ctrlScroll = ScrollController();
 
@@ -19,11 +20,25 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   Widget build(BuildContext context) {
-    return isPort ? buildPortait() : buildLandscape();
+    return TStreamBuilder(
+      initialData: RestfulResult(statusCode: 400, message: '', data: null),
+      stream: GServiceRestaurant.$pagination.browse$,
+      builder: (BuildContext context, RestfulResult snapshot) {
+        print('snapshot.statusCode ${snapshot.statusCode}');
+        if (snapshot.statusCode == 403) {
+          return ViewServerDisconnect();
+        }
+        if (snapshot.statusCode != 200) {
+          return ViewDataLoading();
+        }
+
+        return isPort ? buildPortait(snapshot) : buildLandscape(snapshot);
+      },
+    );
   }
 
   // TODO : 세로모드(mobile) 인 경우, appBar 미출력
-  Widget buildPortait() {
+  Widget buildPortait(RestfulResult snapshot) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -40,7 +55,7 @@ class ViewMapState extends State<ViewMap> {
             const HtmlElementView(viewType: 'naver-map').expand(),
             // Container(color: Colors.red).expand(),
             const Divider(),
-            buildMapList().expand(),
+            buildMapList(snapshot).expand(),
           ],
         ),
       ),
@@ -48,7 +63,7 @@ class ViewMapState extends State<ViewMap> {
   }
 
   // TODO : 가로모드인 경우, appBar 출력
-  Widget buildLandscape() {
+  Widget buildLandscape(RestfulResult snapshot) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Jangsin Map'),
@@ -75,7 +90,7 @@ class ViewMapState extends State<ViewMap> {
                 const Divider(),
                 Row(
                   children: [
-                    buildMapList().expand(),
+                    buildMapList(snapshot).expand(),
                     const VerticalDivider(),
                     const HtmlElementView(viewType: 'naver-map').expand(),
                   ],
@@ -110,83 +125,71 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Widget buildMapList() {
+  Widget buildMapList(RestfulResult snapshot) {
+    List<MRestaurant> restaurants = snapshot.data['pagination_data'];
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TStreamBuilder(
-          initialData: RestfulResult(statusCode: 400, message: '', data: null),
-          stream: GServiceRestaurant.$pagination.browse$,
-          builder: (BuildContext context, RestfulResult snapshot) {
-            if (snapshot.data == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            List<MRestaurant> restaurants = snapshot.data['pagination_data'];
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AutoSizeText('검색결과 : ${snapshot.data['dataCount']}개'),
-                    AutoSizeText('페이지 당 ${snapshot.data['limit']}개 표시'),
-                  ],
-                ),
-                const Divider(),
-                ListView.separated(
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemCount: restaurants.length,
-                  itemBuilder: (context, index) => SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                    child: TileRestaurantUnit(
-                      restaurant: restaurants[index],
-                      $selectedRestaurant:
-                          GServiceRestaurant.$selectedRestaurant,
-                      onPressed: () {
-                        // 선택한 식당이 같은 경우 빈 식당 sink$
-                        // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
-                        //     restaurants[index].id) {
-                        //   GServiceRestaurant.$selectedRestaurant
-                        //       .sink$(MRestaurant());
-                        //   return;
-                        // }
+                AutoSizeText('검색결과 : ${snapshot.data['dataCount']}개'),
+                AutoSizeText('페이지 당 ${snapshot.data['limit']}개 표시'),
+              ],
+            ),
+            const Divider(),
+            ListView.separated(
+              separatorBuilder: (context, index) => const Divider(),
+              itemCount: restaurants.length,
+              itemBuilder: (context, index) => SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: TileRestaurantUnit(
+                  restaurant: restaurants[index],
+                  $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+                  onPressed: () {
+                    // 선택한 식당이 같은 경우 빈 식당 sink$
+                    // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                    //     restaurants[index].id) {
+                    //   GServiceRestaurant.$selectedRestaurant
+                    //       .sink$(MRestaurant());
+                    //   return;
+                    // }
 
-                        // 선택한 식당이 다른 경우 해당 식당을 sink$
-                        GServiceRestaurant.$selectedRestaurant
-                            .sink$(restaurants[index]);
+                    // 선택한 식당이 다른 경우 해당 식당을 sink$
+                    GServiceRestaurant.$selectedRestaurant
+                        .sink$(restaurants[index]);
 
-                        inputDataForHtml(
-                          dataType: 'set',
-                          data: {
-                            'lat': restaurants[index].lat,
-                            'lng': restaurants[index].lng
-                          },
-                        );
+                    inputDataForHtml(
+                      dataType: 'set',
+                      data: {
+                        'lat': restaurants[index].lat,
+                        'lng': restaurants[index].lng
                       },
-                    ),
-                  ),
-                ).expand(),
-                const Divider(),
-                PaginationButton(
-                  currentPage: snapshot.data['current_page'],
-                  totalPage: snapshot.data['total_page'],
-                  onPressed: (int page) {
-                    if (ctrlSido.text == LABEL.ALL) {
-                      GServiceRestaurant.pagination(page: page);
-                      return;
-                    }
-                    GServiceRestaurant.pagination(
-                      page: page,
-                      sido: ctrlSido.text,
                     );
                   },
                 ),
-              ],
-            );
-          },
+              ),
+            ).expand(),
+            const Divider(),
+            PaginationButton(
+              currentPage: snapshot.data['current_page'],
+              totalPage: snapshot.data['total_page'],
+              onPressed: (int page) {
+                if (ctrlSido.text == LABEL.ALL) {
+                  GServiceRestaurant.pagination(page: page);
+                  return;
+                }
+                GServiceRestaurant.pagination(
+                  page: page,
+                  sido: ctrlSido.text,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -254,34 +257,19 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   void initState() {
-    initMap();
     super.initState();
+    initMap();
   }
 
   Future<void> initMap() async {
-    await registerView();
-    RestfulResult result = await GServiceRestaurant.getLatLng();
-    List latLngs = result.data;
-
     ctrlSido.text = LABEL.ALL;
-    GServiceRestaurant.pagination(page: 1);
-
-    Future.delayed(const Duration(milliseconds: 200),
-        () => {inputDataForHtml(dataType: 'init', data: latLngs)});
-  }
-
-  Future<void> registerView() async {
-    String htmlPath =
-        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
-
-    ui_web.platformViewRegistry.registerViewFactory(
-      'naver-map',
-      (int id) => html.IFrameElement()
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.border = 'none'
-        ..src = htmlPath,
-    );
+    await registerNaverMap();
+    await GUtility.wait(splashDuration);
+    await GServiceRestaurant.pagination();
+    RestfulResult latLng = await GServiceRestaurant.getLatLng();
+    await Future.delayed(const Duration(milliseconds: 200), () async {
+      await inputDataForHtml(dataType: 'init', data: latLng.data);
+    });
   }
 
   Future<void> inputDataForHtml(
@@ -295,6 +283,20 @@ class ViewMapState extends State<ViewMap> {
 
     String jsonData = jsonEncode(mapOfData);
     html.window.postMessage(jsonData, '*');
+  }
+
+  Future<void> registerNaverMap() async {
+    String htmlPath =
+        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
+
+    ui_web.platformViewRegistry.registerViewFactory(
+      'naver-map',
+      (int id) => html.IFrameElement()
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.border = 'none'
+        ..src = htmlPath,
+    );
   }
 
   @override
