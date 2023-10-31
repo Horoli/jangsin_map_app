@@ -267,8 +267,6 @@ class ViewMapState extends State<ViewMap> {
             children: [
               Row(
                 children: [
-                  const Text('SiteMap'),
-                  const VerticalDivider(),
                   TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: COLOR.WHITE,
