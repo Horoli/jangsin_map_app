@@ -44,7 +44,7 @@ class ViewMapState extends State<ViewMap> {
       body: SingleChildScrollView(
         controller: ctrlScoll,
         child: SizedBox(
-          height: height * 1.3,
+          height: height * 1.5,
           child: Column(
             children: [
               Padding(
