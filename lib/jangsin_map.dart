@@ -2,15 +2,13 @@ library jangin_map;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
-import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'dart:ui_web' as ui_web;
 import 'dart:html' as html;
+import 'dart:js' as js;
 
 import 'package:http/http.dart' as http;
 import 'package:jangsin_map/model/lib.dart';
@@ -31,7 +29,6 @@ import 'package:tnd_core/tnd_core.dart';
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:file_picker/file_picker.dart';
 
 part 'app_root.dart';
 

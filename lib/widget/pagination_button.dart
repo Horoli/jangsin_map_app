@@ -1,5 +1,6 @@
 part of 'lib.dart';
 
+// ignore: must_be_immutable
 class PaginationButton extends StatelessWidget {
   int currentPage;
   int totalPage;

@@ -2,7 +2,6 @@ library widget;
 
 import 'dart:math';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +13,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 
 import 'dart:js' as js;
-import 'dart:convert';
 
 import 'package:jangsin_map/model/lib.dart';
 import 'package:jangsin_map/preset/key.dart' as KEY;
-import 'package:jangsin_map/preset/district.dart' as DISTRICT;
 import 'package:jangsin_map/preset/color.dart' as COLOR;
 import 'package:jangsin_map/preset/label.dart' as LABEL;
 import 'package:jangsin_map/preset/icon.dart' as ICON;

@@ -1,5 +1,6 @@
 part of widget;
 
+// ignore: must_be_immutable
 class ManagementInfo extends StatelessWidget {
   BuildContext context;
   MRestaurant restaurant;

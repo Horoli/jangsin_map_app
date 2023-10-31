@@ -1,5 +1,6 @@
 part of 'lib.dart';
 
+// ignore: must_be_immutable
 class CustomDropdownField extends StatelessWidget {
   String value;
   List<DropdownMenuItem> items;
