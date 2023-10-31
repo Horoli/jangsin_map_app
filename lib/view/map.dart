@@ -16,6 +16,8 @@ class ViewMapState extends State<ViewMap> {
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
+  final ScrollController ctrlScoll = ScrollController();
+  final ScrollController ctrlMapScroll = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,30 +41,42 @@ class ViewMapState extends State<ViewMap> {
   // TODO : 세로모드(mobile) 인 경우, appBar 미출력
   Widget buildPortait(RestfulResult snapshot) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                buildRegionSelectField(
-                  controller: ctrlSido,
-                  selectRegion: LABEL.SELECT_REGION_SIDO,
-                  selectedRegionFunction: selectRegionSidoDialog,
-                ).expand(),
-                const Padding(padding: EdgeInsets.all(4)),
-                if (ctrlSido.text != DISTRICT.ALL)
-                  buildRegionSelectField(
-                    controller: ctrlSigungu,
-                    selectRegion: LABEL.SELECT_REGION_SIGUNGU,
-                    selectedRegionFunction: selectRegionSigunguDialog,
-                  ).expand()
-              ],
-            ).sizedBox(height: kToolbarHeight),
-            const HtmlElementView(viewType: 'naver-map').expand(),
-            const Divider(),
-            buildMapList(snapshot).expand(),
-          ],
+      body: SingleChildScrollView(
+        controller: ctrlScoll,
+        child: SizedBox(
+          height: height * 1.3,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        buildRegionSelectField(
+                          controller: ctrlSido,
+                          selectRegion: LABEL.SELECT_REGION_SIDO,
+                          selectedRegionFunction: selectRegionSidoDialog,
+                        ).expand(),
+                        const Padding(padding: EdgeInsets.all(4)),
+                        if (ctrlSido.text != DISTRICT.ALL)
+                          buildRegionSelectField(
+                            controller: ctrlSigungu,
+                            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+                            selectedRegionFunction: selectRegionSigunguDialog,
+                          ).expand()
+                      ],
+                    ).sizedBox(height: kToolbarHeight),
+                    const HtmlElementView(viewType: 'naver-map').expand(),
+                    const Divider(),
+                    buildMapList(snapshot).expand(flex: 2),
+                  ],
+                ),
+              ).expand(),
+              const Divider(),
+              buildFooter().sizedBox(height: kToolbarHeight * 1.5)
+            ],
+          ),
         ),
       ),
     );
@@ -72,7 +86,7 @@ class ViewMapState extends State<ViewMap> {
   Widget buildLandscape(RestfulResult snapshot) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jangsin Map'),
+        title: const Text(LABEL.APP_TITLE),
         actions: [
           TextButton(
             child: const Text(''),
@@ -83,67 +97,49 @@ class ViewMapState extends State<ViewMap> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            Column(
-              children: [
-                Row(
+      body: SingleChildScrollView(
+        controller: ctrlScoll,
+        child: SizedBox(
+          height: height * 1.3,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
                   children: [
-                    buildRegionSelectField(
-                      controller: ctrlSido,
-                      selectRegion: LABEL.SELECT_REGION_SIDO,
-                      selectedRegionFunction: selectRegionSidoDialog,
+                    Row(
+                      children: [
+                        buildRegionSelectField(
+                          controller: ctrlSido,
+                          selectRegion: LABEL.SELECT_REGION_SIDO,
+                          selectedRegionFunction: selectRegionSidoDialog,
+                        ).expand(),
+                        const Padding(padding: EdgeInsets.all(4)),
+                        if (ctrlSido.text != DISTRICT.ALL)
+                          buildRegionSelectField(
+                            controller: ctrlSigungu,
+                            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+                            selectedRegionFunction: selectRegionSigunguDialog,
+                          ).expand()
+                      ],
+                    ).sizedBox(height: kToolbarHeight),
+                    const Divider(),
+                    Row(
+                      children: [
+                        buildMapList(snapshot).expand(),
+                        const VerticalDivider(),
+                        const HtmlElementView(viewType: 'naver-map').expand(),
+                      ],
                     ).expand(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    if (ctrlSido.text != DISTRICT.ALL)
-                      buildRegionSelectField(
-                        controller: ctrlSigungu,
-                        selectRegion: LABEL.SELECT_REGION_SIGUNGU,
-                        selectedRegionFunction: selectRegionSigunguDialog,
-                      ).expand()
                   ],
-                ).sizedBox(height: kToolbarHeight),
-                const Divider(),
-                Row(
-                  children: [
-                    buildMapList(snapshot).expand(),
-                    const VerticalDivider(),
-                    const HtmlElementView(viewType: 'naver-map').expand(),
-                  ],
-                ).expand(),
-              ],
-            ).expand(),
-          ],
+                ),
+              ).expand(),
+              const Divider(),
+              buildFooter().sizedBox(height: kToolbarHeight * 3)
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget buildRegionSelectField({
-    required String selectRegion,
-    required TextEditingController controller,
-    required Function() selectedRegionFunction,
-  }) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        suffixIcon: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            VerticalDivider(),
-            Icon(Icons.search),
-            Padding(padding: EdgeInsets.all(4)),
-          ],
-        ),
-        suffixIconColor: COLOR.WHITE,
-        border: const OutlineInputBorder(),
-        labelText: selectRegion,
-      ),
-      readOnly: true,
-      autocorrect: false,
-      onTap: selectedRegionFunction,
     );
   }
 
@@ -151,7 +147,7 @@ class ViewMapState extends State<ViewMap> {
     List<MRestaurant> restaurants = snapshot.data['pagination_data'];
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -164,6 +160,7 @@ class ViewMapState extends State<ViewMap> {
             ),
             const Divider(),
             ListView.separated(
+              controller: ctrlMapScroll,
               separatorBuilder: (context, index) => const Divider(),
               itemCount: restaurants.length,
               itemBuilder: (context, index) => SizedBox(
@@ -208,8 +205,10 @@ class ViewMapState extends State<ViewMap> {
               currentPage: snapshot.data['current_page'],
               totalPage: snapshot.data['total_page'],
               onPressed: (int page) {
+                ctrlMapScroll.jumpTo(0);
                 if (ctrlSido.text == LABEL.ALL) {
                   GServiceRestaurant.pagination(page: page);
+
                   return;
                 }
                 // 쿼리에 null 값이 들어가게 설정
@@ -218,12 +217,64 @@ class ViewMapState extends State<ViewMap> {
                   sido: ctrlSido.text,
                   sigungu: ctrlSigungu.text == "" ? null : ctrlSigungu.text,
                 );
+
+                // ctrlMapScroll.jumpTo(0);
               },
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget buildRegionSelectField({
+    required String selectRegion,
+    required TextEditingController controller,
+    required Function() selectedRegionFunction,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        suffixIcon: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            VerticalDivider(),
+            Icon(Icons.search),
+            Padding(padding: EdgeInsets.all(4)),
+          ],
+        ),
+        suffixIconColor: COLOR.WHITE,
+        border: const OutlineInputBorder(),
+        labelText: selectRegion,
+      ),
+      readOnly: true,
+      autocorrect: false,
+      onTap: selectedRegionFunction,
+    );
+  }
+
+  Widget buildFooter() {
+    return SizedBox(
+      width: double.infinity,
+      // color: Colors.grey,
+      child: Center(
+          child: Row(
+        children: [
+          // const Text('footer text'),
+          // ElevatedButton(
+          //     onPressed: () {
+          //       ctrlScoll.jumpTo(0);
+          //     },
+          //     child: Text(''))
+        ],
+      )),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initMap();
   }
 
   Future<void> selectRegionSidoDialog() async {
@@ -336,12 +387,6 @@ class ViewMapState extends State<ViewMap> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initMap();
   }
 
   Future<void> initMap() async {

@@ -16,7 +16,7 @@ class AppRootState extends State<AppRoot> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '장사의 신 - Jangsin Map',
+      title: LABEL.APP_TITLE,
       theme: ThemeData.dark(),
       initialRoute: PATH.ROUTE_MAP,
       routes: routes,
