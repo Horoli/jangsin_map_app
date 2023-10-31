@@ -74,7 +74,7 @@ class ViewMapState extends State<ViewMap> {
                 ),
               ).expand(),
               const Divider(),
-              buildFooter().sizedBox(height: kToolbarHeight * 1.5)
+              buildFooter().sizedBox(height: kToolbarHeight * 2)
             ],
           ),
         ),
@@ -100,11 +100,15 @@ class ViewMapState extends State<ViewMap> {
       body: SingleChildScrollView(
         controller: ctrlScoll,
         child: SizedBox(
-          height: height * 1.3,
+          height: height * 1.1,
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: EdgeInsets.only(
+                  left: width > 1200 ? 120 : 15,
+                  right: width > 1200 ? 120 : 15,
+                  top: 25,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -256,18 +260,32 @@ class ViewMapState extends State<ViewMap> {
   Widget buildFooter() {
     return SizedBox(
       width: double.infinity,
-      // color: Colors.grey,
       child: Center(
-          child: Row(
-        children: [
-          // const Text('footer text'),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       ctrlScoll.jumpTo(0);
-          //     },
-          //     child: Text(''))
-        ],
-      )),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(LABEL.FOOTER_COPYRIGHT),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(ICON.EMAIL),
+                const Padding(padding: EdgeInsets.all(4)),
+                const Text(LABEL.FOOTER_EMAIL),
+              ],
+            ),
+            Container().expand(),
+            const Text('자쉼맵 Ver.0.1.beta'),
+            const Text('현재 자쉼맵은 개발 단계에 있습니다'),
+            const Text('의견 및 제안은 메일로 보내주시기 바랍니다.'),
+            Container().expand(),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       // ctrlScoll.jumpTo(0);
+            //     },
+            //     child: Text(''))
+          ],
+        ),
+      ),
     );
   }
 

@@ -32,11 +32,10 @@ dependencies:
       ref: v1-migration
 
   file_picker: ^3.0.4
-  csv : ^5.0.0
+  csv: ^5.0.0
   shared_preferences: ^2.1.1
   pointer_interceptor: ^0.9.3+6
-  auto_size_text : ^3.0.0
-
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -48,4 +47,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/html/
+    - assets/icons/
     - .env

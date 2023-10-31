@@ -131,24 +131,25 @@ class TileRestaurantUnit extends StatelessWidget {
   Widget buildLinkButtons() {
     return Row(
       children: [
-        buildLinkIconButton(Icons.map, restaurant.naver_map_link).expand(),
+        buildLinkIconButton(ICON.MAP, restaurant.naver_map_link).expand(),
         if (restaurant.sns_link != '')
-          buildLinkIconButton(Icons.restaurant_menu, restaurant.sns_link)
-              .expand(),
-        if (restaurant.baemin_link != '')
-          buildLinkIconButton(Icons.delivery_dining, restaurant.baemin_link)
-              .expand(),
+          buildLinkIconButton(ICON.INSTA, restaurant.sns_link).expand(),
+        // if (restaurant.baemin_link != '')
+        //   buildLinkIconButton(ICON., restaurant.baemin_link)
+        //       .expand(),
         if (restaurant.youtube_link != '')
-          buildLinkIconButton(
-                  Icons.slow_motion_video_rounded, restaurant.youtube_link)
-              .expand(),
+          buildLinkIconButton(ICON.YOUTUBE, restaurant.youtube_link).expand(),
       ],
     );
   }
 
-  Widget buildLinkIconButton(IconData icon, String link) {
-    return IconButton(
-        onPressed: () => js.context.callMethod('open', [link]),
-        icon: Icon(icon));
+  Widget buildLinkIconButton(
+    String imagePath,
+    String link,
+  ) {
+    return TextButton(
+      child: Image.asset(imagePath),
+      onPressed: () => js.context.callMethod('open', [link]),
+    );
   }
 }

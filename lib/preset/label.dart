@@ -27,3 +27,6 @@ const String SELECT_REGION_SIDO = '지역(시도) 선택';
 const String SELECT_REGION_SIGUNGU = '지역(시군구) 선택';
 const String SELECT_ALL_RESTAURANTS = '모든 식당';
 const String ALL = '전체';
+
+const String FOOTER_EMAIL = 'sunha321@gmail.com';
+const String FOOTER_COPYRIGHT = 'Copyright 2023. Horoli. All right reserved.';
