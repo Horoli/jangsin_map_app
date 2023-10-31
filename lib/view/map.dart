@@ -74,7 +74,7 @@ class ViewMapState extends State<ViewMap> {
                 ),
               ).expand(),
               const Divider(),
-              buildFooter().sizedBox(height: kToolbarHeight * 2.5)
+              buildFooter().sizedBox(height: kToolbarHeight * 3)
             ],
           ),
         ),
@@ -263,13 +263,51 @@ class ViewMapState extends State<ViewMap> {
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Center(
-          child: Row(
+          child: Column(
             children: [
+              Row(
+                children: [
+                  const Text('SiteMap'),
+                  const VerticalDivider(),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: COLOR.WHITE,
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(ICON.CAFE),
+                        const Padding(padding: EdgeInsets.all(2)),
+                        const Text('자영업자의 쉼터 카페').expand(),
+                      ],
+                    ),
+                    onPressed: () {
+                      js.context.callMethod(
+                          'open', ["https://cafe.naver.com/jangsin1004"]);
+                    },
+                  ).expand(),
+                  TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: COLOR.WHITE,
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(ICON.YOUTUBE),
+                          const Padding(padding: EdgeInsets.all(2)),
+                          const Text('장사의 신 유튜브').expand(),
+                        ],
+                      ),
+                      onPressed: () {
+                        js.context.callMethod(
+                            'open', ["https://www.youtube.com/@jangsin"]);
+                      }).expand()
+                ],
+              ),
+              const Divider(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('자쉼맵 Ver.0.1.beta'),
-                  const Text('현재 자쉼맵은 개발 단계에 있습니다'),
+                  const Text('현재 자쉼맵은 개발 단계에 있습니다.'),
                   const Text('의견 및 제안은 메일로 보내주시기 바랍니다.'),
                   const Padding(padding: EdgeInsets.all(4)),
                   const Text(LABEL.FOOTER_COPYRIGHT),
@@ -286,41 +324,6 @@ class ViewMapState extends State<ViewMap> {
                   //       // ctrlScoll.jumpTo(0);
                   //     },
                   //     child: Text(''))
-                ],
-              ).expand(flex: 2),
-              Column(
-                children: [
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: COLOR.WHITE,
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(ICON.CAFE),
-                        const Padding(padding: EdgeInsets.all(2)),
-                        const Text('자영업자의 쉼터 카페').expand(),
-                      ],
-                    ),
-                    onPressed: () {
-                      js.context.callMethod(
-                          'open', ["https://cafe.naver.com/jangsin1004"]);
-                    },
-                  ),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: COLOR.WHITE,
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(ICON.YOUTUBE),
-                          const Padding(padding: EdgeInsets.all(2)),
-                          const Text('장사의 신 유튜브').expand(),
-                        ],
-                      ),
-                      onPressed: () {
-                        js.context.callMethod(
-                            'open', ["https://www.youtube.com/@jangsin"]);
-                      })
                 ],
               ).expand(),
             ],
