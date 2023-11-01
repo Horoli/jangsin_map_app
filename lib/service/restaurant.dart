@@ -54,7 +54,10 @@ class ServiceRestaurant {
     return completer.future;
   }
 
-  Future<RestfulResult> getDistrict({String? sido}) async {
+  Future<RestfulResult> getDistrict({
+    String? sido,
+    required bool isYoutube,
+  }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
     Map<String, String> headers = {
@@ -63,6 +66,7 @@ class ServiceRestaurant {
     };
 
     Map<String, String> queryByCondition = {
+      'source': isYoutube ? 'youtube' : 'cafe',
       if (sido != null) 'sido': sido,
     };
 

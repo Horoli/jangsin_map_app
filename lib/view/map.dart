@@ -348,8 +348,8 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Future<void> selectRegionSidoDialog() async {
-    print(width * 0.4);
-    RestfulResult district = await GServiceRestaurant.getDistrict();
+    RestfulResult district =
+        await GServiceRestaurant.getDistrict(isYoutube: isYoutube);
     List<String> getSidoList = district.data;
     getSidoList.insert(0, DISTRICT.ALL);
     // ignore: use_build_context_synchronously
@@ -415,7 +415,8 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Future<void> selectRegionSigunguDialog() async {
-    await GServiceRestaurant.getDistrict(sido: ctrlSido.text);
+    await GServiceRestaurant.getDistrict(
+        isYoutube: isYoutube, sido: ctrlSido.text);
     List<String> getSigunguList =
         GServiceRestaurant.$districtSigungu.lastValue.data;
 
