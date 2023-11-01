@@ -298,6 +298,7 @@ class ViewAdminState extends State<ViewAdmin> {
                 // youtube를 선택하면 검색값 초기화
                 isYoutube = !isYoutube;
                 GServiceRestaurant.pagination(isYoutube: isYoutube);
+                initCtrl();
               },
             ),
             ListView.separated(
