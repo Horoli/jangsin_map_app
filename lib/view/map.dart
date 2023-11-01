@@ -13,6 +13,7 @@ class ViewMapState extends State<ViewMap> {
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
+  bool isYoutube = true;
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
@@ -44,29 +45,14 @@ class ViewMapState extends State<ViewMap> {
       body: SingleChildScrollView(
         controller: ctrlScoll,
         child: SizedBox(
-          height: height * 1.5,
+          height: height * SIZE.PORTRAIT_HEIGHT_BODY_RATIO,
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        buildRegionSelectField(
-                          controller: ctrlSido,
-                          selectRegion: LABEL.SELECT_REGION_SIDO,
-                          selectedRegionFunction: selectRegionSidoDialog,
-                        ).expand(),
-                        const Padding(padding: EdgeInsets.all(4)),
-                        if (ctrlSido.text != DISTRICT.ALL)
-                          buildRegionSelectField(
-                            controller: ctrlSigungu,
-                            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
-                            selectedRegionFunction: selectRegionSigunguDialog,
-                          ).expand()
-                      ],
-                    ).sizedBox(height: kToolbarHeight),
+                    buildSelectFields().sizedBox(height: kToolbarHeight),
                     const HtmlElementView(viewType: 'naver-map').expand(),
                     const Divider(),
                     buildMapList(snapshot).expand(flex: 2),
@@ -74,7 +60,8 @@ class ViewMapState extends State<ViewMap> {
                 ),
               ).expand(),
               const Divider(),
-              buildFooter().sizedBox(height: kToolbarHeight * 3)
+              buildFooter().sizedBox(
+                  height: kToolbarHeight * SIZE.PORTRAIT_HEIGHT_FOOTER)
             ],
           ),
         ),
@@ -99,51 +86,72 @@ class ViewMapState extends State<ViewMap> {
       ),
       body: SingleChildScrollView(
         controller: ctrlScoll,
-        child: SizedBox(
-          height: height * 1.1,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: width > 1200 ? 120 : 15,
-                  right: width > 1200 ? 120 : 15,
-                  top: 25,
-                ),
-                child: Column(
-                  children: [
-                    Row(
+        child: Center(
+          child: SizedBox(
+            height: height * SIZE.LANDSCAPE_HEIGHT_BODY_RATIO,
+            child: Column(
+              children: [
+                SizedBox(
+                  width: width > SIZE.LANDSCAPE_WIDTH_PIXED
+                      ? SIZE.LANDSCAPE_WIDTH_PIXED
+                      : width * SIZE.LANDSCAPE_WIDTH_RATIO,
+                  height: height,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: [
-                        buildRegionSelectField(
-                          controller: ctrlSido,
-                          selectRegion: LABEL.SELECT_REGION_SIDO,
-                          selectedRegionFunction: selectRegionSidoDialog,
+                        buildSelectFields().sizedBox(height: kToolbarHeight),
+                        const Divider(),
+                        Row(
+                          children: [
+                            buildMapList(snapshot).expand(),
+                            const VerticalDivider(),
+                            const HtmlElementView(viewType: 'naver-map')
+                                .expand(),
+                          ],
                         ).expand(),
-                        const Padding(padding: EdgeInsets.all(4)),
-                        if (ctrlSido.text != DISTRICT.ALL)
-                          buildRegionSelectField(
-                            controller: ctrlSigungu,
-                            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
-                            selectedRegionFunction: selectRegionSigunguDialog,
-                          ).expand()
                       ],
-                    ).sizedBox(height: kToolbarHeight),
-                    const Divider(),
-                    Row(
-                      children: [
-                        buildMapList(snapshot).expand(),
-                        const VerticalDivider(),
-                        const HtmlElementView(viewType: 'naver-map').expand(),
-                      ],
-                    ).expand(),
-                  ],
+                    ),
+                  ),
                 ),
-              ).expand(),
-              const Divider(),
-              buildFooter().sizedBox(height: kToolbarHeight * 2.5)
-            ],
+                const Divider(),
+                buildFooter().sizedBox(
+                    height: kToolbarHeight * SIZE.LANDSCAPE_HEIGHT_FOOTER)
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildSelectFields() {
+    return Row(
+      children: [
+        buildRegionSelectField(
+          controller: ctrlSido,
+          selectRegion: LABEL.SELECT_REGION_SIDO,
+          selectedRegionFunction: selectRegionSidoDialog,
+        ).expand(),
+        const Padding(padding: EdgeInsets.all(4)),
+        if (ctrlSido.text != DISTRICT.ALL)
+          buildRegionSelectField(
+            controller: ctrlSigungu,
+            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+            selectedRegionFunction: selectRegionSigunguDialog,
+          ).expand(),
+        const Padding(padding: EdgeInsets.all(4)),
+        ElevatedButton(
+          child: isYoutube ? Text('youtube') : Text('cafe'),
+          onPressed: () {
+            // youtube를 선택하면 검색값 초기화
+            isYoutube = !isYoutube;
+            GServiceRestaurant.pagination(isYoutube: isYoutube);
+            ctrlSido.text = DISTRICT.ALL;
+            ctrlSigungu.text = DISTRICT.ALL;
+          },
+        ),
+      ],
     );
   }
 
@@ -172,7 +180,7 @@ class ViewMapState extends State<ViewMap> {
                 width: double.infinity,
                 child: Row(
                   children: [
-                    Text('${index + 1}'),
+                    Center(child: Text('${index + 1}')).sizedBox(width: 25),
                     const Padding(padding: EdgeInsets.all(4)),
                     TileRestaurantUnit(
                       restaurant: restaurants[index],
@@ -211,7 +219,8 @@ class ViewMapState extends State<ViewMap> {
               onPressed: (int page) {
                 ctrlMapScroll.jumpTo(0);
                 if (ctrlSido.text == LABEL.ALL) {
-                  GServiceRestaurant.pagination(page: page);
+                  GServiceRestaurant.pagination(
+                      page: page, isYoutube: isYoutube);
 
                   return;
                 }
@@ -220,6 +229,7 @@ class ViewMapState extends State<ViewMap> {
                   page: page,
                   sido: ctrlSido.text,
                   sigungu: ctrlSigungu.text == "" ? null : ctrlSigungu.text,
+                  isYoutube: isYoutube,
                 );
 
                 // ctrlMapScroll.jumpTo(0);
@@ -338,6 +348,7 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Future<void> selectRegionSidoDialog() async {
+    print(width * 0.4);
     RestfulResult district = await GServiceRestaurant.getDistrict();
     List<String> getSidoList = district.data;
     getSidoList.insert(0, DISTRICT.ALL);
@@ -348,8 +359,12 @@ class ViewMapState extends State<ViewMap> {
         return PointerInterceptor(
           child: AlertDialog(
             content: SizedBox(
-              width: isPort ? width * 0.4 : width * 0.4,
-              height: isPort ? height * 0.7 : height * 0.4,
+              width: isPort
+                  ? width * SIZE.PORTRAIT_DIALOG_WIDTH_RATIO
+                  : SIZE.LANDSCAPE_DIALOG_WIDTH,
+              height: isPort
+                  ? height * SIZE.PORTRAIT_DIALOG_HEIGHT_RATIO
+                  : height * SIZE.LANDSCAPE_DIALOG_HEIGHT_RATIO,
               child: ListView.separated(
                 separatorBuilder: (context, index) => const Divider(),
                 itemCount: getSidoList.length,
@@ -357,8 +372,7 @@ class ViewMapState extends State<ViewMap> {
                   String sido = getSidoList[index];
                   return Row(
                     children: [
-                      Text('${index + 1}'),
-                      const VerticalDivider(),
+                      Center(child: Text('${index + 1}')).expand(),
                       ElevatedButton(
                         child: AutoSizeText(sido, maxLines: 1),
                         onPressed: () async {
@@ -370,13 +384,15 @@ class ViewMapState extends State<ViewMap> {
                                   offset: DISTRICT.ALL.length),
                               composing: TextRange.empty,
                             );
-                            GServiceRestaurant.pagination(page: 1);
-                            ctrlSigungu.text = '';
+                            GServiceRestaurant.pagination(
+                                page: 1, isYoutube: isYoutube);
+                            ctrlSigungu.text = DISTRICT.ALL;
                             return;
                           }
 
                           Navigator.pop(context);
-                          GServiceRestaurant.pagination(sido: sido);
+                          GServiceRestaurant.pagination(
+                              sido: sido, isYoutube: isYoutube);
 
                           ctrlSido.value = ctrlSido.value.copyWith(
                             text: sido,
@@ -384,9 +400,9 @@ class ViewMapState extends State<ViewMap> {
                                 TextSelection.collapsed(offset: sido.length),
                             composing: TextRange.empty,
                           );
-                          ctrlSigungu.text = '';
+                          ctrlSigungu.text = DISTRICT.ALL;
                         },
-                      ).expand(),
+                      ).expand(flex: 4),
                     ],
                   );
                 },
@@ -402,6 +418,8 @@ class ViewMapState extends State<ViewMap> {
     await GServiceRestaurant.getDistrict(sido: ctrlSido.text);
     List<String> getSigunguList =
         GServiceRestaurant.$districtSigungu.lastValue.data;
+
+    getSigunguList.insert(0, DISTRICT.ALL);
     // ignore: use_build_context_synchronously
     return showDialog(
       context: context,
@@ -409,8 +427,12 @@ class ViewMapState extends State<ViewMap> {
         return PointerInterceptor(
           child: AlertDialog(
             content: SizedBox(
-              width: isPort ? width * 0.4 : width * 0.4,
-              height: isPort ? height * 0.7 : height * 0.4,
+              width: isPort
+                  ? width * SIZE.PORTRAIT_DIALOG_WIDTH_RATIO
+                  : SIZE.LANDSCAPE_DIALOG_WIDTH,
+              height: isPort
+                  ? height * SIZE.PORTRAIT_DIALOG_HEIGHT_RATIO
+                  : height * SIZE.LANDSCAPE_DIALOG_HEIGHT_RATIO,
               child: ListView.separated(
                 separatorBuilder: (context, index) => const Divider(),
                 itemCount: getSigunguList.length,
@@ -418,11 +440,26 @@ class ViewMapState extends State<ViewMap> {
                   String sigungu = getSigunguList[index];
                   return Row(
                     children: [
-                      Text('${index + 1}'),
+                      Center(child: Text('${index + 1}')).expand(),
                       const VerticalDivider(),
                       ElevatedButton(
                         child: AutoSizeText(sigungu, maxLines: 1),
                         onPressed: () async {
+                          if (sigungu == DISTRICT.ALL) {
+                            Navigator.pop(context);
+                            ctrlSigungu.value = ctrlSigungu.value.copyWith(
+                              text: sigungu,
+                              selection: TextSelection.collapsed(
+                                  offset: sigungu.length),
+                              composing: TextRange.empty,
+                            );
+                            GServiceRestaurant.pagination(
+                              sido: ctrlSido.text,
+                              isYoutube: isYoutube,
+                            );
+                            ctrlSigungu.text = DISTRICT.ALL;
+                            return;
+                          }
                           Navigator.pop(context);
 
                           ctrlSigungu.value = ctrlSigungu.value.copyWith(
@@ -435,9 +472,10 @@ class ViewMapState extends State<ViewMap> {
                           GServiceRestaurant.pagination(
                             sido: ctrlSido.text,
                             sigungu: ctrlSigungu.text,
+                            isYoutube: isYoutube,
                           );
                         },
-                      ).expand(),
+                      ).expand(flex: 4),
                     ],
                   );
                 },
@@ -453,7 +491,9 @@ class ViewMapState extends State<ViewMap> {
     ctrlSido.text = LABEL.ALL;
     await registerNaverMap();
     await GUtility.wait(splashDuration);
-    await GServiceRestaurant.pagination();
+    await GServiceRestaurant.pagination(
+      isYoutube: isYoutube,
+    );
 
     RestfulResult latLng = await GServiceRestaurant.getLatLng();
     await Future.delayed(const Duration(milliseconds: 200), () async {

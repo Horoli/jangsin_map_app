@@ -48,6 +48,8 @@ class ViewAdminState extends State<ViewAdmin> {
 
   late final String token;
 
+  bool isYoutube = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +141,10 @@ class ViewAdminState extends State<ViewAdmin> {
 
                 await csvUploadDialog(csvUploadResult);
 
-                await GServiceRestaurant.pagination(page: 1);
+                await GServiceRestaurant.pagination(
+                  page: 1,
+                  isYoutube: isYoutube,
+                );
                 $csv.sink$([]);
               },
             ).expand(),
@@ -190,7 +195,10 @@ class ViewAdminState extends State<ViewAdmin> {
 
             int page =
                 GServiceRestaurant.$pagination.lastValue.data['current_page'];
-            await GServiceRestaurant.pagination(page: page);
+            await GServiceRestaurant.pagination(
+              page: page,
+              isYoutube: isYoutube,
+            );
           },
           cancelFunction: () => Navigator.pop(context),
         );
@@ -223,7 +231,10 @@ class ViewAdminState extends State<ViewAdmin> {
             int page =
                 GServiceRestaurant.$pagination.lastValue.data['current_page'];
 
-            await GServiceRestaurant.pagination(page: page);
+            await GServiceRestaurant.pagination(
+              page: page,
+              isYoutube: isYoutube,
+            );
           },
           cancelFunction: () => Navigator.pop(context),
         );
@@ -253,7 +264,10 @@ class ViewAdminState extends State<ViewAdmin> {
             GServiceRestaurant.$selectedRestaurant.sink$(restaurant);
             int page =
                 GServiceRestaurant.$pagination.lastValue.data['current_page'];
-            await GServiceRestaurant.pagination(page: page);
+            await GServiceRestaurant.pagination(
+              page: page,
+              isYoutube: isYoutube,
+            );
           },
           cancelFunction: () => Navigator.pop(context),
         );
@@ -278,6 +292,14 @@ class ViewAdminState extends State<ViewAdmin> {
 
         return Column(
           children: [
+            ElevatedButton(
+              child: isYoutube ? Text('youtube') : Text('cafe'),
+              onPressed: () {
+                // youtube를 선택하면 검색값 초기화
+                isYoutube = !isYoutube;
+                GServiceRestaurant.pagination(isYoutube: isYoutube);
+              },
+            ),
             ListView.separated(
               separatorBuilder: (context, index) => const Divider(),
               itemCount: restaurants.length,
@@ -308,7 +330,10 @@ class ViewAdminState extends State<ViewAdmin> {
               currentPage: snapshot.data['current_page'],
               totalPage: snapshot.data['total_page'],
               onPressed: (int page) {
-                GServiceRestaurant.pagination(page: page);
+                GServiceRestaurant.pagination(
+                  page: page,
+                  isYoutube: isYoutube,
+                );
                 initCtrl();
               },
             )
@@ -328,7 +353,9 @@ class ViewAdminState extends State<ViewAdmin> {
 
   Future<void> init() async {
     Future.delayed(const Duration(milliseconds: 200), () async {
-      await GServiceRestaurant.pagination();
+      await GServiceRestaurant.pagination(
+        isYoutube: isYoutube,
+      );
     });
   }
 

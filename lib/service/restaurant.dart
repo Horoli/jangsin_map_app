@@ -125,6 +125,7 @@ class ServiceRestaurant {
     int limit = 10,
     String? sido,
     String? sigungu,
+    required bool isYoutube,
   }) async {
     Completer<RestfulResult> completer = Completer<RestfulResult>();
 
@@ -138,7 +139,7 @@ class ServiceRestaurant {
       'page': page.toString(),
       'limit': limit.toString(),
       // 'menu': 'zzz',
-      // 'source': 'xxx',
+      'source': isYoutube ? 'youtube' : 'cafe',
       if (sido != null) 'sido': sido,
       if (sido != null && sigungu != null) 'sigungu': sigungu,
     };

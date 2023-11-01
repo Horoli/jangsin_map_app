@@ -87,11 +87,7 @@ class TileRestaurantUnit extends StatelessWidget {
           ),
         ).expand(),
         const VerticalDivider(),
-        AutoSizeText(restaurant.representative_menu),
-        // const VerticalDivider(),
-        // AutoSizeText(restaurant.operation_time),
-        // const VerticalDivider(),
-        // AutoSizeText(restaurant.closed_days),
+        AutoSizeText(restaurant.menu_category),
       ],
     );
   }
@@ -99,15 +95,6 @@ class TileRestaurantUnit extends StatelessWidget {
   Widget buildAddress() {
     return Column(
       children: [
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.start,
-        //   children: [
-        //     AutoSizeText(
-        //       "${restaurant.address_sido} ${restaurant.address_sigungu} ${restaurant.address_eupmyeondong} ${restaurant.address_detail}",
-        //       // textAlign: TextAlign.start,
-        //     ).expand(),
-        //   ],
-        // ).expand(),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
