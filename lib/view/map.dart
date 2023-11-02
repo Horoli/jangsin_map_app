@@ -28,13 +28,14 @@ class ViewMapState extends State<ViewMap> {
     ///          ㄴ ListView
     ///          ㄴ progress(refresh 발생 시 보여줄 progress/pointIgnore)
     return Scaffold(
+      floatingActionButton: buildFloatingActionButton(),
       body: Column(
         children: [
-          Container().expand(),
+          const HtmlElementView(viewType: 'naver-map').expand(),
           InfinityScrollList(
             controller: ctrlScroll,
             itemCount: restaurants.length,
-            itemBuilder: (context, index) {
+            itemBuilder: (BuildContext context, int index) {
               return SizedBox(
                 height: 100,
                 child: TileRestaurantUnit(
@@ -363,10 +364,15 @@ class ViewMapState extends State<ViewMap> {
         onPressed: () {
           ctrlScroll.jumpTo(0);
           // youtube를 선택하면 검색값 초기화
-          isYoutube = !isYoutube;
-          GServiceRestaurant.pagination(isYoutube: isYoutube);
           ctrlSido.text = DISTRICT.ALL;
           ctrlSigungu.text = DISTRICT.ALL;
+          isYoutube = !isYoutube;
+          setState(() {
+            print('isYoutube ${isYoutube}');
+          });
+          setState(() {
+            GServiceRestaurant.pagination(isYoutube: isYoutube);
+          });
         },
       ),
     );
