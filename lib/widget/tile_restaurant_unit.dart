@@ -5,12 +5,14 @@ class TileRestaurantUnit extends StatelessWidget {
   final TStream<MRestaurant> $selectedRestaurant;
   final VoidCallback onPressed;
 
-  const TileRestaurantUnit({
+  TileRestaurantUnit({
     required this.restaurant,
     required this.$selectedRestaurant,
     required this.onPressed,
     super.key,
   });
+
+  Color textColor = Colors.grey;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class TileRestaurantUnit extends StatelessWidget {
         padding: EdgeInsets.zero,
         minimumSize: const Size(50, 30),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        foregroundColor: COLOR.WHITE,
+        foregroundColor: textColor,
       ),
       onPressed: onPressed,
       child: Stack(

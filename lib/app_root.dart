@@ -17,7 +17,7 @@ class AppRootState extends State<AppRoot> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: LABEL.APP_TITLE,
-      theme: ThemeData.dark(),
+      // theme: ThemeData.dark(),
       initialRoute: PATH.ROUTE_MAP,
       routes: routes,
     );

@@ -19,7 +19,7 @@ Future<void> main() async {
   await _initSerivice();
   await _initLocalStorage();
 
-  runApp(AppRoot());
+  runApp(const AppRoot());
 }
 
 Future<void> _initLocalStorage() async {

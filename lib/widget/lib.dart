@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jangsin_map/jangsin_map.dart';
 import 'package:tnd_core/tnd_core.dart';
@@ -26,6 +27,7 @@ part 'file_picker.dart';
 part 'tile_restaurant_unit.dart';
 part 'pagination_button.dart';
 part 'dropdown_field.dart';
+part 'infinity_scroll_list.dart';
 part 'admin/management_info.dart';
 
 part 'admin/management_image.dart';

@@ -17,141 +17,380 @@ class ViewMapState extends State<ViewMap> {
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
-  final ScrollController ctrlScoll = ScrollController();
-  final ScrollController ctrlMapScroll = ScrollController();
+  final ScrollController ctrlScroll = ScrollController();
+  final ScrollController ctrlRestaurantScroll = ScrollController();
+
+  List<MRestaurant> restaurants = [];
 
   @override
   Widget build(BuildContext context) {
-    return TStreamBuilder(
-      initialData: RestfulResult(statusCode: 400, message: '', data: null),
-      stream: GServiceRestaurant.$pagination.browse$,
-      builder: (BuildContext context, RestfulResult snapshot) {
-        ('snapshot.statusCode ${snapshot.statusCode}');
-        if (snapshot.statusCode == 403) {
-          return ViewServerDisconnect();
-        }
-        if (snapshot.statusCode != 200) {
-          return ViewDataLoading();
-        }
+    /// TODO : stack
+    ///          ㄴ ListView
+    ///          ㄴ progress(refresh 발생 시 보여줄 progress/pointIgnore)
+    return Scaffold(
+      body: Column(
+        children: [
+          Container().expand(),
+          InfinityScrollList(
+            controller: ctrlScroll,
+            itemCount: restaurants.length,
+            itemBuilder: (context, index) {
+              return SizedBox(
+                height: 100,
+                child: TileRestaurantUnit(
+                  restaurant: restaurants[index],
+                  $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+                  onPressed: () {
+                    // 선택한 식당이 같은 경우 빈 식당 sink$
+                    // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                    //     restaurants[index].id) {
+                    //   GServiceRestaurant.$selectedRestaurant
+                    //       .sink$(MRestaurant());
+                    //   return;
+                    // }
 
-        return isPort ? buildPortait(snapshot) : buildLandscape(snapshot);
-      },
+                    // 선택한 식당이 다른 경우 해당 식당을 sink$
+                    GServiceRestaurant.$selectedRestaurant
+                        .sink$(restaurants[index]);
+
+                    inputDataForHtml(
+                      dataType: 'set',
+                      data: {
+                        'lat': restaurants[index].lat,
+                        'lng': restaurants[index].lng
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+            onRefresh: () async {
+              RestfulResult result = GServiceRestaurant.$pagination.lastValue;
+              print(result.data);
+              if (result.data['total_page'] != result.data['current_page']) {
+                RestfulResult getNewData = await GServiceRestaurant.pagination(
+                    page: result.data['current_page'] + 1, isYoutube: true);
+
+                setState(() {
+                  restaurants.addAll(getNewData.data['pagination_data']);
+                });
+              }
+            },
+          ).expand(),
+        ],
+      ),
     );
+    // return TStreamBuilder(
+    //   initialData: RestfulResult(statusCode: 400, message: '', data: null),
+    //   stream: GServiceRestaurant.$pagination.browse$,
+    //   builder: (BuildContext context, RestfulResult snapshot) {
+    //     ('snapshot.statusCode ${snapshot.statusCode}');
+    //     if (snapshot.statusCode == 403) {
+    //       return ViewServerDisconnect();
+    //     }
+    //     if (snapshot.statusCode != 200) {
+    //       return ViewDataLoading();
+    //     }
+
+    //     return isPort ? buildPortait(snapshot) : buildLandscape(snapshot);
+    //   },
+    // );
   }
 
   // TODO : 세로모드(mobile) 인 경우, appBar 미출력
   Widget buildPortait(RestfulResult snapshot) {
+    List<MRestaurant> restaurants = snapshot.data['pagination_data'];
     return Scaffold(
+      floatingActionButton: buildFloatingActionButton(),
       body: SingleChildScrollView(
-        controller: ctrlScoll,
-        child: SizedBox(
-          height: height * SIZE.PORTRAIT_HEIGHT_BODY_RATIO,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    buildSelectFields().sizedBox(height: kToolbarHeight),
-                    const HtmlElementView(viewType: 'naver-map').expand(),
-                    const Divider(),
-                    buildMapList(snapshot).expand(flex: 2),
-                  ],
-                ),
-              ).expand(),
-              const Divider(),
-              buildFooter().sizedBox(
-                  height: kToolbarHeight * SIZE.PORTRAIT_HEIGHT_FOOTER)
-            ],
+          controller: ctrlScroll,
+          child: SizedBox(
+            height: height,
+            // height: height * SIZE.PORTRAIT_HEIGHT_BODY_RATIO,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      const HtmlElementView(viewType: 'naver-map'),
+                      buildSelectFields().sizedBox(height: kToolbarHeight),
+                    ],
+                  ).sizedBox(height: height / 2),
+                  // InfinityScrollList(restaurants: restaurants).expand(),
+
+                  // buildInfinityScollListView(restaurants).expand(),
+                  // .sizedBox(height: (100 * restaurants.length).toDouble()),
+
+                  PaginationButton(
+                    currentPage: snapshot.data['current_page'],
+                    totalPage: snapshot.data['total_page'],
+                    onPressed: (int page) {
+                      ctrlRestaurantScroll.jumpTo(0);
+                      if (ctrlSido.text == LABEL.ALL) {
+                        GServiceRestaurant.pagination(
+                            page: page, isYoutube: isYoutube);
+
+                        return;
+                      }
+                      // 쿼리에 null 값이 들어가게 설정
+                      GServiceRestaurant.pagination(
+                        page: page,
+                        sido: ctrlSido.text,
+                        sigungu:
+                            ctrlSigungu.text == "" ? null : ctrlSigungu.text,
+                        isYoutube: isYoutube,
+                      );
+
+                      // ctrlMapScroll.jumpTo(0);
+                    },
+                  ),
+                  // Container(color: Colors.red[200]).expand(),
+                  // Container(color: Colors.red[300]).expand(),
+                  // Container(color: Colors.red[400]).expand(),
+                  // Container(color: Colors.red[500]).expand(),
+                ],
+              ),
+            ),
+          )
+          // child: SizedBox(
+          //   height: height * SIZE.PORTRAIT_HEIGHT_BODY_RATIO,
+          //   child: Column(
+          //     children: [
+          //       Padding(
+          //         padding: const EdgeInsets.all(12.0),
+          //         child: Column(
+          //           children: [
+          //             buildSelectFields().sizedBox(height: kToolbarHeight),
+          //             const HtmlElementView(viewType: 'naver-map').expand(),
+          //             const Divider(),
+          //             buildMapList(snapshot).expand(flex: 2),
+          //           ],
+          //         ),
+          //       ).expand(),
+          //       const Divider(),
+          //       buildFooter().sizedBox(
+          //           height: kToolbarHeight * SIZE.PORTRAIT_HEIGHT_FOOTER)
+          //     ],
+          //   ),
+          // ),
           ),
-        ),
-      ),
+    );
+  }
+
+  // Widget buildInfinityScollListView(List<MRestaurant> restaurants) {
+  //   return ListView.separated(
+  //     controller: ctrlRestaurantScroll,
+  //     // separatorBuilder: (context, index) => const Divider(),
+  //     separatorBuilder: (context, index) => Container(),
+  //     itemCount: restaurants.length,
+  //     itemBuilder: (context, index) {
+  //       return SizedBox(
+  //         height: 100,
+  //         width: double.infinity,
+  //         child: Row(
+  //           children: [
+  //             Center(child: Text('${index + 1}')).sizedBox(width: 25),
+  //             const Padding(padding: EdgeInsets.all(4)),
+  //             TileRestaurantUnit(
+  //               restaurant: restaurants[index],
+  //               $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+  //               onPressed: () {
+  //                 // 선택한 식당이 같은 경우 빈 식당 sink$
+  //                 // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+  //                 //     restaurants[index].id) {
+  //                 //   GServiceRestaurant.$selectedRestaurant
+  //                 //       .sink$(MRestaurant());
+  //                 //   return;
+  //                 // }
+
+  //                 // 선택한 식당이 다른 경우 해당 식당을 sink$
+  //                 GServiceRestaurant.$selectedRestaurant
+  //                     .sink$(restaurants[index]);
+
+  //                 inputDataForHtml(
+  //                   dataType: 'set',
+  //                   data: {
+  //                     'lat': restaurants[index].lat,
+  //                     'lng': restaurants[index].lng
+  //                   },
+  //                 );
+  //               },
+  //             ).expand(),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  Widget buildLandscape(RestfulResult snapshot) {
+    return Row(
+      children: [
+        buildMapList(snapshot).sizedBox(width: 600),
+        // Container(color: Colors.blue[100], width: 300),
+
+        const HtmlElementView(viewType: 'naver-map').expand(),
+        // Container(color: Colors.red[100]).expand(),
+      ],
     );
   }
 
   // TODO : 가로모드인 경우, appBar 출력
-  Widget buildLandscape(RestfulResult snapshot) {
+  Widget buildLandscapeaaa(RestfulResult snapshot) {
+    print('height $height');
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(LABEL.APP_TITLE),
-        actions: [
-          TextButton(
-            child: const Text(''),
-            onPressed: () {},
-            onLongPress: () {
-              Navigator.of(context).pushNamed(PATH.ROUTE_ADMIN_LOGIN);
-            },
+      floatingActionButton: buildFloatingActionButton(),
+      body: CustomScrollView(
+        controller: ctrlScroll,
+        slivers: [
+          SliverAppBar(
+            flexibleSpace: Center(
+              child: Text('aaaa'),
+            ),
+            expandedHeight: 200,
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              // height: height,
+              height: height * SIZE.LANDSCAPE_HEIGHT_BODY_RATIO,
+              child: Column(
+                children: [
+                  /*
+
+                      header
+
+                      */
+                  Stack(
+                    children: [
+                      Container(
+                        color: Colors.blue[200],
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      Center(
+                        child: Container(
+                          width: SIZE.LANDSCAPE_WIDTH_PIXED,
+                          height: double.infinity,
+                          color: Colors.blue[300],
+                          child: Center(child: Text('header')),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        height: kToolbarHeight,
+                        child: TextButton(
+                          child: const Text(''),
+                          onPressed: () {},
+                          onLongPress: () {
+                            Navigator.of(context)
+                                .pushNamed(PATH.ROUTE_ADMIN_LOGIN);
+                          },
+                        ),
+                      )
+                    ],
+                  ).sizedBox(height: kToolbarHeight * 3),
+
+                  /*
+
+                      body
+
+                      */
+                  Container(
+                    width: SIZE.LANDSCAPE_WIDTH_PIXED,
+                    height: double.infinity,
+                    color: Colors.blue[300],
+                    child: Center(
+                      child: SizedBox(
+                        height: height * SIZE.LANDSCAPE_HEIGHT_BODY_RATIO,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              buildSelectFields()
+                                  .sizedBox(height: kToolbarHeight),
+                              const Divider(),
+                              Row(
+                                children: [
+                                  buildMapList(snapshot).expand(),
+                                  const VerticalDivider(),
+                                  const HtmlElementView(viewType: 'naver-map')
+                                      .expand(),
+                                ],
+                              ).expand(),
+                            ],
+                          ),
+                        ).expand(),
+                      ),
+                    ),
+                  ).expand(),
+
+                  /*
+
+                     footer
+
+                      */
+                  Stack(
+                    children: [
+                      Container(
+                        color: Colors.blue[200],
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      Center(
+                        child: Container(
+                          width: SIZE.LANDSCAPE_WIDTH_PIXED,
+                          height: double.infinity,
+                          color: Colors.blue[300],
+                          child: buildFooter(),
+                        ),
+                      ),
+                    ],
+                  ).sizedBox(height: kToolbarHeight * 5),
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        controller: ctrlScoll,
-        child: Center(
-          child: SizedBox(
-            height: height * SIZE.LANDSCAPE_HEIGHT_BODY_RATIO,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: width > SIZE.LANDSCAPE_WIDTH_PIXED
-                      ? SIZE.LANDSCAPE_WIDTH_PIXED
-                      : width * SIZE.LANDSCAPE_WIDTH_RATIO,
-                  height: height,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        buildSelectFields().sizedBox(height: kToolbarHeight),
-                        const Divider(),
-                        Row(
-                          children: [
-                            buildMapList(snapshot).expand(),
-                            const VerticalDivider(),
-                            const HtmlElementView(viewType: 'naver-map')
-                                .expand(),
-                          ],
-                        ).expand(),
-                      ],
-                    ),
-                  ),
-                ),
-                const Divider(),
-                buildFooter().sizedBox(
-                    height: kToolbarHeight * SIZE.LANDSCAPE_HEIGHT_FOOTER)
-              ],
-            ),
-          ),
-        ),
+    );
+  }
+
+  Widget buildFloatingActionButton() {
+    return PointerInterceptor(
+      child: FloatingActionButton(
+        child: isYoutube ? Image.asset(ICON.YOUTUBE) : Image.asset(ICON.CAFE),
+        onPressed: () {
+          ctrlScroll.jumpTo(0);
+          // youtube를 선택하면 검색값 초기화
+          isYoutube = !isYoutube;
+          GServiceRestaurant.pagination(isYoutube: isYoutube);
+          ctrlSido.text = DISTRICT.ALL;
+          ctrlSigungu.text = DISTRICT.ALL;
+        },
       ),
     );
   }
 
   Widget buildSelectFields() {
-    return Row(
-      children: [
-        buildRegionSelectField(
-          controller: ctrlSido,
-          selectRegion: LABEL.SELECT_REGION_SIDO,
-          selectedRegionFunction: selectRegionSidoDialog,
-        ).expand(),
-        const Padding(padding: EdgeInsets.all(4)),
-        if (ctrlSido.text != DISTRICT.ALL)
+    return PointerInterceptor(
+      child: Row(
+        children: [
           buildRegionSelectField(
-            controller: ctrlSigungu,
-            selectRegion: LABEL.SELECT_REGION_SIGUNGU,
-            selectedRegionFunction: selectRegionSigunguDialog,
+            controller: ctrlSido,
+            selectRegion: LABEL.SELECT_REGION_SIDO,
+            selectedRegionFunction: selectRegionSidoDialog,
           ).expand(),
-        const Padding(padding: EdgeInsets.all(4)),
-        ElevatedButton(
-          child: isYoutube ? Text('youtube') : Text('cafe'),
-          onPressed: () {
-            // youtube를 선택하면 검색값 초기화
-            isYoutube = !isYoutube;
-            GServiceRestaurant.pagination(isYoutube: isYoutube);
-            ctrlSido.text = DISTRICT.ALL;
-            ctrlSigungu.text = DISTRICT.ALL;
-          },
-        ),
-      ],
+          const Padding(padding: EdgeInsets.all(4)),
+          if (ctrlSido.text != DISTRICT.ALL)
+            buildRegionSelectField(
+              controller: ctrlSigungu,
+              selectRegion: LABEL.SELECT_REGION_SIGUNGU,
+              selectedRegionFunction: selectRegionSigunguDialog,
+            ).expand(),
+          const Padding(padding: EdgeInsets.all(4)),
+        ],
+      ),
     );
   }
 
@@ -172,7 +411,7 @@ class ViewMapState extends State<ViewMap> {
             ),
             const Divider(),
             ListView.separated(
-              controller: ctrlMapScroll,
+              controller: ctrlRestaurantScroll,
               separatorBuilder: (context, index) => const Divider(),
               itemCount: restaurants.length,
               itemBuilder: (context, index) => SizedBox(
@@ -217,7 +456,7 @@ class ViewMapState extends State<ViewMap> {
               currentPage: snapshot.data['current_page'],
               totalPage: snapshot.data['total_page'],
               onPressed: (int page) {
-                ctrlMapScroll.jumpTo(0);
+                ctrlRestaurantScroll.jumpTo(0);
                 if (ctrlSido.text == LABEL.ALL) {
                   GServiceRestaurant.pagination(
                       page: page, isYoutube: isYoutube);
@@ -343,8 +582,8 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   void initState() {
-    super.initState();
     initMap();
+    super.initState();
   }
 
   Future<void> selectRegionSidoDialog() async {
@@ -492,15 +731,27 @@ class ViewMapState extends State<ViewMap> {
     ctrlSido.text = LABEL.ALL;
     await registerNaverMap();
     await GUtility.wait(splashDuration);
-    await GServiceRestaurant.pagination(
+    RestfulResult initPaginationData = await GServiceRestaurant.pagination(
       isYoutube: isYoutube,
     );
+    setState(() {
+      restaurants.addAll(initPaginationData.data['pagination_data']);
+    });
 
     RestfulResult latLng = await GServiceRestaurant.getLatLng();
     await Future.delayed(const Duration(milliseconds: 200), () async {
       await inputDataForHtml(dataType: 'init', data: latLng.data);
     });
   }
+
+  // void onScroll() {
+  //   final double maxScroll = ctrlRestaurantScroll.position.maxScrollExtent;
+  //   final double currentScroll = ctrlRestaurantScroll.position.pixels;
+  //   if (maxScroll - currentScroll <= 10) {
+  //     print('onScroll max : ${maxScroll}, current : ${currentScroll}');
+  //     GServiceRestaurant.pagination(isYoutube: isYoutube);
+  //   }
+  // }
 
   Future<void> inputDataForHtml(
       {required String dataType, required dynamic data}) async {
