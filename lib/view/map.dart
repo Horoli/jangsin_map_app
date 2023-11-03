@@ -589,7 +589,6 @@ class ViewMapState extends State<ViewMap> {
                                   sigungu: ctrlSigungu.text,
                                   isYoutube: isYoutube,
                                 );
-                                print(result.map);
 
                                 $restaurants
                                     .sink$(result.data['pagination_data']);
