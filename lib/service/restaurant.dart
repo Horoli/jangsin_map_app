@@ -126,7 +126,7 @@ class ServiceRestaurant {
 
   Future<RestfulResult> pagination({
     int page = 1,
-    int limit = 10,
+    int limit = 30,
     String? sido,
     String? sigungu,
     required bool isYoutube,

@@ -64,12 +64,6 @@ class ViewMapState extends State<ViewMap> {
                       alignment: Alignment.center,
                     ),
             ),
-            // flexibleSpace: Center(
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(8.0),
-            //     child: buildSelectFields(),
-            //   ),
-            // ),
             expandedHeight:
                 isYoutube ? kToolbarHeight * 2 : kToolbarHeight * 2.5,
           ),
@@ -88,10 +82,6 @@ class ViewMapState extends State<ViewMap> {
                   Map 
                   */
 
-                  // const Padding(
-                  //   padding: EdgeInsets.all(8.0),
-                  //   child: Card(),
-                  // ).sizedBox(height: height * 0.5),
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Card(
@@ -113,46 +103,20 @@ class ViewMapState extends State<ViewMap> {
                   /*
                   Footer 
                   */
-                  Container(
-                    height: kToolbarHeight,
-                    color: Colors.blue[200],
-                    width: double.infinity,
-                    child: Row(
-                      children: [
-                        buildFooterLogoLinkButton(
-                          children: [
-                            Image.asset(ICON.CAFE),
-                            const Padding(padding: EdgeInsets.all(2)),
-                            const Text('자영업자의 쉼터 카페').expand(),
-                          ],
-                          url: "https://cafe.naver.com/jangsin1004",
-                        ).expand(),
-                        buildFooterLogoLinkButton(
-                          children: [
-                            Image.asset(ICON.YOUTUBE),
-                            const Padding(padding: EdgeInsets.all(2)),
-                            const Text('장사의 신 유튜브').expand(),
-                          ],
-                          url: "https://www.youtube.com/@jangsin",
-                        ).expand(),
-                      ],
-                    ),
-                  ),
-
-                  Container(
-                    height: kToolbarHeight,
-                    color: Colors.blue[200],
-                    width: double.infinity,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(LABEL.FOOTER_EMAIL,
-                            style: TextStyle(color: COLOR.WHITE)),
-                        Text(LABEL.FOOTER_COPYRIGHT,
-                            style: TextStyle(color: COLOR.WHITE)),
-                      ],
-                    ),
-                  ),
+                  buildFooter().sizedBox(height: kToolbarHeight),
+                  // Container(
+                  //   height: kToolbarHeight,
+                  //   color: Colors.blue[200],
+                  //   width: double.infinity,
+                  //   child: const Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Text(LABEL.FOOTER_EMAIL,
+                  //           style: TextStyle(color: COLOR.WHITE)),
+                  //       Text(LABEL.FOOTER_COPYRIGHT,
+                  //           style: TextStyle(color: COLOR.WHITE)),
+                  //     ],
+                  //   ),
                 ],
               ),
             ),
@@ -225,18 +189,18 @@ class ViewMapState extends State<ViewMap> {
                       ),
                     ),
                   ),
-                  PointerInterceptor(
-                    child: Positioned(
-                      top: 0,
-                      right: 0,
-                      // height: 100,
-                      // width: 100,
-                      child: buildToAdminLoginButton(),
-                    ),
-                  ),
+                  // PointerInterceptor(
+                  //   child: Positioned(
+                  //     top: 0,
+                  //     right: 0,
+                  //     // height: 100,
+                  //     // width: 100,
+                  //     child: buildToAdminLoginButton(),
+                  //   ),
+                  // ),
                 ],
               ).sizedBox(height: height - kToolbarHeight),
-              buildFooooter().sizedBox(height: kToolbarHeight),
+              buildFooter().sizedBox(height: kToolbarHeight),
             ],
           ),
         ),
@@ -244,74 +208,29 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Widget buildToAdminLoginButton() {
-    return TextButton(
-      child: const Text(''),
-      onPressed: () {},
-      onLongPress: () {
-        Navigator.of(context).pushNamed(PATH.ROUTE_ADMIN_LOGIN);
-      },
-    );
-  }
-
-  Widget buildFooooter() {
-    return Container(
-      color: Colors.blue[200],
-      width: double.infinity,
-      child: Row(
-        children: [
-          buildFooterLogoLinkButton(
-            children: [
-              Image.asset(ICON.CAFE),
-              const Padding(padding: EdgeInsets.all(2)),
-              const Text('자영업자의 쉼터 카페').expand(),
-            ],
-            url: "https://cafe.naver.com/jangsin1004",
-          ).expand(),
-          buildFooterLogoLinkButton(
-            children: [
-              Image.asset(ICON.YOUTUBE),
-              const Padding(padding: EdgeInsets.all(2)),
-              const Text('장사의 신 유튜브').expand(),
-            ],
-            url: "https://www.youtube.com/@jangsin",
-          ).expand(),
-          const Text('jashim_map beta Ver.0.1.1',
-              style: TextStyle(color: COLOR.WHITE)),
-          const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(LABEL.FOOTER_EMAIL, style: TextStyle(color: COLOR.WHITE)),
-              Text(LABEL.FOOTER_COPYRIGHT,
-                  style: TextStyle(color: COLOR.WHITE)),
-            ],
-          ).expand(),
+  Widget buildFooter() {
+    List<Map<String, dynamic>> dataList = [
+      {
+        'url': "https://cafe.naver.com/jangsin1004",
+        'children': [
+          Center(child: Image.asset(ICON.CAFE)),
+          const Center(child: Padding(padding: EdgeInsets.all(2))),
+          const Center(child: Text('자영업자의 쉼터 카페')),
         ],
-      ),
-    );
-  }
-
-  Widget buildFooterLogoLinkButton({
-    required List<Widget> children,
-    required String url,
-  }) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        foregroundColor: COLOR.WHITE,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children,
-        // children: [
-        //   Image.asset(ICON.CAFE),
-        //   const Padding(padding: EdgeInsets.all(2)),
-        //   const Text('자영업자의 쉼터 카페').expand(),
-        // ],
-      ),
-      onPressed: () {
-        // js.context.callMethod('open', ["https://cafe.naver.com/jangsin1004"]);
-        js.context.callMethod('open', [url]);
       },
+      {
+        'url': "https://www.youtube.com/@jangsin",
+        'children': [
+          Center(child: Image.asset(ICON.YOUTUBE)),
+          const Center(child: Padding(padding: EdgeInsets.all(2))),
+          const Center(child: Text('장사의 신 유튜브')),
+        ],
+      },
+    ];
+    return FooterBar(
+      context: context,
+      barColor: Colors.blue[200],
+      mapOfData: dataList,
     );
   }
 
@@ -457,10 +376,10 @@ class ViewMapState extends State<ViewMap> {
       isYoutube: isYoutube,
     );
     RestfulResult latLng = await GServiceRestaurant.getLatLng();
+    $restaurants.sink$(initPaginationData.data['pagination_data']);
+    dataCount = initPaginationData.data['dataCount'];
 
-    await Future.delayed(const Duration(milliseconds: 200), () async {
-      $restaurants.sink$(initPaginationData.data['pagination_data']);
-      dataCount = initPaginationData.data['dataCount'];
+    await Future.delayed(const Duration(milliseconds: 500), () async {
       await inputDataForHtml(dataType: 'init', data: latLng.data);
     });
   }
@@ -503,76 +422,6 @@ class ViewMapState extends State<ViewMap> {
     );
   }
 
-  Widget buildFooter() {
-    return Container(
-      color: Colors.blue[200],
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: COLOR.WHITE,
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(ICON.CAFE),
-                        const Padding(padding: EdgeInsets.all(2)),
-                        const Text('자영업자의 쉼터 카페').expand(),
-                      ],
-                    ),
-                    onPressed: () {
-                      js.context.callMethod(
-                          'open', ["https://cafe.naver.com/jangsin1004"]);
-                    },
-                  ).expand(),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: COLOR.WHITE,
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(ICON.YOUTUBE),
-                          const Padding(padding: EdgeInsets.all(2)),
-                          const Text('장사의 신 유튜브').expand(),
-                        ],
-                      ),
-                      onPressed: () {
-                        js.context.callMethod(
-                            'open', ["https://www.youtube.com/@jangsin"]);
-                      }).expand()
-                ],
-              ),
-              const Divider(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('자쉼맵 Ver.0.1.beta'),
-                  const Text('현재 자쉼맵은 개발 단계에 있습니다.'),
-                  const Text('의견 및 제안은 메일로 보내주시기 바랍니다.'),
-                  const Padding(padding: EdgeInsets.all(4)),
-                  const Text(LABEL.FOOTER_COPYRIGHT),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset(ICON.EMAIL),
-                      const Padding(padding: EdgeInsets.all(4)),
-                      const Text(LABEL.FOOTER_EMAIL),
-                    ],
-                  ),
-                ],
-              ).expand(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     initMap();
@@ -590,6 +439,7 @@ class ViewMapState extends State<ViewMap> {
       builder: (BuildContext context) {
         return PointerInterceptor(
           child: AlertDialog(
+            contentPadding: EdgeInsets.zero,
             content: SizedBox(
               width: isPort
                   ? width * SIZE.PORTRAIT_DIALOG_WIDTH_RATIO
@@ -597,52 +447,64 @@ class ViewMapState extends State<ViewMap> {
               height: isPort
                   ? height * SIZE.PORTRAIT_DIALOG_HEIGHT_RATIO
                   : height * SIZE.LANDSCAPE_DIALOG_HEIGHT_RATIO,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: getSidoList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  String sido = getSidoList[index];
-                  return Row(
-                    children: [
-                      Center(child: Text('${index + 1}')).expand(),
-                      ElevatedButton(
-                        child: AutoSizeText(sido, maxLines: 1),
-                        onPressed: () async {
-                          if (sido == DISTRICT.ALL) {
-                            Navigator.pop(context);
-                            ctrlSido.value = ctrlSido.value.copyWith(
-                              text: DISTRICT.ALL,
-                              selection: const TextSelection.collapsed(
-                                  offset: DISTRICT.ALL.length),
-                              composing: TextRange.empty,
-                            );
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    const Text(LABEL.SELECT_REGION_SIDO),
+                    const Divider(),
+                    ListView.separated(
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: getSidoList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        String sido = getSidoList[index];
+                        return Row(
+                          children: [
+                            Center(child: Text('${index + 1}')).expand(),
+                            ElevatedButton(
+                              child: AutoSizeText(sido, maxLines: 1),
+                              onPressed: () async {
+                                if (sido == DISTRICT.ALL) {
+                                  Navigator.pop(context);
+                                  ctrlSido.value = ctrlSido.value.copyWith(
+                                    text: DISTRICT.ALL,
+                                    selection: const TextSelection.collapsed(
+                                        offset: DISTRICT.ALL.length),
+                                    composing: TextRange.empty,
+                                  );
 
-                            RestfulResult result =
-                                await GServiceRestaurant.pagination(
-                                    isYoutube: isYoutube);
-                            $restaurants.sink$(result.data['pagination_data']);
-                            return ctrlListScroll.jumpTo(0);
-                          }
+                                  RestfulResult result =
+                                      await GServiceRestaurant.pagination(
+                                          isYoutube: isYoutube);
+                                  $restaurants
+                                      .sink$(result.data['pagination_data']);
+                                  return ctrlListScroll.jumpTo(0);
+                                }
 
-                          Navigator.pop(context);
-                          RestfulResult result =
-                              await GServiceRestaurant.pagination(
-                                  sido: sido, isYoutube: isYoutube);
-                          $restaurants.sink$(result.data['pagination_data']);
+                                Navigator.pop(context);
+                                RestfulResult result =
+                                    await GServiceRestaurant.pagination(
+                                        sido: sido, isYoutube: isYoutube);
+                                $restaurants
+                                    .sink$(result.data['pagination_data']);
 
-                          ctrlSido.value = ctrlSido.value.copyWith(
-                            text: sido,
-                            selection:
-                                TextSelection.collapsed(offset: sido.length),
-                            composing: TextRange.empty,
-                          );
-                          ctrlSigungu.text = DISTRICT.ALL;
-                          return ctrlListScroll.jumpTo(0);
-                        },
-                      ).expand(flex: 4),
-                    ],
-                  );
-                },
+                                ctrlSido.value = ctrlSido.value.copyWith(
+                                  text: sido,
+                                  selection: TextSelection.collapsed(
+                                      offset: sido.length),
+                                  composing: TextRange.empty,
+                                );
+                                ctrlSigungu.text = DISTRICT.ALL;
+                                return ctrlListScroll.jumpTo(0);
+                              },
+                            ).expand(flex: 4),
+                          ],
+                        );
+                      },
+                    ).expand(),
+                    buildExitButton(context),
+                  ],
+                ),
               ),
             ),
           ),
@@ -656,7 +518,6 @@ class ViewMapState extends State<ViewMap> {
         isYoutube: isYoutube, sido: ctrlSido.text);
     List<String> getSigunguList =
         GServiceRestaurant.$districtSigungu.lastValue.data;
-
     getSigunguList.insert(0, DISTRICT.ALL);
     // ignore: use_build_context_synchronously
     return showDialog(
@@ -664,6 +525,7 @@ class ViewMapState extends State<ViewMap> {
       builder: (BuildContext context) {
         return PointerInterceptor(
           child: AlertDialog(
+            contentPadding: EdgeInsets.zero,
             content: SizedBox(
               width: isPort
                   ? width * SIZE.PORTRAIT_DIALOG_WIDTH_RATIO
@@ -671,69 +533,82 @@ class ViewMapState extends State<ViewMap> {
               height: isPort
                   ? height * SIZE.PORTRAIT_DIALOG_HEIGHT_RATIO
                   : height * SIZE.LANDSCAPE_DIALOG_HEIGHT_RATIO,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: getSigunguList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  String sigungu = getSigunguList[index];
-                  return Row(
-                    children: [
-                      Center(child: Text('${index + 1}')).expand(),
-                      const VerticalDivider(),
-                      ElevatedButton(
-                        child: AutoSizeText(sigungu, maxLines: 1),
-                        onPressed: () async {
-                          if (sigungu == DISTRICT.ALL) {
-                            Navigator.pop(context);
-                            ctrlSigungu.value = ctrlSigungu.value.copyWith(
-                              text: sigungu,
-                              selection: TextSelection.collapsed(
-                                  offset: sigungu.length),
-                              composing: TextRange.empty,
-                            );
-                            ctrlSigungu.text = DISTRICT.ALL;
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    const Text(LABEL.SELECT_REGION_SIGUNGU),
+                    const Divider(),
+                    ListView.separated(
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: getSigunguList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        String sigungu = getSigunguList[index];
+                        return Row(
+                          children: [
+                            Center(child: Text('${index + 1}')).expand(),
+                            const VerticalDivider(),
+                            ElevatedButton(
+                              child: AutoSizeText(sigungu, maxLines: 1),
+                              onPressed: () async {
+                                if (sigungu == DISTRICT.ALL) {
+                                  Navigator.pop(context);
+                                  ctrlSigungu.value =
+                                      ctrlSigungu.value.copyWith(
+                                    text: sigungu,
+                                    selection: TextSelection.collapsed(
+                                        offset: sigungu.length),
+                                    composing: TextRange.empty,
+                                  );
+                                  ctrlSigungu.text = DISTRICT.ALL;
 
-                            RestfulResult result =
-                                await GServiceRestaurant.pagination(
-                              sido: ctrlSido.text,
-                              sigungu: ctrlSigungu.text == DISTRICT.ALL
-                                  ? null
-                                  : ctrlSigungu.text,
-                              isYoutube: isYoutube,
-                            );
-                            $restaurants.sink$(result.data['pagination_data']);
-                            return ctrlListScroll.jumpTo(0);
-                          }
-                          Navigator.pop(context);
+                                  RestfulResult result =
+                                      await GServiceRestaurant.pagination(
+                                    sido: ctrlSido.text,
+                                    sigungu: ctrlSigungu.text == DISTRICT.ALL
+                                        ? null
+                                        : ctrlSigungu.text,
+                                    isYoutube: isYoutube,
+                                  );
+                                  $restaurants
+                                      .sink$(result.data['pagination_data']);
+                                  return ctrlListScroll.jumpTo(0);
+                                }
+                                Navigator.pop(context);
 
-                          ctrlSigungu.value = ctrlSigungu.value.copyWith(
-                            text: sigungu,
-                            selection:
-                                TextSelection.collapsed(offset: sigungu.length),
-                            composing: TextRange.empty,
-                          );
+                                ctrlSigungu.value = ctrlSigungu.value.copyWith(
+                                  text: sigungu,
+                                  selection: TextSelection.collapsed(
+                                      offset: sigungu.length),
+                                  composing: TextRange.empty,
+                                );
 
-                          RestfulResult result =
-                              await GServiceRestaurant.pagination(
-                            sido: ctrlSido.text,
-                            sigungu: ctrlSigungu.text,
-                            isYoutube: isYoutube,
-                          );
-                          print(result.map);
+                                RestfulResult result =
+                                    await GServiceRestaurant.pagination(
+                                  sido: ctrlSido.text,
+                                  sigungu: ctrlSigungu.text,
+                                  isYoutube: isYoutube,
+                                );
+                                print(result.map);
 
-                          $restaurants.sink$(result.data['pagination_data']);
+                                $restaurants
+                                    .sink$(result.data['pagination_data']);
 
-                          return ctrlListScroll.jumpTo(0);
-                          // GServiceRestaurant.pagination(
-                          //   sido: ctrlSido.text,
-                          //   sigungu: ctrlSigungu.text,
-                          //   isYoutube: isYoutube,
-                          // );
-                        },
-                      ).expand(flex: 4),
-                    ],
-                  );
-                },
+                                return ctrlListScroll.jumpTo(0);
+                                // GServiceRestaurant.pagination(
+                                //   sido: ctrlSido.text,
+                                //   sigungu: ctrlSigungu.text,
+                                //   isYoutube: isYoutube,
+                                // );
+                              },
+                            ).expand(flex: 4),
+                          ],
+                        );
+                      },
+                    ).expand(),
+                    buildExitButton(context),
+                  ],
+                ),
               ),
             ),
           ),
@@ -752,6 +627,7 @@ class ViewMapState extends State<ViewMap> {
     };
 
     String jsonData = jsonEncode(mapOfData);
+    // String jsonData = jsonEncode(asd);
     html.window.postMessage(jsonData, '*');
   }
 

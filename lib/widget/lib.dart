@@ -21,6 +21,7 @@ import 'package:jangsin_map/preset/key.dart' as KEY;
 import 'package:jangsin_map/preset/color.dart' as COLOR;
 import 'package:jangsin_map/preset/label.dart' as LABEL;
 import 'package:jangsin_map/preset/icon.dart' as ICON;
+import 'package:jangsin_map/preset/path.dart' as PATH;
 
 // import 'package:tnd_pkg_widget/tnd_pkg_widget.dart';
 
@@ -29,6 +30,7 @@ part 'tile_restaurant_unit.dart';
 part 'pagination_button.dart';
 part 'dropdown_field.dart';
 part 'append_scroll_listview.dart';
-part 'admin/management_info.dart';
+part 'footer.dart';
 
+part 'admin/management_info.dart';
 part 'admin/management_image.dart';
