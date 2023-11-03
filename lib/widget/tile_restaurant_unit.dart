@@ -12,8 +12,6 @@ class TileRestaurantUnit extends StatelessWidget {
     super.key,
   });
 
-  Color textColor = Colors.grey;
-
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -21,7 +19,7 @@ class TileRestaurantUnit extends StatelessWidget {
         padding: EdgeInsets.zero,
         minimumSize: const Size(50, 30),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        foregroundColor: textColor,
+        foregroundColor: COLOR.TILE_TEXT_COLOR,
       ),
       onPressed: onPressed,
       child: Stack(

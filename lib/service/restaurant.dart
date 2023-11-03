@@ -142,7 +142,6 @@ class ServiceRestaurant {
     Map<String, String> queryByCondition = {
       'page': page.toString(),
       'limit': limit.toString(),
-      // 'menu': 'zzz',
       'source': isYoutube ? 'youtube' : 'cafe',
       if (sido != null) 'sido': sido,
       if (sido != null && sigungu != null) 'sigungu': sigungu,

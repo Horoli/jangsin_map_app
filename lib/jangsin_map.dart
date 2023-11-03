@@ -21,6 +21,7 @@ import 'package:jangsin_map/preset/label.dart' as LABEL;
 import 'package:jangsin_map/preset/color.dart' as COLOR;
 import 'package:jangsin_map/preset/icon.dart' as ICON;
 import 'package:jangsin_map/preset/size.dart' as SIZE;
+import 'package:jangsin_map/preset/image.dart' as IMAGE;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
