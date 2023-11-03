@@ -224,7 +224,16 @@ class ViewMapState extends State<ViewMap> {
                         ),
                       ),
                     ),
-                  )
+                  ),
+                  PointerInterceptor(
+                    child: Positioned(
+                      top: 0,
+                      right: 0,
+                      // height: 100,
+                      // width: 100,
+                      child: buildToAdminLoginButton(),
+                    ),
+                  ),
                 ],
               ).sizedBox(height: height - kToolbarHeight),
               buildFooooter().sizedBox(height: kToolbarHeight),
