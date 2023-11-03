@@ -50,20 +50,40 @@ class ViewMapState extends State<ViewMap> {
         controller: ctrlMainScroll,
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.blue[100],
-            flexibleSpace: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: buildSelectFields(),
-              ),
+            backgroundColor: COLOR.WHITE.withOpacity(0),
+            flexibleSpace: Container(
+              child: isYoutube
+                  ? Image.asset(
+                      IMAGE.YOUTUBE_LOGO,
+                    )
+                  : Image.asset(
+                      IMAGE.JASHIM_LOGO,
+                      fit: BoxFit.fitWidth,
+                      width: double.infinity,
+                      height: double.infinity,
+                      alignment: Alignment.center,
+                    ),
             ),
-            expandedHeight: kToolbarHeight * 1.5,
+            // flexibleSpace: Center(
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: buildSelectFields(),
+            //   ),
+            // ),
+            expandedHeight:
+                isYoutube ? kToolbarHeight * 2 : kToolbarHeight * 2.5,
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: height * 1.2,
+              height: height * 1.4,
               child: Column(
                 children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: buildSelectFields(),
+                    ),
+                  ).sizedBox(height: kToolbarHeight),
                   /*
                   Map 
                   */
@@ -93,9 +113,46 @@ class ViewMapState extends State<ViewMap> {
                   /*
                   Footer 
                   */
-                  buildFooter().sizedBox(height: kToolbarHeight * 3)
-                  // Container(color: Colors.blue[200])
-                  //     .sizedBox(height: kToolbarHeight * 3),
+                  Container(
+                    height: kToolbarHeight,
+                    color: Colors.blue[200],
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        buildFooterLogoLinkButton(
+                          children: [
+                            Image.asset(ICON.CAFE),
+                            const Padding(padding: EdgeInsets.all(2)),
+                            const Text('자영업자의 쉼터 카페').expand(),
+                          ],
+                          url: "https://cafe.naver.com/jangsin1004",
+                        ).expand(),
+                        buildFooterLogoLinkButton(
+                          children: [
+                            Image.asset(ICON.YOUTUBE),
+                            const Padding(padding: EdgeInsets.all(2)),
+                            const Text('장사의 신 유튜브').expand(),
+                          ],
+                          url: "https://www.youtube.com/@jangsin",
+                        ).expand(),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    height: kToolbarHeight,
+                    color: Colors.blue[200],
+                    width: double.infinity,
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(LABEL.FOOTER_EMAIL,
+                            style: TextStyle(color: COLOR.WHITE)),
+                        Text(LABEL.FOOTER_COPYRIGHT,
+                            style: TextStyle(color: COLOR.WHITE)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -108,126 +165,144 @@ class ViewMapState extends State<ViewMap> {
   Widget buildLandscapeView(List<MRestaurant> listOfRestaurant) {
     return Scaffold(
       floatingActionButton: buildFloatingActionButton(),
-      body: SingleChildScrollView(
-        controller: ctrlMainScroll,
-        child: SizedBox(
-          height: height * 1.2,
-          child: Center(
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        height: height,
-                        color: Colors.amber[100],
-                      ),
+      body: SizedBox(
+        height: height,
+        child: Center(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  /*
+                  map
+                  */
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      height: height,
+                      width: width - SIZE.LANDSCAPE_WIDTH_PIXED,
+                      color: Colors.amber[100],
+                      child: const HtmlElementView(viewType: 'naver-map'),
                     ),
-                  ],
-                ).sizedBox(height: height),
-                // Stack(
-                //   children: [
-                //     /*
-                //      map
-                //     */
-                //     Positioned(
-                //       top: 0,
-                //       right: 0,
-                //       child: Container(
-                //           // color: Colors.amber[100],
-                //           ),
-                //     ),
-                //     // const HtmlElementView(viewType: 'naver-map').expand(),
-                //     /*
-                //      list
-                //     */
-                //     Positioned(
-                //       top: 0,
-                //       left: 0,
-                //       child: Material(
-                //         elevation: 30,
-                //         child: Container(
-                //           // decoration: BoxDecoration(
-                //           //   color: COLOR.WHITE,
-                //           //   boxShadow: [
-                //           //     BoxShadow(
-                //           //       color: Colors.grey.withOpacity(0.1),
-                //           //       blurRadius: 15,
-                //           //       // spreadRadius: -20,
-                //           //       offset: const Offset(3, 0),
-                //           //     ),
-                //           //   ],
-                //           // ),
-                //           padding: const EdgeInsets.all(8.0),
-                //           child: Column(
-                //             children: [
-                //               Padding(
-                //                 padding: const EdgeInsets.all(8.0),
-                //                 child: Row(
-                //                   children: [
-                //                     Center(
-                //                       child: InkWell(
-                //                         child: Image.asset(IMAGE.MAIN_LOGO),
-                //                         onTap: () {},
-                //                       ),
-                //                     ).expand(),
-                //                     const Padding(padding: EdgeInsets.all(4)),
-                //                     Container(
-                //                       color: Colors.red[100],
-                //                       child: const Center(
-                //                         child: AutoSizeText('자쉼맵 - jashim map'),
-                //                       ),
-                //                     ).expand(flex: 2),
-                //                   ],
-                //                 ),
-                //               ).sizedBox(height: kToolbarHeight * 3),
-                //               //
-                //               buildSelectFields()
-                //                   .sizedBox(height: kToolbarHeight),
-                //               //
-
-                //               Card(
-                //                 child: Padding(
-                //                   padding: const EdgeInsets.all(8.0),
-                //                   child: buildListView(listOfRestaurant),
-                //                 ),
-                //               ).sizedBox(height: height * 0.7),
-                //             ],
-                //           ),
-                //         ),
-                //       ).sizedBox(width: 600),
-                //     ),
-                //   ],
-                // ).sizedBox(height: height),
-
-                // Footer
-                Container(
-                  color: Colors.blue[100],
-                  child: Stack(
-                    children: [
-                      buildFooter(),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: TextButton(
-                          child: const Text(''),
-                          onPressed: () {},
-                          onLongPress: () {
-                            Navigator.of(context)
-                                .pushNamed(PATH.ROUTE_ADMIN_LOGIN);
-                          },
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: Material(
+                      elevation: 30,
+                      child: SizedBox(
+                        height: height - kToolbarHeight,
+                        width: SIZE.LANDSCAPE_WIDTH_PIXED,
+                        child: Column(
+                          children: [
+                            Container(
+                              child: isYoutube
+                                  ? Image.asset(
+                                      IMAGE.YOUTUBE_LOGO,
+                                    )
+                                  : Image.asset(
+                                      IMAGE.JASHIM_LOGO,
+                                      fit: BoxFit.fill,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                    ),
+                            ).sizedBox(height: kToolbarHeight * 3),
+                            const Padding(padding: EdgeInsets.all(8)),
+                            Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: buildSelectFields())
+                                .sizedBox(height: kToolbarHeight),
+                            const Divider(),
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: buildListView(listOfRestaurant),
+                              ),
+                            ).expand(),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ).expand(),
-              ],
-            ),
+                    ),
+                  )
+                ],
+              ).sizedBox(height: height - kToolbarHeight),
+              buildFooooter().sizedBox(height: kToolbarHeight),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildToAdminLoginButton() {
+    return TextButton(
+      child: const Text(''),
+      onPressed: () {},
+      onLongPress: () {
+        Navigator.of(context).pushNamed(PATH.ROUTE_ADMIN_LOGIN);
+      },
+    );
+  }
+
+  Widget buildFooooter() {
+    return Container(
+      color: Colors.blue[200],
+      width: double.infinity,
+      child: Row(
+        children: [
+          buildFooterLogoLinkButton(
+            children: [
+              Image.asset(ICON.CAFE),
+              const Padding(padding: EdgeInsets.all(2)),
+              const Text('자영업자의 쉼터 카페').expand(),
+            ],
+            url: "https://cafe.naver.com/jangsin1004",
+          ).expand(),
+          buildFooterLogoLinkButton(
+            children: [
+              Image.asset(ICON.YOUTUBE),
+              const Padding(padding: EdgeInsets.all(2)),
+              const Text('장사의 신 유튜브').expand(),
+            ],
+            url: "https://www.youtube.com/@jangsin",
+          ).expand(),
+          const Text('jashim_map beta Ver.0.1.1',
+              style: TextStyle(color: COLOR.WHITE)),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(LABEL.FOOTER_EMAIL, style: TextStyle(color: COLOR.WHITE)),
+              Text(LABEL.FOOTER_COPYRIGHT,
+                  style: TextStyle(color: COLOR.WHITE)),
+            ],
+          ).expand(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildFooterLogoLinkButton({
+    required List<Widget> children,
+    required String url,
+  }) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: COLOR.WHITE,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+        // children: [
+        //   Image.asset(ICON.CAFE),
+        //   const Padding(padding: EdgeInsets.all(2)),
+        //   const Text('자영업자의 쉼터 카페').expand(),
+        // ],
+      ),
+      onPressed: () {
+        // js.context.callMethod('open', ["https://cafe.naver.com/jangsin1004"]);
+        js.context.callMethod('open', [url]);
+      },
     );
   }
 
@@ -356,9 +431,9 @@ class ViewMapState extends State<ViewMap> {
               await GServiceRestaurant.pagination(isYoutube: isYoutube);
           $restaurants.sink$(result.data['pagination_data']);
           dataCount = result.data['dataCount'];
-          // if (isPort) {
-          ctrlMainScroll.jumpTo(0);
-          // }
+          if (isPort) {
+            ctrlMainScroll.jumpTo(0);
+          }
           ctrlListScroll.jumpTo(0);
         },
       ),
