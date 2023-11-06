@@ -19,7 +19,8 @@ class ViewMapState extends State<ViewMap> {
   final TextEditingController ctrlSigungu = TextEditingController();
   final ScrollController ctrlMainScroll = ScrollController();
   final ScrollController ctrlListScroll = ScrollController();
-  final TStream<List<MRestaurant>> $restaurants = TStream<List<MRestaurant>>();
+  final TStream<List<MRestaurant>> $listOfRestaurant =
+      TStream<List<MRestaurant>>();
   int dataCount = 0;
   bool isLoading = false;
 
@@ -31,11 +32,14 @@ class ViewMapState extends State<ViewMap> {
 
     return TStreamBuilder(
       initialData: const <MRestaurant>[],
-      stream: $restaurants.browse$,
+      stream: $listOfRestaurant.browse$,
       builder: (context, List<MRestaurant> listOfRestaurant) {
         if (listOfRestaurant.isEmpty) {
+          // initMarker(listOfRestaurant);
           return ViewDataLoading();
         }
+        initMarker(listOfRestaurant);
+
         return isPort
             ? buildPortaitView(listOfRestaurant)
             : buildLandscapeView(listOfRestaurant);
@@ -104,19 +108,6 @@ class ViewMapState extends State<ViewMap> {
                   Footer 
                   */
                   buildFooter().sizedBox(height: kToolbarHeight),
-                  // Container(
-                  //   height: kToolbarHeight,
-                  //   color: Colors.blue[200],
-                  //   width: double.infinity,
-                  //   child: const Column(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Text(LABEL.FOOTER_EMAIL,
-                  //           style: TextStyle(color: COLOR.WHITE)),
-                  //       Text(LABEL.FOOTER_COPYRIGHT,
-                  //           style: TextStyle(color: COLOR.WHITE)),
-                  //     ],
-                  //   ),
                 ],
               ),
             ),
@@ -189,15 +180,6 @@ class ViewMapState extends State<ViewMap> {
                       ),
                     ),
                   ),
-                  // PointerInterceptor(
-                  //   child: Positioned(
-                  //     top: 0,
-                  //     right: 0,
-                  //     // height: 100,
-                  //     // width: 100,
-                  //     child: buildToAdminLoginButton(),
-                  //   ),
-                  // ),
                 ],
               ).sizedBox(height: height - kToolbarHeight),
               buildFooter().sizedBox(height: kToolbarHeight),
@@ -268,6 +250,7 @@ class ViewMapState extends State<ViewMap> {
                   inputDataForHtml(
                     dataType: 'set',
                     data: {
+                      'label': listOfRestaurant[index].label,
                       'lat': listOfRestaurant[index].lat,
                       'lng': listOfRestaurant[index].lng
                     },
@@ -296,7 +279,7 @@ class ViewMapState extends State<ViewMap> {
           );
 
           if (getDataResult.statusCode != 200) {
-            $restaurants.sink$(listOfRestaurant);
+            $listOfRestaurant.sink$(listOfRestaurant);
             return;
           }
 
@@ -319,7 +302,7 @@ class ViewMapState extends State<ViewMap> {
         // 스크롤을 비활성화 시키기 위해 지연시간 추가
         await Future.delayed(const Duration(milliseconds: 500), () async {
           isLoading = false;
-          $restaurants.sink$(listOfRestaurant);
+          $listOfRestaurant.sink$(listOfRestaurant);
         });
         // $restaurants.sink$(listOfRestaurant);
       },
@@ -357,7 +340,7 @@ class ViewMapState extends State<ViewMap> {
           isYoutube = !isYoutube;
           RestfulResult result =
               await GServiceRestaurant.pagination(isYoutube: isYoutube);
-          $restaurants.sink$(result.data['pagination_data']);
+          $listOfRestaurant.sink$(result.data['pagination_data']);
           dataCount = result.data['dataCount'];
           if (isPort) {
             ctrlMainScroll.jumpTo(0);
@@ -366,22 +349,6 @@ class ViewMapState extends State<ViewMap> {
         },
       ),
     );
-  }
-
-  Future<void> initMap() async {
-    ctrlSido.text = LABEL.ALL;
-    await registerNaverMap();
-    await GUtility.wait(splashDuration);
-    RestfulResult initPaginationData = await GServiceRestaurant.pagination(
-      isYoutube: isYoutube,
-    );
-    RestfulResult latLng = await GServiceRestaurant.getLatLng();
-    $restaurants.sink$(initPaginationData.data['pagination_data']);
-    dataCount = initPaginationData.data['dataCount'];
-
-    await Future.delayed(const Duration(milliseconds: 500), () async {
-      await inputDataForHtml(dataType: 'init', data: latLng.data);
-    });
   }
 
   ///
@@ -424,8 +391,67 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   void initState() {
-    initMap();
+    registerNaverMap();
+    initData();
     super.initState();
+  }
+
+  Future<void> initData() async {
+    ctrlSido.text = LABEL.ALL;
+    RestfulResult initPaginationData = await GServiceRestaurant.pagination(
+      isYoutube: isYoutube,
+    );
+    await registerNaverMap();
+    List<MRestaurant> result = initPaginationData.data['pagination_data'];
+    await GUtility.wait(splashDuration);
+    $listOfRestaurant.sink$(result);
+
+    dataCount = initPaginationData.data['dataCount'];
+  }
+
+  Future<void> initMarker(List<MRestaurant> result) async {
+    print('aaaaaaaaaaaaaaaaaaaaaa');
+    List<Map<String, dynamic>> getData = result
+        .map((MRestaurant rest) => {
+              'label': rest.label,
+              'lat': rest.lat,
+              'lng': rest.lng,
+            })
+        .toList();
+
+    await inputDataForHtml(dataType: 'init', data: getData);
+
+    // await initMarkerInput(getData);
+  }
+
+  Future<void> initMarkerInput(List<Map<String, dynamic>> data) async {}
+
+  Future<void> inputDataForHtml(
+      {required String dataType, required dynamic data}) async {
+    assert(dataType == 'init' || dataType == 'set',
+        'inputDataForHtml exception : dataType is not init or set');
+    Map<String, dynamic> mapOfData = {
+      'type': dataType,
+      'data': data,
+    };
+
+    String jsonData = jsonEncode(mapOfData);
+    // String jsonData = jsonEncode(asd);
+    html.window.postMessage(jsonData, '*');
+  }
+
+  Future<void> registerNaverMap() async {
+    String htmlPath =
+        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
+
+    ui_web.platformViewRegistry.registerViewFactory(
+      'naver-map',
+      (int id) => html.IFrameElement()
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.border = 'none'
+        ..src = htmlPath,
+    );
   }
 
   Future<void> selectRegionSidoDialog() async {
@@ -476,7 +502,7 @@ class ViewMapState extends State<ViewMap> {
                                   RestfulResult result =
                                       await GServiceRestaurant.pagination(
                                           isYoutube: isYoutube);
-                                  $restaurants
+                                  $listOfRestaurant
                                       .sink$(result.data['pagination_data']);
                                   return ctrlListScroll.jumpTo(0);
                                 }
@@ -485,7 +511,7 @@ class ViewMapState extends State<ViewMap> {
                                 RestfulResult result =
                                     await GServiceRestaurant.pagination(
                                         sido: sido, isYoutube: isYoutube);
-                                $restaurants
+                                $listOfRestaurant
                                     .sink$(result.data['pagination_data']);
 
                                 ctrlSido.value = ctrlSido.value.copyWith(
@@ -570,7 +596,7 @@ class ViewMapState extends State<ViewMap> {
                                         : ctrlSigungu.text,
                                     isYoutube: isYoutube,
                                   );
-                                  $restaurants
+                                  $listOfRestaurant
                                       .sink$(result.data['pagination_data']);
                                   return ctrlListScroll.jumpTo(0);
                                 }
@@ -590,7 +616,7 @@ class ViewMapState extends State<ViewMap> {
                                   isYoutube: isYoutube,
                                 );
 
-                                $restaurants
+                                $listOfRestaurant
                                     .sink$(result.data['pagination_data']);
 
                                 return ctrlListScroll.jumpTo(0);
@@ -613,34 +639,6 @@ class ViewMapState extends State<ViewMap> {
           ),
         );
       },
-    );
-  }
-
-  Future<void> inputDataForHtml(
-      {required String dataType, required dynamic data}) async {
-    assert(dataType == 'init' || dataType == 'set',
-        'inputDataForHtml exception : dataType is not init or set');
-    Map<String, dynamic> mapOfData = {
-      'type': dataType,
-      'data': data,
-    };
-
-    String jsonData = jsonEncode(mapOfData);
-    // String jsonData = jsonEncode(asd);
-    html.window.postMessage(jsonData, '*');
-  }
-
-  Future<void> registerNaverMap() async {
-    String htmlPath =
-        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
-
-    ui_web.platformViewRegistry.registerViewFactory(
-      'naver-map',
-      (int id) => html.IFrameElement()
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.border = 'none'
-        ..src = htmlPath,
     );
   }
 

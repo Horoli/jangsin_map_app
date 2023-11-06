@@ -25,19 +25,13 @@
     <div id="map"></div>
     <script>
         window.parent.addEventListener('message', handleMessage, false);
-        // window.parent.addEventListener('set', setMarker, false);
 
-        // const lat = 37.4824419369998;
-        // const lng = 126.84983521857548;
+        var mapOfCurrentMarker = {};
+
         var map = new naver.maps.Map('map', mapOptions);
-        // var center = new naver.maps.LatLng(lat, lng);
         var mapOptions = { zoom: 10 };
-        // window.addEventListener('resize', resize);
 
-        // var marker = new naver.maps.Marker({
-        //     position: center,
-        //     map: map,
-        // });
+        var infoWindow = new naver.maps.InfoWindow();
 
 
         function handleMessage(e) {
@@ -47,47 +41,81 @@
             }
 
             if (getData.type === "init") {
-                // setHeaderSrc(getData);
-                initMarker(getData);
+                console.log('init A');
+                if (Object.keys(mapOfCurrentMarker).length !== 0) {
+                    markerInitializing();
+                }
+
+                console.log('init B');
+                markerCreate(getData);
             }
         }
 
 
         // initData create marker
-        function initMarker(e) {
-            Object.keys(e.data).forEach((key) => {
-                var position = new naver.maps.LatLng(e.data[key].lat, e.data[key].lng);
+        function markerCreate(event) {
+            Object.keys(event.data).forEach((key) => {
+                var label = event.data[key].label;
+                var lat = event.data[key].lat;
+                var lng = event.data[key].lng;
+                var position = new naver.maps.LatLng(lat, lng);
                 var newMarker = new naver.maps.Marker({
                     position: position,
                     map: map,
+                    clickable: true
                 })
+
+                /*
+                지도 내에서 마커를 클릭하면 infoWindow가 열림
+                */
+                naver.maps.Event.addListener(newMarker, 'click', function (mapListener) {
+                    infoWindow.setContent(getContentElement(label));
+                    infoWindow.open(map, newMarker);
+                    map.setCenter(position)
+                    map.setZoom(15)
+                });
+
+                mapOfCurrentMarker[label] = newMarker;
             })
         }
 
-        // 선택하면 입력된 좌표로 지도화면 이동
-        function clickMoveToSelectedRestaurantLocation(e) {
-            var position = new naver.maps.LatLng(e.data.lat, e.data.lng);
+        /*
+        기존에 열려있던 infoWindow를 닫음
+        기존에 set된 마커들을 초기화
+        mapOfCurrentMarker를 초기화
+        */
+        function markerInitializing() {
+            for (var key in mapOfCurrentMarker) {
+                infoWindow.close();
+                mapOfCurrentMarker[key].setMap(null);
+                delete mapOfCurrentMarker[key];
+            }
+        }
 
-            var newMarker = new naver.maps.Marker({
-                position: position,
-                map: map,
-            })
+
+        /*
+        list에서 가게를 선택하면 해당 가게의 위치로 지도가 이동하고
+        infoWindow를 여는 함수
+        */
+        function clickMoveToSelectedRestaurantLocation(event) {
+
+            var label = event.data.label;
+            var lat = event.data.lat;
+            var lng = event.data.lng;
+            var position = new naver.maps.LatLng(lat, lng);
+
+            infoWindow.setContent(getContentElement(label));
+            infoWindow.open(map, mapOfCurrentMarker[label]);
+
             map.setCenter(position)
             map.setZoom(15)
-            // map.fitBounds(position);
-            // marker.setPosition(position);
-
-            // var position = new naver.maps.LatLng(e[lat], e[lng])
-
         }
 
-        // naver.maps.Event.addListener(map, 'click', function (e) {
-        //     console.log(e.latlng);
-        //     map.setCenter(e.latlng)
-        //     // map.fitBounds(e.latlng);
-        //     map.setZoom(13)
-        //     marker.setPosition(e.latlng);
-        // });
+
+        function getContentElement(titleString) {
+            return '<div style="padding:20px;">' + titleString + '</div>';
+        }
+
 
     </script>
 </body>
