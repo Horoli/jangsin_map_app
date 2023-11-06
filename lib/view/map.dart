@@ -406,6 +406,13 @@ class ViewMapState extends State<ViewMap> {
     await GUtility.wait(splashDuration);
     $listOfRestaurant.sink$(result);
 
+    ///
+    ///
+    /// TODO : 현재 initState에서 initMarker를 호출하면
+    /// markerCreate가 실행되지 않는 상황
+    ///
+    ///
+
     dataCount = initPaginationData.data['dataCount'];
   }
 
