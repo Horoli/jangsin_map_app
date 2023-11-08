@@ -209,10 +209,17 @@ class ServiceRestaurant {
     return completer.future;
   }
 
-  Future<RestfulResult> getThumbnail({
-    required String thumbnail,
+  final Map<String, Widget> thumbnailCache = {};
+
+  Future<Widget?> getThumbnail({
+    required String thumbnailId,
   }) {
-    Completer<RestfulResult> completer = Completer<RestfulResult>();
+    Completer<Widget?> completer = Completer<Widget?>();
+
+    if (thumbnailCache.containsKey(thumbnailId)) {
+      completer.complete(thumbnailCache[thumbnailId]!);
+      return completer.future;
+    }
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -220,7 +227,7 @@ class ServiceRestaurant {
       "client-key": dotenv.get("JANGSIN_APP_CLIENT_KEY"),
     };
 
-    String jsonBody = jsonEncode({"thumbnail": thumbnail});
+    String jsonBody = jsonEncode({"thumbnail": thumbnailId});
 
     Uri query = PATH.IS_LOCAL
         ? Uri.http(PATH.LOCAL_URL, PATH.API_IMAGE_THUMBNAIL)
@@ -228,25 +235,39 @@ class ServiceRestaurant {
 
     http.post(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = jsonDecode(rep.body);
+      Map data = rawData['data'];
 
-      if (rawData['statusCode'] != 200) {
-        RestfulResult errorResult = RestfulResult(
-          statusCode: rawData['statusCode'],
-          message: rawData['message'],
-        );
-        completer.complete(errorResult);
-        return errorResult;
+      if (rawData['statusCode'] == 200 &&
+          data['thumbnail'] != null &&
+          data['thumbnail']['image'] != null &&
+          data['thumbnail']['image'].isNotEmpty) {
+        String imageBase64 = data['thumbnail']['image'];
+        Widget convertImage;
+        if (imageBase64.length < 100) {
+          convertImage = const Center(
+              child: Text(
+            'crashed image',
+            textAlign: TextAlign.center,
+          ));
+        } else {
+          convertImage = Image.memory(
+            base64Decode(imageBase64),
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(child: Text('crashed image'));
+            },
+          );
+        }
+        completer.complete(thumbnailCache[thumbnailId] = convertImage);
+        return completer.future;
       }
 
-      RestfulResult result = RestfulResult(
-        statusCode: rawData['statusCode'],
-        message: rawData['message'],
-        data: rawData['data'],
-      );
-
-      completer.complete(result);
+      completer.complete();
     });
 
     return completer.future;
+  }
+
+  void clearThumbnailCache() {
+    thumbnailCache.clear();
   }
 }

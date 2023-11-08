@@ -36,9 +36,11 @@
 
         function handleMessage(e) {
             const getData = JSON.parse(e.data);
+            console.log('getData', getData);
             if (getData.type === "set") {
                 clickMoveToSelectedRestaurantLocation(getData);
             }
+
 
             if (getData.type === "init") {
                 console.log('init A');
@@ -72,7 +74,7 @@
                     infoWindow.setContent(getContentElement(label));
                     infoWindow.open(map, newMarker);
                     map.setCenter(position)
-                    map.setZoom(15)
+                    map.setZoom(14)
                 });
 
                 mapOfCurrentMarker[label] = newMarker;
@@ -108,12 +110,13 @@
             infoWindow.open(map, mapOfCurrentMarker[label]);
 
             map.setCenter(position)
-            map.setZoom(15)
+            map.setZoom(14)
         }
 
 
         function getContentElement(titleString) {
-            return '<div style="padding:20px;">' + titleString + '</div>';
+            const title = '<div style="padding:20px;">' + titleString + '</div>';
+            return title;
         }
 
 

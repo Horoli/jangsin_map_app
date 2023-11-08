@@ -21,28 +21,26 @@ class ViewMapState extends State<ViewMap> {
   final ScrollController ctrlListScroll = ScrollController();
   final TStream<List<MRestaurant>> $listOfRestaurant =
       TStream<List<MRestaurant>>();
-  int dataCount = 0;
+  // int dataCount = 0;
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    /// TODO : stack
-    ///          ㄴ ListView
-    ///          ㄴ progress(refresh 발생 시 보여줄 progress/pointIgnore)
-
     return TStreamBuilder(
       initialData: const <MRestaurant>[],
       stream: $listOfRestaurant.browse$,
       builder: (context, List<MRestaurant> listOfRestaurant) {
-        if (listOfRestaurant.isEmpty) {
-          // initMarker(listOfRestaurant);
-          return ViewDataLoading();
-        }
-        initMarker(listOfRestaurant);
+        List<Map<String, dynamic>> getMarkerData =
+            convertMarkerData(listOfRestaurant);
+        inputDataForHtml(dataType: 'init', data: getMarkerData);
 
-        return isPort
-            ? buildPortaitView(listOfRestaurant)
-            : buildLandscapeView(listOfRestaurant);
+        return Stack(children: [
+          isPort
+              ? buildPortaitView(listOfRestaurant)
+              : buildLandscapeView(listOfRestaurant),
+          // loadingView
+          if (listOfRestaurant.isEmpty) ViewDataLoading(),
+        ]);
       },
     );
   }
@@ -85,7 +83,6 @@ class ViewMapState extends State<ViewMap> {
                   /*
                   Map 
                   */
-
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Card(
@@ -127,9 +124,7 @@ class ViewMapState extends State<ViewMap> {
             children: [
               Stack(
                 children: [
-                  /*
-                  map
-                  */
+                  // map
                   Positioned(
                     top: 0,
                     right: 0,
@@ -140,6 +135,7 @@ class ViewMapState extends State<ViewMap> {
                       child: const HtmlElementView(viewType: 'naver-map'),
                     ),
                   ),
+                  // list
                   Positioned(
                     top: 0,
                     left: 0,
@@ -152,9 +148,7 @@ class ViewMapState extends State<ViewMap> {
                           children: [
                             Container(
                               child: isYoutube
-                                  ? Image.asset(
-                                      IMAGE.YOUTUBE_LOGO,
-                                    )
+                                  ? Image.asset(IMAGE.YOUTUBE_LOGO)
                                   : Image.asset(
                                       IMAGE.JASHIM_LOGO,
                                       fit: BoxFit.fill,
@@ -194,73 +188,100 @@ class ViewMapState extends State<ViewMap> {
     List<Map<String, dynamic>> dataList = [
       {
         'url': "https://cafe.naver.com/jangsin1004",
-        'children': [
-          Center(child: Image.asset(ICON.CAFE)),
-          const Center(child: Padding(padding: EdgeInsets.all(2))),
-          const Center(child: Text('자영업자의 쉼터 카페')),
-        ],
+        'child': const Center(child: Text('자영업자의 쉼터 카페')),
       },
       {
         'url': "https://www.youtube.com/@jangsin",
-        'children': [
-          Center(child: Image.asset(ICON.YOUTUBE)),
-          const Center(child: Padding(padding: EdgeInsets.all(2))),
-          const Center(child: Text('장사의 신 유튜브')),
-        ],
+        'child': const Center(child: Text('장사의 신 유튜브')),
       },
     ];
     return FooterBar(
       context: context,
-      barColor: Colors.blue[200],
+      barColor: COLOR.DARK_GREY,
       mapOfData: dataList,
     );
   }
 
   Widget buildListView(List<MRestaurant> listOfRestaurant) {
+    List<Widget> asd = listOfRestaurant
+        .asMap()
+        .keys
+        .map(
+          (int index) => SizedBox(
+            height: 100,
+            child: TileRestaurantUnit(
+              index: index,
+              restaurant: listOfRestaurant[index],
+              $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+              onPressed: () {
+                // 선택한 식당이 같은 경우 빈 식당 sink$
+                // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+                //     restaurants[index].id) {
+                //   GServiceRestaurant.$selectedRestaurant
+                //       .sink$(MRestaurant());
+                //   return;
+                // }
+
+                // 선택한 식당이 다른 경우 해당 식당을 sink$
+                GServiceRestaurant.$selectedRestaurant
+                    .sink$(listOfRestaurant[index]);
+
+                inputDataForHtml(
+                  dataType: 'set',
+                  data: {
+                    'label': listOfRestaurant[index].label,
+                    'lat': listOfRestaurant[index].lat,
+                    'lng': listOfRestaurant[index].lng
+                  },
+                );
+              },
+            ),
+          ),
+        )
+        .toList();
+    print(asd);
+
     return AppendScrollListView(
       isLoading: isLoading,
       controller: ctrlListScroll,
-      itemCount: listOfRestaurant.length,
-      itemBuilder: (BuildContext context, int index) {
-        return SizedBox(
-          height: 100,
-          child: Row(
-            children: [
-              Center(
-                  child: Text(
-                '${index + 1}',
-                style: const TextStyle(color: COLOR.GREY),
-              )).sizedBox(width: 25),
-              TileRestaurantUnit(
-                restaurant: listOfRestaurant[index],
-                $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
-                onPressed: () {
-                  // 선택한 식당이 같은 경우 빈 식당 sink$
-                  // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
-                  //     restaurants[index].id) {
-                  //   GServiceRestaurant.$selectedRestaurant
-                  //       .sink$(MRestaurant());
-                  //   return;
-                  // }
+      children: asd,
+      // children: listOfRestaurant
+      //     .map((MRestaurant data) => SizedBox(height: 100))
+      //     .toList(),
 
-                  // 선택한 식당이 다른 경우 해당 식당을 sink$
-                  GServiceRestaurant.$selectedRestaurant
-                      .sink$(listOfRestaurant[index]);
+      // itemCount: listOfRestaurant.length,
+      // itemBuilder: (BuildContext context, int index) {
+      //   return SizedBox(
+      //     height: 100,
+      //     child: TileRestaurantUnit(
+      //       index: index,
+      //       restaurant: listOfRestaurant[index],
+      //       $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
+      //       onPressed: () {
+      //         // 선택한 식당이 같은 경우 빈 식당 sink$
+      //         // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
+      //         //     restaurants[index].id) {
+      //         //   GServiceRestaurant.$selectedRestaurant
+      //         //       .sink$(MRestaurant());
+      //         //   return;
+      //         // }
 
-                  inputDataForHtml(
-                    dataType: 'set',
-                    data: {
-                      'label': listOfRestaurant[index].label,
-                      'lat': listOfRestaurant[index].lat,
-                      'lng': listOfRestaurant[index].lng
-                    },
-                  );
-                },
-              ).expand(),
-            ],
-          ),
-        );
-      },
+      //         // 선택한 식당이 다른 경우 해당 식당을 sink$
+      //         GServiceRestaurant.$selectedRestaurant
+      //             .sink$(listOfRestaurant[index]);
+
+      //         inputDataForHtml(
+      //           dataType: 'set',
+      //           data: {
+      //             'label': listOfRestaurant[index].label,
+      //             'lat': listOfRestaurant[index].lat,
+      //             'lng': listOfRestaurant[index].lng
+      //           },
+      //         );
+      //       },
+      //     ).expand(),
+      //   );
+      // },
       onRefreshStart: () async {
         // 스크롤을 비활성화 시키기 위해
         isLoading = true;
@@ -341,7 +362,8 @@ class ViewMapState extends State<ViewMap> {
           RestfulResult result =
               await GServiceRestaurant.pagination(isYoutube: isYoutube);
           $listOfRestaurant.sink$(result.data['pagination_data']);
-          dataCount = result.data['dataCount'];
+          GServiceRestaurant.clearThumbnailCache();
+          // dataCount = result.data['dataCount'];
           if (isPort) {
             ctrlMainScroll.jumpTo(0);
           }
@@ -398,26 +420,14 @@ class ViewMapState extends State<ViewMap> {
 
   Future<void> initData() async {
     ctrlSido.text = LABEL.ALL;
-    RestfulResult initPaginationData = await GServiceRestaurant.pagination(
-      isYoutube: isYoutube,
-    );
-    await registerNaverMap();
+    RestfulResult initPaginationData =
+        await GServiceRestaurant.pagination(isYoutube: isYoutube);
     List<MRestaurant> result = initPaginationData.data['pagination_data'];
     await GUtility.wait(splashDuration);
     $listOfRestaurant.sink$(result);
-
-    ///
-    ///
-    /// TODO : 현재 initState에서 initMarker를 호출하면
-    /// markerCreate가 실행되지 않는 상황
-    ///
-    ///
-
-    dataCount = initPaginationData.data['dataCount'];
   }
 
-  Future<void> initMarker(List<MRestaurant> result) async {
-    print('aaaaaaaaaaaaaaaaaaaaaa');
+  List<Map<String, dynamic>> convertMarkerData(List<MRestaurant> result) {
     List<Map<String, dynamic>> getData = result
         .map((MRestaurant rest) => {
               'label': rest.label,
@@ -425,13 +435,8 @@ class ViewMapState extends State<ViewMap> {
               'lng': rest.lng,
             })
         .toList();
-
-    await inputDataForHtml(dataType: 'init', data: getData);
-
-    // await initMarkerInput(getData);
+    return getData;
   }
-
-  Future<void> initMarkerInput(List<Map<String, dynamic>> data) async {}
 
   Future<void> inputDataForHtml(
       {required String dataType, required dynamic data}) async {
@@ -443,7 +448,6 @@ class ViewMapState extends State<ViewMap> {
     };
 
     String jsonData = jsonEncode(mapOfData);
-    // String jsonData = jsonEncode(asd);
     html.window.postMessage(jsonData, '*');
   }
 

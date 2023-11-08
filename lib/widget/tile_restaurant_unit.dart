@@ -1,11 +1,13 @@
 part of widget;
 
 class TileRestaurantUnit extends StatelessWidget {
+  final int index;
   final MRestaurant restaurant;
   final TStream<MRestaurant> $selectedRestaurant;
   final VoidCallback onPressed;
 
   TileRestaurantUnit({
+    required this.index,
     required this.restaurant,
     required this.$selectedRestaurant,
     required this.onPressed,
@@ -35,28 +37,23 @@ class TileRestaurantUnit extends StatelessWidget {
               }),
           Row(
             children: [
+              Center(
+                  child: Text(
+                '${index + 1}',
+                style: const TextStyle(color: COLOR.GREY),
+              )).sizedBox(width: 25),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: FutureBuilder(
-                  initialData:
-                      RestfulResult(statusCode: 400, message: '', data: null),
+                  initialData: null,
                   future: GServiceRestaurant.getThumbnail(
-                      thumbnail: restaurant.thumbnail),
+                      thumbnailId: restaurant.thumbnail),
                   builder: (
                     BuildContext context,
-                    AsyncSnapshot<RestfulResult> snapshot,
+                    AsyncSnapshot<Widget?> snapshot,
                   ) {
-                    if (snapshot.data!.statusCode != 200) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.data!.data['thumbnail'] == null ||
-                        snapshot.data!.data['thumbnail']['image'] == "") {
-                      return const Center(child: Text("no image"));
-                    }
-
-                    return Image.memory(base64Decode(
-                        snapshot.data!.data['thumbnail']['image']));
+                    return snapshot.data ??
+                        const Center(child: Text("no image"));
                   },
                 ),
               ).expand(),

@@ -22,30 +22,38 @@ class FooterBar extends StatelessWidget {
   }
 
   List<Widget> generateButtons() {
+    List<Widget> footer = [
+      const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            '사이트맵',
+            style: TextStyle(color: COLOR.WHITE),
+          ),
+        ),
+      ),
+      const Padding(padding: EdgeInsets.all(4)),
+    ];
+
     List<Widget> footerButtons = mapOfData
         .map((Map<String, dynamic> data) =>
-            buildIconButtons(children: data['children'], url: data['url'])
-                .expand())
+            buildIconButtons(child: data['child'], url: data['url']))
         .toList();
 
-    footerButtons.add(buildAboutButton().expand());
+    footer.addAll(footerButtons);
+    footerButtons.add(buildAboutButton());
 
-    return footerButtons;
+    return footer;
   }
 
   Widget buildIconButtons({
-    required List<Widget> children,
+    required Widget child,
     required String url,
   }) {
     return TextButton(
       style: TextButton.styleFrom(foregroundColor: COLOR.WHITE),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children,
-      ),
-      onPressed: () {
-        js.context.callMethod('open', [url]);
-      },
+      child: child,
+      onPressed: () => js.context.callMethod('open', [url]),
     );
   }
 
@@ -54,12 +62,7 @@ class FooterBar extends StatelessWidget {
       style: TextButton.styleFrom(foregroundColor: COLOR.WHITE),
       child: const SizedBox(
         height: double.infinity,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('About'),
-          ],
-        ),
+        child: Center(child: Text('About')),
       ),
       onPressed: () async {
         aboutPop();

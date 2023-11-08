@@ -4,19 +4,19 @@ class AppendScrollListView extends StatefulWidget {
   final bool isLoading;
   final AsyncCallback onRefreshStart;
   final AsyncCallback onRefreshEnd;
-  final IndexedWidgetBuilder itemBuilder;
   final ScrollController controller;
-  final int itemCount;
-  // final List<T> data;
+  final List<Widget> children;
+  // final IndexedWidgetBuilder itemBuilder;
+  // final int itemCount;
 
   const AppendScrollListView({
     required this.isLoading,
     required this.onRefreshStart,
     required this.onRefreshEnd,
-    required this.itemBuilder,
     required this.controller,
-    required this.itemCount,
-    // required this.data,
+    required this.children,
+    // required this.itemBuilder,
+    // required this.itemCount,
     super.key,
   });
 
@@ -31,11 +31,16 @@ class AppendScrollListViewState extends State<AppendScrollListView> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ListView.separated(
+        // ListView.separated(
+        //   controller: ctrlScroll,
+        //   separatorBuilder: (context, index) => const Divider(),
+        //   itemCount: widget.itemCount,
+        //   itemBuilder: widget.itemBuilder,
+        // ),
+
+        ListView(
           controller: ctrlScroll,
-          separatorBuilder: (context, index) => const Divider(),
-          itemCount: widget.itemCount,
-          itemBuilder: widget.itemBuilder,
+          children: widget.children,
         ),
         /*
 
