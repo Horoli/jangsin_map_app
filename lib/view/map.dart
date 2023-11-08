@@ -34,13 +34,15 @@ class ViewMapState extends State<ViewMap> {
             convertMarkerData(listOfRestaurant);
         inputDataForHtml(dataType: 'init', data: getMarkerData);
 
-        return Stack(children: [
-          isPort
-              ? buildPortaitView(listOfRestaurant)
-              : buildLandscapeView(listOfRestaurant),
-          // loadingView
-          if (listOfRestaurant.isEmpty) ViewDataLoading(),
-        ]);
+        return Stack(
+          children: [
+            isPort
+                ? buildPortaitView(listOfRestaurant)
+                : buildLandscapeView(listOfRestaurant),
+            // loadingView
+            if (listOfRestaurant.isEmpty) ViewDataLoading(),
+          ],
+        );
       },
     );
   }
@@ -430,7 +432,7 @@ class ViewMapState extends State<ViewMap> {
   List<Map<String, dynamic>> convertMarkerData(List<MRestaurant> result) {
     List<Map<String, dynamic>> getData = result
         .map((MRestaurant rest) => {
-              'label': rest.label,
+              'labe': rest.label,
               'lat': rest.lat,
               'lng': rest.lng,
             })
