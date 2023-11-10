@@ -40,8 +40,8 @@ class FooterBar extends StatelessWidget {
             buildIconButtons(child: data['child'], url: data['url']))
         .toList();
 
-    footer.addAll(footerButtons);
     footerButtons.add(buildAboutButton());
+    footer.addAll(footerButtons);
 
     return footer;
   }

@@ -32,6 +32,7 @@ class ViewMapState extends State<ViewMap> {
       builder: (context, List<MRestaurant> listOfRestaurant) {
         List<Map<String, dynamic>> getMarkerData =
             convertMarkerData(listOfRestaurant);
+        // print('getMarkerData $getMarkerData');
         inputDataForHtml(dataType: 'init', data: getMarkerData);
 
         return Stack(
@@ -205,7 +206,7 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Widget buildListView(List<MRestaurant> listOfRestaurant) {
-    List<Widget> asd = listOfRestaurant
+    List<Widget> tiles = listOfRestaurant
         .asMap()
         .keys
         .map(
@@ -233,7 +234,12 @@ class ViewMapState extends State<ViewMap> {
                   data: {
                     'label': listOfRestaurant[index].label,
                     'lat': listOfRestaurant[index].lat,
-                    'lng': listOfRestaurant[index].lng
+                    'lng': listOfRestaurant[index].lng,
+                    'sido': listOfRestaurant[index].address_sido,
+                    'sigungu': listOfRestaurant[index].address_sigungu,
+                    'eupmyeondong':
+                        listOfRestaurant[index].address_eupmyeondong,
+                    'detail': listOfRestaurant[index].address_detail,
                   },
                 );
               },
@@ -241,12 +247,11 @@ class ViewMapState extends State<ViewMap> {
           ),
         )
         .toList();
-    print(asd);
 
     return AppendScrollListView(
       isLoading: isLoading,
       controller: ctrlListScroll,
-      children: asd,
+      children: tiles,
       // children: listOfRestaurant
       //     .map((MRestaurant data) => SizedBox(height: 100))
       //     .toList(),
@@ -432,9 +437,14 @@ class ViewMapState extends State<ViewMap> {
   List<Map<String, dynamic>> convertMarkerData(List<MRestaurant> result) {
     List<Map<String, dynamic>> getData = result
         .map((MRestaurant rest) => {
-              'labe': rest.label,
+              'label': rest.label,
               'lat': rest.lat,
               'lng': rest.lng,
+              // 'address': rest.address_street,
+              'sido': rest.address_sido,
+              'sigungu': rest.address_sigungu,
+              'eupmyeondong': rest.address_eupmyeondong,
+              'detail': rest.address_detail,
             })
         .toList();
     return getData;
