@@ -38,18 +38,15 @@
 
       function handleMessage(e) {
         const getData = JSON.parse(e.data);
-        console.log("getData", getData);
         if (getData.type === "set") {
           clickMoveToSelectedRestaurantLocation(getData);
         }
 
         if (getData.type === "init") {
-          console.log("init A");
           if (Object.keys(mapOfCurrentMarker).length !== 0) {
             markerInitializing();
           }
 
-          console.log("init B");
           markerCreate(getData);
         }
       }
@@ -113,7 +110,6 @@
         */
       function clickMoveToSelectedRestaurantLocation(event) {
         var label = event.data.label;
-        console.log("event.data", event.data);
 
         var sido = event.data.sido;
         var sigungu = event.data.sigungu;

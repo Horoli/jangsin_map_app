@@ -29,4 +29,5 @@ Future<void> _initLocalStorage() async {
 Future<void> _initSerivice() async {
   GServiceRestaurant = ServiceRestaurant.getInstance();
   GServiceAdmin = ServiceAdmin.getInstance();
+  GServiceInfo = ServiceInfo.getInstance();
 }

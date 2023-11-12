@@ -32,7 +32,6 @@ class ViewMapState extends State<ViewMap> {
       builder: (context, List<MRestaurant> listOfRestaurant) {
         List<Map<String, dynamic>> getMarkerData =
             convertMarkerData(listOfRestaurant);
-        // print('getMarkerData $getMarkerData');
         inputDataForHtml(dataType: 'init', data: getMarkerData);
 
         return Stack(
@@ -426,6 +425,7 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Future<void> initData() async {
+    await GServiceInfo.visitorUpdate();
     ctrlSido.text = LABEL.ALL;
     RestfulResult initPaginationData =
         await GServiceRestaurant.pagination(isYoutube: isYoutube);

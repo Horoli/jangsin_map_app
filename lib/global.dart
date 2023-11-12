@@ -4,6 +4,8 @@ final Utility GUtility = Utility();
 
 late final ServiceRestaurant GServiceRestaurant;
 late final ServiceAdmin GServiceAdmin;
+late final ServiceInfo GServiceInfo;
+
 late final SharedPreferences GSharedPreferences;
 
 Widget buildExitButton(BuildContext context) {

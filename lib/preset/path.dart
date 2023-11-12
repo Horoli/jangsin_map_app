@@ -1,4 +1,4 @@
-const bool IS_LOCAL = false;
+const bool IS_LOCAL = true;
 const String LOCAL_URL = 'localhost:4003';
 const String FORIEGN_URL = 'jangsin-api.horoli.kr';
 
@@ -22,6 +22,8 @@ const String API_RESTAURANT_CSV_UPLOAD = 'restaurant/create_csv_upload';
 
 const String API_IMAGE_THUMBNAIL = 'image/thumbnail';
 const String API_IMAGE_THUMBNAIL_ADMIN = 'image/thumbnail_admin';
+
+const String API_INFO_VISITOR_UPDATE = 'service_info/visitor_update';
 
 const String API_USERS_SIGN_IN = 'users/sign_in';
 const String API_USERS_SIGN_UP = 'users/sign_up';

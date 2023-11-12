@@ -36,6 +36,7 @@ part 'app_root.dart';
 
 part 'service/restaurant.dart';
 part 'service/admin.dart';
+part 'service/info.dart';
 
 part 'global.dart';
 
