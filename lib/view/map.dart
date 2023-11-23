@@ -13,7 +13,7 @@ class ViewMapState extends State<ViewMap> {
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
-  bool isYoutube = true;
+  bool isYoutube = false;
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
@@ -32,7 +32,25 @@ class ViewMapState extends State<ViewMap> {
       builder: (context, List<MRestaurant> listOfRestaurant) {
         List<Map<String, dynamic>> getMarkerData =
             convertMarkerData(listOfRestaurant);
-        inputDataForHtml(dataType: 'init', data: getMarkerData);
+        inputDataForHtml(
+          dataType: KEY.DATATYPE_SETUP,
+          data: {
+            // 'maxWidth': 140,
+            // 'backgroundColor': "#eee",
+            // 'borderColor': "#2db400",
+            'borderWidth': 0,
+            'disableAnchor': true,
+            'backgroundColor': 'transparent',
+            // 'anchorSize': {"width": 30, "height": 30},
+            // 'anchorSkew': true,
+            // 'anchorColor': "#eee",
+            'pixelOffset': {"x": 20, "y": -20}
+          },
+        );
+        inputDataForHtml(
+          dataType: KEY.DATATYPE_INIT,
+          data: getMarkerData,
+        );
 
         return Stack(
           children: [
@@ -88,7 +106,9 @@ class ViewMapState extends State<ViewMap> {
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Card(
-                      child: HtmlElementView(viewType: 'naver-map'),
+                      child: HtmlElementView(
+                        viewType: KEY.NAVER_MAP,
+                      ),
                     ),
                   ).sizedBox(height: height * 0.5),
 
@@ -134,7 +154,7 @@ class ViewMapState extends State<ViewMap> {
                       height: height,
                       width: width - SIZE.LANDSCAPE_WIDTH_PIXED,
                       color: Colors.amber[100],
-                      child: const HtmlElementView(viewType: 'naver-map'),
+                      child: const HtmlElementView(viewType: KEY.NAVER_MAP),
                     ),
                   ),
                   // list
@@ -229,16 +249,18 @@ class ViewMapState extends State<ViewMap> {
                     .sink$(listOfRestaurant[index]);
 
                 inputDataForHtml(
-                  dataType: 'set',
+                  dataType: KEY.DATATYPE_SET,
                   data: {
                     'label': listOfRestaurant[index].label,
                     'lat': listOfRestaurant[index].lat,
                     'lng': listOfRestaurant[index].lng,
-                    'sido': listOfRestaurant[index].address_sido,
-                    'sigungu': listOfRestaurant[index].address_sigungu,
-                    'eupmyeondong':
-                        listOfRestaurant[index].address_eupmyeondong,
-                    'detail': listOfRestaurant[index].address_detail,
+                    'info': createHtmlMarkerInfo(
+                      listOfRestaurant[index].label,
+                      listOfRestaurant[index].address_sido,
+                      listOfRestaurant[index].address_sigungu,
+                      listOfRestaurant[index].address_eupmyeondong,
+                      listOfRestaurant[index].address_detail,
+                    ),
                   },
                 );
               },
@@ -420,8 +442,19 @@ class ViewMapState extends State<ViewMap> {
   @override
   void initState() {
     registerNaverMap();
+    html.window.addEventListener('message', onHTMLMessage);
     initData();
     super.initState();
+  }
+
+  void onHTMLMessage(event) {
+    String _data = event.data.toString();
+    if (!_data.startsWith('@APP')) return;
+
+    String data = _data.substring(4);
+    Map<String, dynamic> mapOfData = jsonDecode(data);
+
+    print('mapOfData $mapOfData');
   }
 
   Future<void> initData() async {
@@ -440,19 +473,40 @@ class ViewMapState extends State<ViewMap> {
               'label': rest.label,
               'lat': rest.lat,
               'lng': rest.lng,
-              // 'address': rest.address_street,
-              'sido': rest.address_sido,
-              'sigungu': rest.address_sigungu,
-              'eupmyeondong': rest.address_eupmyeondong,
-              'detail': rest.address_detail,
+              'info': createHtmlMarkerInfo(
+                rest.label,
+                rest.address_sido,
+                rest.address_sigungu,
+                rest.address_eupmyeondong,
+                rest.address_detail,
+              ),
             })
         .toList();
     return getData;
   }
 
+  String createHtmlMarkerInfo(
+    String label,
+    String sido,
+    String sigungu,
+    String eupmyeondong,
+    String detail,
+  ) {
+    return [
+      '<div class="iw_inner" style="padding: 0px 20px 0px 20px; background-color: #f5f5f5; border-radius: 10px;">',
+      '<h3 style="background-color: #FF0000; color: white; padding: 10px;"> $label</h3>',
+      '<p style="margin: 10px 0;"> $sido $sigungu<br>',
+      '$eupmyeondong $detail </p>',
+      "</div>",
+    ].join('');
+  }
+
   Future<void> inputDataForHtml(
       {required String dataType, required dynamic data}) async {
-    assert(dataType == 'init' || dataType == 'set',
+    assert(
+        dataType == KEY.DATATYPE_INIT ||
+            dataType == KEY.DATATYPE_SET ||
+            dataType == KEY.DATATYPE_SETUP,
         'inputDataForHtml exception : dataType is not init or set');
     Map<String, dynamic> mapOfData = {
       'type': dataType,
@@ -460,7 +514,7 @@ class ViewMapState extends State<ViewMap> {
     };
 
     String jsonData = jsonEncode(mapOfData);
-    html.window.postMessage(jsonData, '*');
+    html.window.postMessage('@HTML$jsonData', '*');
   }
 
   Future<void> registerNaverMap() async {
@@ -468,7 +522,7 @@ class ViewMapState extends State<ViewMap> {
         PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
 
     ui_web.platformViewRegistry.registerViewFactory(
-      'naver-map',
+      KEY.NAVER_MAP,
       (int id) => html.IFrameElement()
         ..style.width = '100%'
         ..style.height = '100%'
@@ -643,11 +697,6 @@ class ViewMapState extends State<ViewMap> {
                                     .sink$(result.data['pagination_data']);
 
                                 return ctrlListScroll.jumpTo(0);
-                                // GServiceRestaurant.pagination(
-                                //   sido: ctrlSido.text,
-                                //   sigungu: ctrlSigungu.text,
-                                //   isYoutube: isYoutube,
-                                // );
                               },
                             ).expand(flex: 4),
                           ],
