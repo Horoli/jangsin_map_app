@@ -2,6 +2,8 @@ library widget;
 
 import 'dart:math';
 import 'dart:convert';
+import 'dart:ui_web' as ui_web;
+import 'dart:html' as html;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
@@ -31,6 +33,7 @@ part 'pagination_button.dart';
 part 'dropdown_field.dart';
 part 'append_scroll_listview.dart';
 part 'footer.dart';
+part 'html.dart';
 
 part 'admin/management_info.dart';
 part 'admin/management_image.dart';

@@ -25,12 +25,14 @@
   <script>
     window.parent.addEventListener("message", handleMessage, false);
 
+    // 마커정보를 저장하는 객체
     var mapOfCurrentMarker = {};
+    // infoWindow는 messageHandler에서 초기화
+    var infoWindow
 
     var map = new naver.maps.Map("map", mapOptions);
     var mapOptions = { zoom: 10 };
 
-    var infoWindow
 
     function postMessage(data) {
       window.parent.postMessage('@APP' + JSON.stringify(data))
@@ -54,7 +56,7 @@
             setupOptions.anchorSize = new naver.maps.Size(setupOptions.anchorSize.width, setupOptions.anchorSize.height)
           }
 
-          console.log('setupOptions', setupOptions);
+          // console.log('setupOptions', setupOptions);
           infoWindow = new naver.maps.InfoWindow(setupOptions)
         } break
         case "setMarker": {

@@ -21,7 +21,6 @@ class ViewMapState extends State<ViewMap> {
   final ScrollController ctrlListScroll = ScrollController();
   final TStream<List<MRestaurant>> $listOfRestaurant =
       TStream<List<MRestaurant>>();
-  // int dataCount = 0;
   bool isLoading = false;
 
   @override
@@ -31,26 +30,8 @@ class ViewMapState extends State<ViewMap> {
       stream: $listOfRestaurant.browse$,
       builder: (context, List<MRestaurant> listOfRestaurant) {
         List<Map<String, dynamic>> getMarkerData =
-            convertMarkerData(listOfRestaurant);
-        inputDataForHtml(
-          dataType: KEY.DATATYPE_SETUP,
-          data: {
-            // 'maxWidth': 140,
-            // 'backgroundColor': "#eee",
-            // 'borderColor': "#2db400",
-            'borderWidth': 0,
-            'disableAnchor': true,
-            'backgroundColor': 'transparent',
-            // 'anchorSize': {"width": 30, "height": 30},
-            // 'anchorSkew': true,
-            // 'anchorColor': "#eee",
-            'pixelOffset': {"x": 20, "y": -20}
-          },
-        );
-        inputDataForHtml(
-          dataType: KEY.DATATYPE_INIT,
-          data: getMarkerData,
-        );
+            htmlControl.convertMarkerData(listOfRestaurant);
+        initHtml(getMarkerData);
 
         return Stack(
           children: [
@@ -248,13 +229,13 @@ class ViewMapState extends State<ViewMap> {
                 GServiceRestaurant.$selectedRestaurant
                     .sink$(listOfRestaurant[index]);
 
-                inputDataForHtml(
-                  dataType: KEY.DATATYPE_SET,
+                htmlControl.inputDataForHtml(
+                  dataType: KEY.DATATYPE_SET_MARKER,
                   data: {
                     'label': listOfRestaurant[index].label,
                     'lat': listOfRestaurant[index].lat,
                     'lng': listOfRestaurant[index].lng,
-                    'info': createHtmlMarkerInfo(
+                    'info': htmlControl.createHtmlMarkerInfo(
                       listOfRestaurant[index].label,
                       listOfRestaurant[index].address_sido,
                       listOfRestaurant[index].address_sigungu,
@@ -273,51 +254,12 @@ class ViewMapState extends State<ViewMap> {
       isLoading: isLoading,
       controller: ctrlListScroll,
       children: tiles,
-      // children: listOfRestaurant
-      //     .map((MRestaurant data) => SizedBox(height: 100))
-      //     .toList(),
-
-      // itemCount: listOfRestaurant.length,
-      // itemBuilder: (BuildContext context, int index) {
-      //   return SizedBox(
-      //     height: 100,
-      //     child: TileRestaurantUnit(
-      //       index: index,
-      //       restaurant: listOfRestaurant[index],
-      //       $selectedRestaurant: GServiceRestaurant.$selectedRestaurant,
-      //       onPressed: () {
-      //         // 선택한 식당이 같은 경우 빈 식당 sink$
-      //         // if (GServiceRestaurant.$selectedRestaurant.lastValue.id ==
-      //         //     restaurants[index].id) {
-      //         //   GServiceRestaurant.$selectedRestaurant
-      //         //       .sink$(MRestaurant());
-      //         //   return;
-      //         // }
-
-      //         // 선택한 식당이 다른 경우 해당 식당을 sink$
-      //         GServiceRestaurant.$selectedRestaurant
-      //             .sink$(listOfRestaurant[index]);
-
-      //         inputDataForHtml(
-      //           dataType: 'set',
-      //           data: {
-      //             'label': listOfRestaurant[index].label,
-      //             'lat': listOfRestaurant[index].lat,
-      //             'lng': listOfRestaurant[index].lng
-      //           },
-      //         );
-      //       },
-      //     ).expand(),
-      //   );
-      // },
       onRefreshStart: () async {
         // 스크롤을 비활성화 시키기 위해
         isLoading = true;
         RestfulResult result = GServiceRestaurant.$pagination.lastValue;
         /*
-
          현재 페이지가 마지막 페이지가 아닌 경우 페이지를 추가
-
         */
         if (result.data['total_page'] != result.data['current_page']) {
           RestfulResult getDataResult = await GServiceRestaurant.pagination(
@@ -326,20 +268,15 @@ class ViewMapState extends State<ViewMap> {
             page: result.data['current_page'] + 1,
             isYoutube: isYoutube,
           );
-
           if (getDataResult.statusCode != 200) {
             $listOfRestaurant.sink$(listOfRestaurant);
             return;
           }
-
           debugPrint(
               'getDataResult.data[current_page] ${getDataResult.data['current_page']}');
-
           /*
-
           스크롤을 여러번 내려서 데이터가 중복되는 경우를 exception 처리
-
-        */
+          */
           if (listOfRestaurant.length <
               getDataResult.data['current_page'] *
                   getDataResult.data['limit']) {
@@ -441,20 +378,13 @@ class ViewMapState extends State<ViewMap> {
 
   @override
   void initState() {
-    registerNaverMap();
+    htmlControl.registerHtml(
+      KEY.NAVER_MAP,
+      PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN,
+    );
     html.window.addEventListener('message', onHTMLMessage);
     initData();
     super.initState();
-  }
-
-  void onHTMLMessage(event) {
-    String _data = event.data.toString();
-    if (!_data.startsWith('@APP')) return;
-
-    String data = _data.substring(4);
-    Map<String, dynamic> mapOfData = jsonDecode(data);
-
-    print('mapOfData $mapOfData');
   }
 
   Future<void> initData() async {
@@ -467,68 +397,38 @@ class ViewMapState extends State<ViewMap> {
     $listOfRestaurant.sink$(result);
   }
 
-  List<Map<String, dynamic>> convertMarkerData(List<MRestaurant> result) {
-    List<Map<String, dynamic>> getData = result
-        .map((MRestaurant rest) => {
-              'label': rest.label,
-              'lat': rest.lat,
-              'lng': rest.lng,
-              'info': createHtmlMarkerInfo(
-                rest.label,
-                rest.address_sido,
-                rest.address_sigungu,
-                rest.address_eupmyeondong,
-                rest.address_detail,
-              ),
-            })
-        .toList();
-    return getData;
-  }
-
-  String createHtmlMarkerInfo(
-    String label,
-    String sido,
-    String sigungu,
-    String eupmyeondong,
-    String detail,
-  ) {
-    return [
-      '<div class="iw_inner" style="padding: 0px 20px 0px 20px; background-color: #f5f5f5; border-radius: 10px;">',
-      '<h3 style="background-color: #FF0000; color: white; padding: 10px;"> $label</h3>',
-      '<p style="margin: 10px 0;"> $sido $sigungu<br>',
-      '$eupmyeondong $detail </p>',
-      "</div>",
-    ].join('');
-  }
-
-  Future<void> inputDataForHtml(
-      {required String dataType, required dynamic data}) async {
-    assert(
-        dataType == KEY.DATATYPE_INIT ||
-            dataType == KEY.DATATYPE_SET ||
-            dataType == KEY.DATATYPE_SETUP,
-        'inputDataForHtml exception : dataType is not init or set');
-    Map<String, dynamic> mapOfData = {
-      'type': dataType,
-      'data': data,
-    };
-
-    String jsonData = jsonEncode(mapOfData);
-    html.window.postMessage('@HTML$jsonData', '*');
-  }
-
-  Future<void> registerNaverMap() async {
-    String htmlPath =
-        PATH.IS_LOCAL ? PATH.MAP_HTML_LOCAL : PATH.MAP_HTML_FORIEGN;
-
-    ui_web.platformViewRegistry.registerViewFactory(
-      KEY.NAVER_MAP,
-      (int id) => html.IFrameElement()
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.border = 'none'
-        ..src = htmlPath,
+  // initState가 아닌 최상위 streamBuilder내에서 initHtml을 호출
+  void initHtml(List<Map<String, dynamic>> markerData) {
+    htmlControl.inputDataForHtml(
+      dataType: KEY.DATATYPE_INIT_MARKER,
+      data: markerData,
     );
+
+    htmlControl.inputDataForHtml(
+      dataType: KEY.DATATYPE_INFO_WINDOW_SETUP,
+      data: {
+        // 'maxWidth': 140,
+        // 'backgroundColor': "#eee",
+        // 'borderColor': "#2db400",
+        'borderWidth': 0,
+        'disableAnchor': true,
+        'backgroundColor': 'transparent',
+        // 'anchorSize': {"width": 30, "height": 30},
+        // 'anchorSkew': true,
+        // 'anchorColor': "#eee",
+        'pixelOffset': {"x": 20, "y": -20}
+      },
+    );
+  }
+
+  void onHTMLMessage(event) {
+    String _data = event.data.toString();
+    if (!_data.startsWith('@APP')) return;
+
+    String data = _data.substring(4);
+    Map<String, dynamic> mapOfData = jsonDecode(data);
+
+    print('mapOfData $mapOfData');
   }
 
   Future<void> selectRegionSidoDialog() async {

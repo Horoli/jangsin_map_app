@@ -27,8 +27,8 @@ const String ADMIN_YOUTUBE_LINK = "youtube_link";
 const String ADMIN_YOUTUBE_UPLOADED_AT = "youtube_uploaded_at";
 const String ADMIN_BAEMIN_LINK = "baemin_link";
 
-const String DATATYPE_INIT = 'initMarker';
-const String DATATYPE_SET = 'setMarker';
-const String DATATYPE_SETUP = 'infoWindowSetup';
+const String DATATYPE_INIT_MARKER = 'initMarker';
+const String DATATYPE_SET_MARKER = 'setMarker';
+const String DATATYPE_INFO_WINDOW_SETUP = 'infoWindowSetup';
 
 const String NAVER_MAP = 'naver-map';
