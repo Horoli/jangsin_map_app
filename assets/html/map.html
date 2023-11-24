@@ -7,7 +7,124 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
   <title>"title"</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rey7y37ny0"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", _ => {
+      window.parent.addEventListener("message", handleMessage, false);
+
+      // 마커정보를 저장하는 객체
+      var mapOfCurrentMarker = {};
+      // infoWindow는 messageHandler에서 초기화
+      var infoWindow
+
+      var map = new naver.maps.Map("map", mapOptions);
+      var mapOptions = { zoom: 10 };
+
+
+      function postMessage(data) {
+        window.parent.postMessage('@APP' + JSON.stringify(data))
+      }
+      function handleMessage(e) {
+        if (!e.data.startsWith('@HTML'))
+          return
+
+        const getData = JSON.parse(e.data.slice(5));
+
+        switch (getData.type) {
+          case "infoWindowSetup": {
+            const setupOptions = {
+              ...getData.data
+            }
+
+            if (setupOptions.pixelOffset) {
+              setupOptions.pixelOffset = new naver.maps.Point(setupOptions.pixelOffset.x, setupOptions.pixelOffset.y)
+            }
+            if (setupOptions.anchorSize) {
+              setupOptions.anchorSize = new naver.maps.Size(setupOptions.anchorSize.width, setupOptions.anchorSize.height)
+            }
+
+            // console.log('setupOptions', setupOptions);
+            infoWindow = new naver.maps.InfoWindow(setupOptions)
+          } break
+          case "setMarker": {
+            clickMoveToSelectedRestaurantLocation(getData);
+          } break
+          case "initMarker": {
+            if (Object.keys(mapOfCurrentMarker).length !== 0) {
+              markerInitializing();
+            }
+
+            markerCreate(getData);
+          } break
+        }
+      }
+
+      // initData create marker
+      function markerCreate(event) {
+        Object.keys(event.data).forEach((key) => {
+          var label = event.data[key].label;
+          var lat = event.data[key].lat;
+          var lng = event.data[key].lng;
+
+          var position = new naver.maps.LatLng(lat, lng);
+          var newMarker = new naver.maps.Marker({
+            position: position,
+            map: map,
+            clickable: true,
+          });
+
+          /*
+            지도 내에서 마커를 클릭하면 infoWindow가 열림
+            */
+          naver.maps.Event.addListener(
+            newMarker,
+            "click",
+            function (mapListener) {
+              postMessage({ event: 'marker.click' })
+              infoWindow.setContent(event.data[key].info);
+              infoWindow.open(map, newMarker);
+              map.setCenter(position);
+              map.setZoom(14);
+            }
+          );
+
+          mapOfCurrentMarker[label] = newMarker;
+        });
+      }
+
+      /*
+        기존에 열려있던 infoWindow를 닫음
+        기존에 set된 마커들을 초기화
+        mapOfCurrentMarker를 초기화
+        */
+      function markerInitializing() {
+        for (var key in mapOfCurrentMarker) {
+          infoWindow.close();
+          mapOfCurrentMarker[key].setMap(null);
+          delete mapOfCurrentMarker[key];
+        }
+      }
+
+      /*
+        list에서 가게를 선택하면 해당 가게의 위치로 지도가 이동하고
+        infoWindow를 여는 함수
+        */
+      function clickMoveToSelectedRestaurantLocation(event) {
+        var label = event.data.label;
+        var lat = event.data.lat;
+        var lng = event.data.lng;
+        var info = event.data.info;
+        var position = new naver.maps.LatLng(lat, lng);
+
+        infoWindow.setContent(info);
+        infoWindow.open(map, mapOfCurrentMarker[label]);
+
+        map.setCenter(position);
+        map.setZoom(14);
+      }
+    })
+  </script>
   <style>
     body,
     html,
@@ -17,125 +134,44 @@
       margin: 0px;
       padding: 0px;
     }
+
+    a:has(i) {
+      text-decoration: none;
+      color: white;
+    }
+
+    div:has(.iw_inner) {
+      width: max-content !important;
+    }
+
+    .iw_inner {
+      width: 100%;
+      min-width: 250px;
+
+      &>.header {
+        display: flex;
+        background-color: black;
+        color: white;
+        margin: 0;
+        padding: 10px !important;
+        align-items: center;
+        gap: 5px;
+
+        &>*:first-child {
+          flex-grow: 1;
+        }
+
+        &>*:not(:first-child) {
+          flex-grow: 0;
+          flex-shrink: 1;
+        }
+      }
+    }
   </style>
 </head>
 
 <body>
   <div id="map"></div>
-  <script>
-    window.parent.addEventListener("message", handleMessage, false);
-
-    // 마커정보를 저장하는 객체
-    var mapOfCurrentMarker = {};
-    // infoWindow는 messageHandler에서 초기화
-    var infoWindow
-
-    var map = new naver.maps.Map("map", mapOptions);
-    var mapOptions = { zoom: 10 };
-
-
-    function postMessage(data) {
-      window.parent.postMessage('@APP' + JSON.stringify(data))
-    }
-    function handleMessage(e) {
-      if (!e.data.startsWith('@HTML'))
-        return
-
-      const getData = JSON.parse(e.data.slice(5));
-
-      switch (getData.type) {
-        case "infoWindowSetup": {
-          const setupOptions = {
-            ...getData.data
-          }
-
-          if (setupOptions.pixelOffset) {
-            setupOptions.pixelOffset = new naver.maps.Point(setupOptions.pixelOffset.x, setupOptions.pixelOffset.y)
-          }
-          if (setupOptions.anchorSize) {
-            setupOptions.anchorSize = new naver.maps.Size(setupOptions.anchorSize.width, setupOptions.anchorSize.height)
-          }
-
-          // console.log('setupOptions', setupOptions);
-          infoWindow = new naver.maps.InfoWindow(setupOptions)
-        } break
-        case "setMarker": {
-          clickMoveToSelectedRestaurantLocation(getData);
-        } break
-        case "initMarker": {
-          if (Object.keys(mapOfCurrentMarker).length !== 0) {
-            markerInitializing();
-          }
-
-          markerCreate(getData);
-        } break
-      }
-    }
-
-    // initData create marker
-    function markerCreate(event) {
-      Object.keys(event.data).forEach((key) => {
-        var label = event.data[key].label;
-        var lat = event.data[key].lat;
-        var lng = event.data[key].lng;
-
-        var position = new naver.maps.LatLng(lat, lng);
-        var newMarker = new naver.maps.Marker({
-          position: position,
-          map: map,
-          clickable: true,
-        });
-
-        /*
-          지도 내에서 마커를 클릭하면 infoWindow가 열림
-          */
-        naver.maps.Event.addListener(
-          newMarker,
-          "click",
-          function (mapListener) {
-            postMessage({ event: 'marker.click' })
-            infoWindow.setContent(event.data[key].info);
-            infoWindow.open(map, newMarker);
-            map.setCenter(position);
-            map.setZoom(14);
-          }
-        );
-
-        mapOfCurrentMarker[label] = newMarker;
-      });
-    }
-
-    /*
-      기존에 열려있던 infoWindow를 닫음
-      기존에 set된 마커들을 초기화
-      mapOfCurrentMarker를 초기화
-      */
-    function markerInitializing() {
-      for (var key in mapOfCurrentMarker) {
-        infoWindow.close();
-        mapOfCurrentMarker[key].setMap(null);
-        delete mapOfCurrentMarker[key];
-      }
-    }
-
-    /*
-      list에서 가게를 선택하면 해당 가게의 위치로 지도가 이동하고
-      infoWindow를 여는 함수
-      */
-    function clickMoveToSelectedRestaurantLocation(event) {
-      var label = event.data.label;
-      var lat = event.data.lat;
-      var lng = event.data.lng;
-      var info = event.data.info;
-      var position = new naver.maps.LatLng(lat, lng);
-
-      infoWindow.setContent(info);
-      infoWindow.open(map, mapOfCurrentMarker[label]);
-
-      map.setCenter(position);
-      map.setZoom(14);
-    }
-  </script>
 </body>
 
 </html>

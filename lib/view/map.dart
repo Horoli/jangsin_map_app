@@ -241,6 +241,9 @@ class ViewMapState extends State<ViewMap> {
                       listOfRestaurant[index].address_sigungu,
                       listOfRestaurant[index].address_eupmyeondong,
                       listOfRestaurant[index].address_detail,
+                      mapUrl: listOfRestaurant[index].naver_map_link,
+                      youtubeUrl: listOfRestaurant[index].youtube_link,
+                      instagramUrl: listOfRestaurant[index].sns_link,
                     ),
                   },
                 );

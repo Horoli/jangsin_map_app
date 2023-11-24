@@ -40,6 +40,9 @@ class HtmlNaverMapControl {
                 restaurant.address_sigungu,
                 restaurant.address_eupmyeondong,
                 restaurant.address_detail,
+                mapUrl: restaurant.naver_map_link,
+                youtubeUrl: restaurant.youtube_link,
+                instagramUrl: restaurant.sns_link,
               ),
             })
         .toList();
@@ -50,12 +53,25 @@ class HtmlNaverMapControl {
     String sido,
     String sigungu,
     String eupmyeondong,
-    String detail,
-  ) {
+    String detail, {
+    String? instagramUrl,
+    String? mapUrl,
+    String? youtubeUrl,
+  }) {
+    print('mapUrl $mapUrl');
+    print('youtubeUrl ${youtubeUrl == ''}');
+    print('instagramUrl $instagramUrl');
     return [
       '<div class="iw_inner" style="display: flex; flex-direction: column; background-color: #f5f5f5; border-style: solid; border-color: black; border-radius: 10px;">',
-      '<h3 style="background-color: black; color: white; margin: 0; padding: 10px;"> $label</h3>',
-      '<p style="margin: 0; padding: 0;"> $sido $sigungu<br>',
+      '<h3 class="header" style="display: flex; background-color: black; color: white; margin: 0; padding: 10px;"> <span>$label</span>',
+      if (mapUrl != '')
+        '<a href="$mapUrl" target="_blank"><i class="fa fa-map"></i></a>',
+      if (instagramUrl != '')
+        '<a href="$instagramUrl" target="_blank"><i class="fa fa-instagram"></i></a>',
+      if (youtubeUrl != '')
+        '<a href="$youtubeUrl" target="_blank"><i class="fa fa-youtube"></i></a>',
+      '</h3>',
+      '<p style="margin: 10px; padding: 0;"> $sido $sigungu<br>',
       '$eupmyeondong $detail </p>',
       "</div>",
     ].join('');
