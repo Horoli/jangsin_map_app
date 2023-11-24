@@ -63,7 +63,7 @@ class TileRestaurantUnit extends StatelessWidget {
                 children: [
                   buildLabel().expand(),
                   buildAddress().expand(),
-                  buildLinkButtons().expand(),
+                  // buildLinkButtons().expand(),
                 ],
               ).expand(flex: 3),
             ],
@@ -112,20 +112,20 @@ class TileRestaurantUnit extends StatelessWidget {
     );
   }
 
-  Widget buildLinkButtons() {
-    return Row(
-      children: [
-        buildLinkIconButton(ICON.MAP, restaurant.naver_map_link).expand(),
-        if (restaurant.sns_link != '')
-          buildLinkIconButton(ICON.INSTA, restaurant.sns_link).expand(),
-        // if (restaurant.baemin_link != '')
-        //   buildLinkIconButton(ICON., restaurant.baemin_link)
-        //       .expand(),
-        if (restaurant.youtube_link != '')
-          buildLinkIconButton(ICON.YOUTUBE, restaurant.youtube_link).expand(),
-      ],
-    );
-  }
+  // Widget buildLinkButtons() {
+  //   return Row(
+  //     children: [
+  //       buildLinkIconButton(ICON.MAP, restaurant.naver_map_link).expand(),
+  //       if (restaurant.sns_link != '')
+  //         buildLinkIconButton(ICON.INSTA, restaurant.sns_link).expand(),
+  //       // if (restaurant.baemin_link != '')
+  //       //   buildLinkIconButton(ICON., restaurant.baemin_link)
+  //       //       .expand(),
+  //       if (restaurant.youtube_link != '')
+  //         buildLinkIconButton(ICON.YOUTUBE, restaurant.youtube_link).expand(),
+  //     ],
+  //   );
+  // }
 
   Widget buildLinkIconButton(
     String imagePath,

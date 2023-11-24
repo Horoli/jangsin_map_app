@@ -23,12 +23,16 @@ class FooterBar extends StatelessWidget {
 
   List<Widget> generateButtons() {
     List<Widget> footer = [
+      const Padding(padding: EdgeInsets.all(4)),
       const Center(
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
             '사이트맵',
-            style: TextStyle(color: COLOR.WHITE),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: COLOR.WHITE,
+            ),
           ),
         ),
       ),
