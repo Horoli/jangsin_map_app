@@ -93,8 +93,9 @@ class TileRestaurantUnit extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AutoSizeText(addressString).expand(),
-          AutoSizeText('영업시간 : ${restaurant.operation_time}').expand(),
+          AutoSizeText(addressString, maxLines: 1).expand(),
+          AutoSizeText('영업시간 : ${restaurant.operation_time}', maxLines: 1)
+              .expand(),
           AutoSizeText('휴무일 : ${restaurant.closed_days}').expand(),
         ],
       ),
