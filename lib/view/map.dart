@@ -13,7 +13,7 @@ class ViewMapState extends State<ViewMap> {
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
-  bool isYoutube = false;
+  bool isYoutube = true;
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
