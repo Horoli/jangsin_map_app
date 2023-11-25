@@ -62,11 +62,11 @@ class HtmlNaverMapControl {
       '<div class="iw_inner" style="display: flex; flex-direction: column; border-style: solid; border-color: #3b3b3b; border-radius: 10px;">',
       '<h3 class="header" style="display: flex;"> <span>$label</span>',
       if (mapUrl != '')
-        '<a href="$mapUrl" target="_blank"><i class="fa fa-map"></i></a>',
+        '<a href="$mapUrl" target="_blank" style="margin-inline: 8px;"><i class="fa fa-map"></i></a>',
       if (instagramUrl != '')
-        '<a href="$instagramUrl" target="_blank"><i class="fa fa-instagram"></i></a>',
+        '<a href="$instagramUrl" target="_blank" style="margin-inline: 8px;"><i class="fa fa-instagram"></i></a>',
       if (youtubeUrl != '')
-        '<a href="$youtubeUrl" target="_blank"><i class="fa fa-youtube"></i></a>',
+        '<a href="$youtubeUrl" target="_blank" style="margin-inline: 8px;"><i class="fa fa-youtube"></i></a>',
       '</h3>',
       '<p style="margin: 10px; padding: 0;"> $sido $sigungu<br>',
       '$eupmyeondong $detail </p>',

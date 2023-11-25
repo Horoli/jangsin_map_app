@@ -57,8 +57,8 @@ class TileRestaurantUnit extends StatelessWidget {
               const Padding(padding: EdgeInsets.all(4)),
               Column(
                 children: [
-                  buildLabel().expand(),
-                  buildAddress().expand(),
+                  buildLabel().expand(flex: 2),
+                  buildAddress().expand(flex: 3),
                   // buildLinkButtons().expand(),
                 ],
               ).expand(flex: 3),
