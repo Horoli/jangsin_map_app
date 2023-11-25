@@ -97,7 +97,7 @@ class ViewMapState extends State<ViewMap> {
                   List 
                   */
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Card(
                       color: Colors.grey[100],
                       child: buildListView(listOfRestaurant),
@@ -119,6 +119,7 @@ class ViewMapState extends State<ViewMap> {
 
   Widget buildLandscapeView(List<MRestaurant> listOfRestaurant) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: buildFloatingActionButton(),
       body: SizedBox(
         height: height,
@@ -320,6 +321,8 @@ class ViewMapState extends State<ViewMap> {
   Widget buildFloatingActionButton() {
     return PointerInterceptor(
       child: FloatingActionButton(
+        mouseCursor: MaterialStateMouseCursor.textable,
+        tooltip: isYoutube ? "자쉼멤버스 가게보기" : "유튜브 출연식당 보기",
         child: isYoutube ? Image.asset(ICON.YOUTUBE) : Image.asset(ICON.CAFE),
         onPressed: () async {
           // youtube를 선택하면 검색값 초기화
@@ -357,16 +360,24 @@ class ViewMapState extends State<ViewMap> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        suffixIcon: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            VerticalDivider(),
-            Icon(Icons.search),
-            Padding(padding: EdgeInsets.all(4)),
-          ],
-        ),
+        prefixIcon: const Icon(Icons.search),
+        // prefixIcon: const Row(
+        //   mainAxisSize: MainAxisSize.min,
+        //   children: [
+        //     Icon(Icons.search),
+        //   ],
+        // ),
+        // suffixIcon: const Row(
+        //   mainAxisSize: MainAxisSize.min,
+        //   children: [
+        //     VerticalDivider(),
+        //     Icon(Icons.search),
+        //     Padding(padding: EdgeInsets.all(4)),
+        //   ],
+        // ),
         suffixIconColor: COLOR.GREY,
-        border: const OutlineInputBorder(),
+        border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
         labelText: selectRegion,
         labelStyle: const TextStyle(color: COLOR.GREY),
         fillColor: COLOR.GREY,

@@ -31,17 +31,21 @@ class AppendScrollListViewState extends State<AppendScrollListView> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // ListView.separated(
-        //   controller: ctrlScroll,
-        //   separatorBuilder: (context, index) => const Divider(),
-        //   itemCount: widget.itemCount,
-        //   itemBuilder: widget.itemBuilder,
-        // ),
-
-        ListView(
+        ListView.separated(
           controller: ctrlScroll,
-          children: widget.children,
+          separatorBuilder: (context, index) => const Divider(
+            height: 1,
+          ),
+          itemCount: widget.children.length,
+          itemBuilder: (BuildContext context, index) {
+            return widget.children[index];
+          },
         ),
+
+        // ListView(
+        //   controller: ctrlScroll,
+        //   children: widget.children,
+        // ),
         /*
 
           중복 데이터 추가를 방지하기 위해 isLoading이 true일 때만 인터셉터를 추가

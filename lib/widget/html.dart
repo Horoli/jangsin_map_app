@@ -58,12 +58,9 @@ class HtmlNaverMapControl {
     String? mapUrl,
     String? youtubeUrl,
   }) {
-    print('mapUrl $mapUrl');
-    print('youtubeUrl ${youtubeUrl == ''}');
-    print('instagramUrl $instagramUrl');
     return [
-      '<div class="iw_inner" style="display: flex; flex-direction: column; background-color: #f5f5f5; border-style: solid; border-color: black; border-radius: 10px;">',
-      '<h3 class="header" style="display: flex; background-color: black; color: white; margin: 0; padding: 10px;"> <span>$label</span>',
+      '<div class="iw_inner" style="display: flex; flex-direction: column; border-style: solid; border-color: #3b3b3b; border-radius: 10px;">',
+      '<h3 class="header" style="display: flex;"> <span>$label</span>',
       if (mapUrl != '')
         '<a href="$mapUrl" target="_blank"><i class="fa fa-map"></i></a>',
       if (instagramUrl != '')

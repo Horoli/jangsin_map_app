@@ -37,25 +37,21 @@ class TileRestaurantUnit extends StatelessWidget {
               }),
           Row(
             children: [
-              Center(
-                  child: Text(
+              AutoSizeText(
                 '${index + 1}',
+                textAlign: TextAlign.center,
                 style: const TextStyle(color: COLOR.GREY),
-              )).sizedBox(width: 25),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder(
-                  initialData: null,
-                  future: GServiceRestaurant.getThumbnail(
-                      thumbnailId: restaurant.thumbnail),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<Widget?> snapshot,
-                  ) {
-                    return snapshot.data ??
-                        const Center(child: Text("no image"));
-                  },
-                ),
+              ).sizedBox(width: 40),
+              FutureBuilder(
+                initialData: null,
+                future: GServiceRestaurant.getThumbnail(
+                    thumbnailId: restaurant.thumbnail),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<Widget?> snapshot,
+                ) {
+                  return snapshot.data ?? const Center(child: Text("no image"));
+                },
               ).expand(),
               //
               const Padding(padding: EdgeInsets.all(4)),
@@ -79,7 +75,7 @@ class TileRestaurantUnit extends StatelessWidget {
         AutoSizeText(
           restaurant.label,
           style: const TextStyle(
-            fontSize: 20,
+            // fontSize: ,
             fontWeight: FontWeight.bold,
           ),
         ).expand(),
@@ -90,25 +86,18 @@ class TileRestaurantUnit extends StatelessWidget {
   }
 
   Widget buildAddress() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            AutoSizeText(
-              restaurant.address_street,
-              textAlign: TextAlign.start,
-            ).expand(),
-          ],
-        ).expand(),
-        Row(
-          children: [
-            AutoSizeText(restaurant.operation_time),
-            const VerticalDivider(),
-            AutoSizeText('휴무일 : ${restaurant.closed_days}'),
-          ],
-        ).expand(),
-      ],
+    String addressString =
+        '${restaurant.address_sido} ${restaurant.address_sigungu} ${restaurant.address_eupmyeondong} ${restaurant.address_detail}';
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AutoSizeText(addressString).expand(),
+          AutoSizeText('영업시간 : ${restaurant.operation_time}').expand(),
+          AutoSizeText('휴무일 : ${restaurant.closed_days}').expand(),
+        ],
+      ),
     );
   }
 
