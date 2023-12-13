@@ -13,7 +13,7 @@ class ViewMapState extends State<ViewMap> {
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
-  bool isYoutube = true;
+  bool isYoutube = false;
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
@@ -82,7 +82,7 @@ class ViewMapState extends State<ViewMap> {
                     ),
                   ).sizedBox(height: kToolbarHeight),
                   /*
-                  Map 
+                  Map
                   */
                   const Padding(
                     padding: EdgeInsets.all(8.0),
@@ -94,7 +94,7 @@ class ViewMapState extends State<ViewMap> {
                   ).sizedBox(height: height * 0.5),
 
                   /*
-                  List 
+                  List
                   */
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -105,7 +105,7 @@ class ViewMapState extends State<ViewMap> {
                   ).expand(),
 
                   /*
-                  Footer 
+                  Footer
                   */
                   buildFooter().sizedBox(height: kToolbarHeight),
                 ],
