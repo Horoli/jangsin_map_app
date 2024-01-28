@@ -13,7 +13,7 @@ class ViewMapState extends State<ViewMap> {
   double get width => mediaQuery.size.width;
   double get height => mediaQuery.size.height;
   final int splashDuration = 2000;
-  bool isYoutube = true;
+  bool isYoutube = false;
 
   final TextEditingController ctrlSido = TextEditingController();
   final TextEditingController ctrlSigungu = TextEditingController();
@@ -189,20 +189,10 @@ class ViewMapState extends State<ViewMap> {
   }
 
   Widget buildFooter() {
-    List<Map<String, dynamic>> dataList = [
-      {
-        'url': "https://cafe.naver.com/jangsin1004",
-        'child': const Center(child: Text('자영업자의 쉼터 카페')),
-      },
-      {
-        'url': "https://www.youtube.com/@jangsin",
-        'child': const Center(child: Text('장사의 신 유튜브')),
-      },
-    ];
     return FooterBar(
       context: context,
       barColor: COLOR.DARK_GREY,
-      mapOfData: dataList,
+      mapOfData: DATA.FOOTER,
     );
   }
 
@@ -230,7 +220,7 @@ class ViewMapState extends State<ViewMap> {
                 GServiceRestaurant.$selectedRestaurant
                     .sink$(listOfRestaurant[index]);
 
-                htmlControl.inputDataForHtml(
+                htmlControl.dataInputForHtml(
                   dataType: KEY.DATATYPE_SET_MARKER,
                   data: {
                     'label': listOfRestaurant[index].label,
@@ -413,12 +403,12 @@ class ViewMapState extends State<ViewMap> {
 
   // initState가 아닌 최상위 streamBuilder내에서 initHtml을 호출
   void initHtml(List<Map<String, dynamic>> markerData) {
-    htmlControl.inputDataForHtml(
+    htmlControl.dataInputForHtml(
       dataType: KEY.DATATYPE_INIT_MARKER,
       data: markerData,
     );
 
-    htmlControl.inputDataForHtml(
+    htmlControl.dataInputForHtml(
       dataType: KEY.DATATYPE_INFO_WINDOW_SETUP,
       data: {
         // 'maxWidth': 140,
@@ -436,10 +426,10 @@ class ViewMapState extends State<ViewMap> {
   }
 
   void onHTMLMessage(event) {
-    String _data = event.data.toString();
-    if (!_data.startsWith('@APP')) return;
+    String eventData = event.data.toString();
+    if (!eventData.startsWith('@APP')) return;
 
-    String data = _data.substring(4);
+    String data = eventData.substring(4);
     Map<String, dynamic> mapOfData = jsonDecode(data);
 
     print('mapOfData $mapOfData');
