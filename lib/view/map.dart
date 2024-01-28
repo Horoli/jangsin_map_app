@@ -82,7 +82,7 @@ class ViewMapState extends State<ViewMap> {
                     ),
                   ).sizedBox(height: kToolbarHeight),
                   /*
-                  Map 
+                  Map
                   */
                   const Padding(
                     padding: EdgeInsets.all(8.0),
@@ -94,7 +94,7 @@ class ViewMapState extends State<ViewMap> {
                   ).sizedBox(height: height * 0.5),
 
                   /*
-                  List 
+                  List
                   */
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -105,7 +105,7 @@ class ViewMapState extends State<ViewMap> {
                   ).expand(),
 
                   /*
-                  Footer 
+                  Footer
                   */
                   buildFooter().sizedBox(height: kToolbarHeight),
                 ],
