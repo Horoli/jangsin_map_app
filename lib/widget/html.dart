@@ -12,7 +12,7 @@ class HtmlNaverMapControl {
     );
   }
 
-  Future<void> inputDataForHtml(
+  Future<void> dataInputForHtml(
       {required String dataType, required dynamic data}) async {
     assert(
         dataType == KEY.DATATYPE_INIT_MARKER ||
