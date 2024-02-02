@@ -159,6 +159,8 @@ class ServiceRestaurant {
             queryByCondition,
           );
 
+    print(query);
+
     http.get(query, headers: headers).timeout(const Duration(seconds: 5),
         onTimeout: () async {
       RestfulResult timeOutResult =

@@ -99,7 +99,7 @@ class ServiceAdmin {
     (jsonBody);
     (query);
 
-    http.post(query, headers: headers, body: jsonBody).then((rep) {
+    http.patch(query, headers: headers, body: jsonBody).then((rep) {
       Map rawData = json.decode(rep.body);
       (rawData);
 
