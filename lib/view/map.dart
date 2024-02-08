@@ -431,8 +431,6 @@ class ViewMapState extends State<ViewMap> {
 
     String data = eventData.substring(4);
     Map<String, dynamic> mapOfData = jsonDecode(data);
-
-    print('mapOfData $mapOfData');
   }
 
   Future<void> selectRegionSidoDialog() async {

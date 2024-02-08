@@ -476,7 +476,7 @@ class ViewAdminState extends State<ViewAdmin> {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
-          debugPrint('${result.map}');
+          // debugPrint('${result.map}');
           return AlertDialog(
             title: result.statusCode == 200
                 ? Column(
